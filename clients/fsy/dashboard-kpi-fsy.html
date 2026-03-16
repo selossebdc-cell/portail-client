@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Soul Yoga — Dashboard KPI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            padding: 24px;
+            line-height: 1.5;
+        }
+
+        .header { text-align: center; margin-bottom: 32px; }
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            color: #C27A5A;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .header .tagline { color: #888; font-size: 0.9rem; margin-top: 4px; }
+        .header .vision {
+            color: #aaa; font-size: 0.85rem; font-style: italic; margin-top: 12px;
+            max-width: 500px; margin-left: auto; margin-right: auto;
+            border-left: 3px solid #C27A5A; padding-left: 12px; text-align: left;
+        }
+
+        h2 { color: #C27A5A; font-size: 1.1rem; margin: 24px 0 12px 0; border-bottom: 1px solid #2a2a2a; padding-bottom: 6px; font-family: 'Playfair Display', serif; }
+        h3 { color: #aaa; font-size: 0.9rem; margin: 16px 0 8px 0; }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .kpi {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px 16px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        .kpi:hover { border-color: #C27A5A44; }
+        .kpi-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
+        .kpi-value { font-size: 2rem; font-weight: 700; margin: 6px 0; font-family: 'Playfair Display', serif; }
+        .kpi-detail { font-size: 0.75rem; color: #666; }
+        .kpi-sub { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+        .progress-bar { background: #2a2a2a; border-radius: 8px; height: 12px; overflow: hidden; margin: 6px 0; position: relative; }
+        .progress-fill { height: 100%; border-radius: 8px; transition: width 0.8s ease; }
+        .progress-fill.gold { background: linear-gradient(90deg, #C27A5A, #d4a574); }
+        .progress-fill.green { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+        .progress-fill.blue { background: linear-gradient(90deg, #5b9bd5, #7ab8e8); }
+        .progress-fill.purple { background: linear-gradient(90deg, #9C7AB5, #b99ad4); }
+        .progress-pct { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.6rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+        .section { background: #141414; border: 1px solid #1e1e1e; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+
+        /* Offer cards */
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .offer-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+        .offer-card:hover { border-color: #C27A5A; transform: translateY(-2px); }
+        .offer-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .offer-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: #C27A5A; margin-bottom: 4px; }
+        .offer-price { font-size: 0.85rem; color: #888; margin-bottom: 12px; }
+
+        .input-row { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+        .input-row label { font-size: 0.8rem; color: #aaa; flex: 1; }
+        .input-row input {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            color: #e0e0e0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 80px;
+            text-align: right;
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+            transition: border-color 0.3s;
+        }
+        .input-row input:focus { border-color: #C27A5A; outline: none; }
+        .input-row .unit { font-size: 0.75rem; color: #666; width: 30px; }
+
+        .offer-revenue {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .offer-revenue-label { font-size: 0.75rem; color: #888; }
+        .offer-revenue-amount { font-size: 1.2rem; font-weight: 700; color: #C27A5A; font-family: 'Playfair Display', serif; }
+
+        /* Gauge */
+        .gauge-container { margin: 20px 0; }
+        .gauge-bar {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: visible;
+            border: 1px solid #2a2a2a;
+        }
+        .gauge-fill-bg {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+        }
+        .gauge-amount {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+        .gauge-target-marker {
+            position: absolute;
+            top: -8px;
+            bottom: -8px;
+            width: 3px;
+            background: #ff9800;
+            border-radius: 2px;
+        }
+        .gauge-target-label {
+            position: absolute;
+            top: -22px;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: #ff9800;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        /* Milestones */
+        .milestones { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+        .milestone {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .milestone.done { border-color: #4CAF50; }
+        .milestone.current { border-color: #C27A5A; }
+        .milestone-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .milestone-dot.done { background: #4CAF50; }
+        .milestone-dot.current { background: #C27A5A; animation: pulse 2s infinite; }
+        .milestone-dot.pending { background: #333; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* Revenue table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #1a1a1a; color: #C27A5A; text-align: left; padding: 8px 12px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+        td { padding: 8px 12px; border-bottom: 1px solid #1a1a1a; }
+        .amount { text-align: right; font-variant-numeric: tabular-nums; }
+
+        .note { background: #1a1a0f; border-left: 3px solid #C27A5A; padding: 10px 14px; margin: 12px 0; font-size: 0.8rem; color: #bba; border-radius: 0 6px 6px 0; }
+
+        .save-indicator {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #4CAF50; color: #fff; padding: 8px 16px;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+            opacity: 0; transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .save-indicator.show { opacity: 1; }
+
+        .last-update { text-align: right; font-size: 0.7rem; color: #555; margin-top: 24px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Face Soul Yoga</h1>
+    <div class="tagline">Tableau de bord — Objectifs & KPIs</div>
+    <div class="vision">"Je veux etre une vraie chef d'entreprise qui pilote sa boite avec fluidite et joie"</div>
+</div>
+
+<!-- KPIs principaux -->
+<div class="kpi-grid" id="kpi-grid"></div>
+
+<!-- JAUGE CA -->
+<div class="section">
+    <h2>Progression vers l'objectif</h2>
+    <div id="gauge-section"></div>
+</div>
+
+<!-- OFFRES -->
+<div class="section">
+    <h2>Tes offres — Remplis tes chiffres</h2>
+    <p style="font-size:0.8rem;color:#888;margin-bottom:16px">Mets a jour les chiffres reels. Le CA se recalcule automatiquement.</p>
+    <div class="offers-grid" id="offers-grid"></div>
+</div>
+
+<!-- PROJECTION -->
+<div class="section">
+    <h2>Projection Annuelle</h2>
+    <div id="projection-table"></div>
+</div>
+
+<!-- MILESTONES -->
+<div class="section">
+    <h2>Jalons 2026</h2>
+    <div class="milestones" id="milestones"></div>
+</div>
+
+<!-- KPIs operationnels -->
+<div class="section">
+    <h2>KPIs Operationnels</h2>
+    <div class="offers-grid" id="ops-grid"></div>
+</div>
+
+<div class="save-indicator" id="save-indicator">Sauvegarde !</div>
+
+<p class="last-update" id="last-update"></p>
+
+<script>
+// ===== DATA =====
+const OFFERS = [
+    {
+        id: 'abo',
+        icon: '🔄',
+        name: 'Abonnement mensuel',
+        price: 17,
+        unit: '/mois',
+        annualMultiplier: 12,
+        fields: [
+            { key: 'abo_current', label: 'Abonnees actuelles', default: 300 },
+            { key: 'abo_new_month', label: 'Nouvelles / mois', default: 0 },
+            { key: 'abo_churn_month', label: 'Departs / mois', default: 0 }
+        ],
+        color: '#5b9bd5',
+        calcRevenue: (d) => d.abo_current * 17
+    },
+    {
+        id: 'formation',
+        icon: '🎓',
+        name: 'Formation Master The Method',
+        price: 1950,
+        unit: '',
+        earlyBird: 1550,
+        fields: [
+            { key: 'formation_sold', label: 'Vendues (total)', default: 0 },
+            { key: 'formation_month', label: 'Ventes ce mois', default: 0 },
+            { key: 'formation_target_month', label: 'Objectif / mois', default: 10 }
+        ],
+        color: '#C27A5A',
+        calcRevenue: (d) => d.formation_month * 1950
+    },
+    {
+        id: 'accomp',
+        icon: '🌙',
+        name: 'Accompagnement Sommeil',
+        price: 399,
+        unit: '',
+        fields: [
+            { key: 'accomp_sold', label: 'Vendus (total)', default: 0 },
+            { key: 'accomp_month', label: 'Ventes ce mois', default: 0 },
+            { key: 'accomp_target_month', label: 'Objectif / mois', default: 80 }
+        ],
+        color: '#9C7AB5',
+        calcRevenue: (d) => d.accomp_month * 399
+    },
+    {
+        id: 'premium',
+        icon: '✨',
+        name: 'Premium / Mastermind (Aurelia Del Sol)',
+        price: 4500,
+        unit: '',
+        fields: [
+            { key: 'premium_sold', label: 'Clientes (total)', default: 0 },
+            { key: 'premium_month', label: 'Nouvelles ce mois', default: 0 }
+        ],
+        color: '#d4a574',
+        calcRevenue: (d) => d.premium_month * 4500
+    }
+];
+
+const MILESTONES = [
+    { label: "Architecture offre definie", date: "Mars 2026", status: "done" },
+    { label: "Migration Kajabi + Bunny lancee", date: "Mars 2026", status: "current" },
+    { label: "Chatbot Telegram deploye", date: "Mars 2026", status: "current" },
+    { label: "Process creation formation documente", date: "Avril 2026", status: "pending" },
+    { label: "Formation evergreen en ligne", date: "Mai 2026", status: "pending" },
+    { label: "10 inscriptions / mois formation", date: "Juin 2026", status: "pending" },
+    { label: "Accompagnement sommeil lance", date: "Juin 2026", status: "pending" },
+    { label: "Aurelia sort de l'operationnel FSY", date: "Aout 2026", status: "pending" },
+    { label: "Objectif 500K EUR", date: "Dec 2026", status: "pending" }
+];
+
+const OPS_METRICS = [
+    {
+        icon: '⏱',
+        name: 'Temps de travail',
+        fields: [
+            { key: 'hours_ops', label: 'Heures operationnel / sem', default: 40 },
+            { key: 'hours_strat', label: 'Heures strategie / sem', default: 5 },
+            { key: 'hours_ceo', label: 'CEO time / sem', default: 2 }
+        ]
+    },
+    {
+        icon: '📊',
+        name: 'Communaute & Engagement',
+        fields: [
+            { key: 'members_whatsapp', label: 'Membres WhatsApp', default: 300 },
+            { key: 'members_telegram', label: 'Membres Telegram', default: 0 },
+            { key: 'members_uscreen', label: 'Membres Uscreen actifs', default: 613 },
+            { key: 'videos_total', label: 'Videos en ligne', default: 600 }
+        ]
+    }
+];
+
+// ===== STATE =====
+let state = {};
+
+function initState() {
+    OFFERS.forEach(o => o.fields.forEach(f => { state[f.key] = f.default; }));
+    OPS_METRICS.forEach(o => o.fields.forEach(f => { state[f.key] = f.default; }));
+    state.ca_ytd = 0;
+    state.objectif_annuel = 500000;
+}
+
+function loadState() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('fsy-dashboard-kpi'));
+        if (saved) Object.assign(state, saved);
+    } catch(e) {}
+}
+
+function saveState() {
+    localStorage.setItem('fsy-dashboard-kpi', JSON.stringify(state));
+    const indicator = document.getElementById('save-indicator');
+    indicator.classList.add('show');
+    setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+// ===== RENDER =====
+function render() {
+    const mrrAbo = state.abo_current * 17;
+    const revFormation = state.formation_month * 1950;
+    const revAccomp = state.accomp_month * 399;
+    const revPremium = state.premium_month * 4500;
+    const revMensuel = mrrAbo + revFormation + revAccomp + revPremium;
+
+    const projAnnuel = (mrrAbo * 12) + (state.formation_month * 1950 * 12) + (state.accomp_month * 399 * 12) + (state.premium_month * 4500 * 12);
+    const pctObjectif = Math.min(100, (projAnnuel / state.objectif_annuel) * 100);
+
+    const totalFormationsVendues = state.formation_sold;
+    const totalAccompVendus = state.accomp_sold;
+
+    // KPIs
+    document.getElementById('kpi-grid').innerHTML = `
+        <div class="kpi">
+            <div class="kpi-label">Revenu mensuel</div>
+            <div class="kpi-value" style="color:#C27A5A">${fmt(revMensuel)} &euro;</div>
+            <div class="kpi-detail">Tous canaux confondus</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-label">MRR Abonnements</div>
+            <div class="kpi-value" style="color:#5b9bd5">${fmt(mrrAbo)} &euro;</div>
+            <div class="kpi-detail">${state.abo_current} abonnees x 17 &euro;</div>
+            <div class="progress-bar"><div class="progress-fill blue" style="width:${Math.min(100, state.abo_current / 1000 * 100)}%"></div></div>
+            <div class="kpi-sub">Objectif : 1 000 abonnees</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-label">Formations vendues</div>
+            <div class="kpi-value" style="color:#C27A5A">${totalFormationsVendues}</div>
+            <div class="kpi-detail">${state.formation_month} ce mois / obj. ${state.formation_target_month}</div>
+            <div class="progress-bar"><div class="progress-fill gold" style="width:${Math.min(100, state.formation_month / Math.max(1, state.formation_target_month) * 100)}%"></div></div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-label">Accompagnements</div>
+            <div class="kpi-value" style="color:#9C7AB5">${totalAccompVendus}</div>
+            <div class="kpi-detail">${state.accomp_month} ce mois / obj. ${state.accomp_target_month}</div>
+            <div class="progress-bar"><div class="progress-fill purple" style="width:${Math.min(100, state.accomp_month / Math.max(1, state.accomp_target_month) * 100)}%"></div></div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-label">Projection annuelle</div>
+            <div class="kpi-value" style="color:${projAnnuel >= state.objectif_annuel ? '#4CAF50' : '#ff9800'}">${fmt(projAnnuel)} &euro;</div>
+            <div class="kpi-detail">${Math.round(pctObjectif)}% de l'objectif ${fmt(state.objectif_annuel)} &euro;</div>
+            <div class="progress-bar"><div class="progress-fill ${projAnnuel >= state.objectif_annuel ? 'green' : 'gold'}" style="width:${pctObjectif}%"></div></div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-label">Temps CEO</div>
+            <div class="kpi-value" style="color:${state.hours_ceo >= 5 ? '#4CAF50' : '#ff9800'}">${state.hours_ceo}h</div>
+            <div class="kpi-detail">/ semaine (objectif 5h)</div>
+            <div class="progress-bar"><div class="progress-fill ${state.hours_ceo >= 5 ? 'green' : 'gold'}" style="width:${Math.min(100, state.hours_ceo / 5 * 100)}%"></div></div>
+        </div>
+    `;
+
+    // Gauge
+    const gaugeMax = Math.max(state.objectif_annuel, projAnnuel) * 1.1;
+    const gaugePct = Math.min(95, (projAnnuel / gaugeMax) * 100);
+    const targetPct = (state.objectif_annuel / gaugeMax) * 100;
+    const target1M = (1000000 / gaugeMax) * 100;
+    const gaugeColor = projAnnuel >= state.objectif_annuel ? '#4CAF50' : projAnnuel >= state.objectif_annuel * 0.5 ? '#C27A5A' : '#ef5350';
+
+    document.getElementById('gauge-section').innerHTML = `
+        <div class="gauge-container">
+            <div class="gauge-bar">
+                <div class="gauge-fill-bg" style="width:${gaugePct}%;background:linear-gradient(90deg, ${gaugeColor}88, ${gaugeColor});">
+                    <span class="gauge-amount">${fmt(projAnnuel)} &euro;/an</span>
+                </div>
+                <div class="gauge-target-marker" style="left:${targetPct}%">
+                    <div class="gauge-target-label">Objectif ${fmt(state.objectif_annuel)} &euro;</div>
+                </div>
+                ${target1M <= 100 ? `<div class="gauge-target-marker" style="left:${target1M}%;background:#d4a574"><div class="gauge-target-label" style="color:#d4a574">Vision 1M &euro;</div></div>` : ''}
+            </div>
+            <div class="gauge-labels">
+                <span>0 &euro;</span>
+                <span>${fmt(Math.round(gaugeMax))} &euro;</span>
+            </div>
+        </div>
+    `;
+
+    // Offers
+    document.getElementById('offers-grid').innerHTML = OFFERS.map(o => {
+        const rev = o.calcRevenue(state);
+        return `
+        <div class="offer-card">
+            <div class="offer-icon">${o.icon}</div>
+            <div class="offer-name">${o.name}</div>
+            <div class="offer-price">${fmt(o.price)} &euro;${o.unit} ${o.earlyBird ? '(early bird ' + fmt(o.earlyBird) + ' &euro;)' : ''}</div>
+            ${o.fields.map(f => `
+                <div class="input-row">
+                    <label>${f.label}</label>
+                    <input type="number" value="${state[f.key]}" onchange="updateField('${f.key}', this.value)" onfocus="this.select()">
+                </div>
+            `).join('')}
+            <div class="offer-revenue">
+                <span class="offer-revenue-label">Revenu mensuel</span>
+                <span class="offer-revenue-amount" style="color:${o.color}">${fmt(rev)} &euro;</span>
+            </div>
+        </div>`;
+    }).join('');
+
+    // Projection table
+    const projData = [
+        { nom: 'Abonnements', qte: state.abo_current, prix: 17, mensuel: mrrAbo, annuel: mrrAbo * 12, color: '#5b9bd5' },
+        { nom: 'Formation MTM', qte: state.formation_month + '/mois', prix: 1950, mensuel: revFormation, annuel: revFormation * 12, color: '#C27A5A' },
+        { nom: 'Accompagnement Sommeil', qte: state.accomp_month + '/mois', prix: 399, mensuel: revAccomp, annuel: revAccomp * 12, color: '#9C7AB5' },
+        { nom: 'Premium / Mastermind', qte: state.premium_month + '/mois', prix: 4500, mensuel: revPremium, annuel: revPremium * 12, color: '#d4a574' }
+    ];
+    const totalMensuel = projData.reduce((s, p) => s + p.mensuel, 0);
+    const totalAnnuel = projData.reduce((s, p) => s + p.annuel, 0);
+
+    document.getElementById('projection-table').innerHTML = `
+        <table>
+            <thead><tr><th>Offre</th><th>Clients</th><th>Prix unitaire</th><th class="amount">Mensuel</th><th class="amount">Annuel</th></tr></thead>
+            <tbody>
+                ${projData.map(p => `
+                    <tr>
+                        <td style="color:${p.color};font-weight:600">${p.nom}</td>
+                        <td>${p.qte}</td>
+                        <td>${fmt(p.prix)} &euro;</td>
+                        <td class="amount">${fmt(p.mensuel)} &euro;</td>
+                        <td class="amount" style="font-weight:600">${fmt(p.annuel)} &euro;</td>
+                    </tr>
+                `).join('')}
+                <tr style="border-top:2px solid #C27A5A">
+                    <td colspan="3" style="color:#C27A5A;font-weight:700;font-family:'Playfair Display',serif">TOTAL</td>
+                    <td class="amount" style="color:#C27A5A;font-weight:700">${fmt(totalMensuel)} &euro;</td>
+                    <td class="amount" style="color:#C27A5A;font-weight:700;font-size:1.1rem">${fmt(totalAnnuel)} &euro;</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note" style="margin-top:12px">
+            <strong>Scenario realiste (session 3) :</strong> 120 formations/an (10/mois) + 1 000 accompagnements/an (~83/mois) + 300 abonnees = <strong>634 000 &euro;/an</strong>
+        </div>
+    `;
+
+    // Milestones
+    document.getElementById('milestones').innerHTML = MILESTONES.map(m => `
+        <div class="milestone ${m.status}">
+            <div class="milestone-dot ${m.status}"></div>
+            <div>
+                <div style="font-weight:600">${m.label}</div>
+                <div style="font-size:0.7rem;color:#888">${m.date}</div>
+            </div>
+        </div>
+    `).join('');
+
+    // Ops
+    document.getElementById('ops-grid').innerHTML = OPS_METRICS.map(o => `
+        <div class="offer-card">
+            <div class="offer-icon">${o.icon}</div>
+            <div class="offer-name">${o.name}</div>
+            ${o.fields.map(f => `
+                <div class="input-row">
+                    <label>${f.label}</label>
+                    <input type="number" value="${state[f.key]}" onchange="updateField('${f.key}', this.value)" onfocus="this.select()">
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+
+    document.getElementById('last-update').textContent = 'Derniere mise a jour : ' + new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function updateField(key, value) {
+    state[key] = parseInt(value) || 0;
+    saveState();
+    render();
+}
+
+function fmt(n) {
+    return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// INIT
+initState();
+loadState();
+render();
+</script>
+
+</body>
+</html>
