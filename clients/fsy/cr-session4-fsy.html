@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CR Session 4 — Face Soul Yoga | CS Consulting Stratégique</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --terracotta: #C27A5A;
+    --terracotta-light: #d4956f;
+    --terracotta-dark: #a8654a;
+    --bg: #0f0f0f;
+    --bg-card: #1a1a1a;
+    --bg-card-hover: #222222;
+    --white: #FFFFFF;
+    --grey-light: #b0b0b0;
+    --grey-dim: #666666;
+    --green: #4ade80;
+    --green-dim: #166534;
+    --red: #f87171;
+    --red-dim: #991b1b;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --purple: #a78bfa;
+    --purple-dim: #4c1d95;
+    --yellow: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(160deg, #1a1a1a 0%, #0f0f0f 50%, #1a1410 100%);
+    padding: 40px 24px 32px;
+    border-bottom: 3px solid var(--terracotta);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -40px;
+    width: 250px; height: 250px;
+    background: var(--terracotta);
+    opacity: 0.06;
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .header .brand {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .header .subtitle {
+    font-size: 0.95rem;
+    color: var(--grey-light);
+    margin-top: 6px;
+  }
+  .header-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    text-align: center;
+    padding: 12px 16px;
+    background: rgba(194,122,90,0.08);
+    border: 1px solid rgba(194,122,90,0.2);
+    border-radius: 12px;
+    min-width: 80px;
+  }
+  .stat-box .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--terracotta-light);
+  }
+  .stat-box .stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--grey-light);
+    margin-top: 2px;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* COLLAPSIBLE CARDS */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover {
+    border-color: rgba(194,122,90,0.2);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+  .card-header:hover {
+    background: var(--bg-card-hover);
+  }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-header .chevron {
+    width: 20px;
+    height: 20px;
+    color: var(--grey-dim);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .card.open .chevron {
+    transform: rotate(180deg);
+  }
+  .card-body {
+    display: none;
+    padding: 0 24px 24px;
+  }
+  .card.open .card-body {
+    display: block;
+  }
+
+  /* SECTION ICON */
+  .section-icon {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .icon-green { background: rgba(74,222,128,0.12); }
+  .icon-red { background: rgba(248,113,113,0.12); }
+  .icon-blue { background: rgba(96,165,250,0.12); }
+  .icon-purple { background: rgba(167,139,250,0.12); }
+  .icon-orange { background: rgba(251,146,60,0.12); }
+  .icon-yellow { background: rgba(251,191,36,0.12); }
+  .icon-terracotta { background: rgba(194,122,90,0.15); }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .badge-terracotta { background: rgba(194,122,90,0.2); color: var(--terracotta-light); }
+  .badge-green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-orange { background: rgba(251,146,60,0.15); color: var(--orange); }
+  .badge-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .badge-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+  .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); }
+
+  /* DECISION ITEM */
+  .decision {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .decision:last-child { border-bottom: none; }
+  .decision-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .decision-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--terracotta-light);
+  }
+
+  /* LISTS */
+  .content-list {
+    list-style: none;
+    padding: 0;
+  }
+  .content-list li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: var(--grey-light);
+    font-size: 0.9rem;
+  }
+  .content-list li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 14px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    opacity: 0.6;
+  }
+  .content-list li strong {
+    color: var(--white);
+  }
+  .content-list li em {
+    color: var(--terracotta-light);
+    font-style: italic;
+  }
+
+  /* BLOCKQUOTES */
+  blockquote {
+    border-left: 3px solid var(--terracotta);
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: rgba(194,122,90,0.06);
+    border-radius: 0 10px 10px 0;
+    color: var(--terracotta-light);
+    font-style: italic;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  blockquote .author {
+    display: block;
+    color: var(--grey-dim);
+    font-size: 0.8rem;
+    margin-top: 6px;
+    font-style: normal;
+  }
+
+  /* CHECKBOXES */
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+    color: var(--grey-light);
+  }
+  .action-item:last-child { border-bottom: none; }
+  .action-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--grey-dim);
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .action-item input[type="checkbox"]:checked {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+  .action-item input[type="checkbox"]:checked::after {
+    content: '\2713';
+    position: absolute;
+    top: -1px;
+    left: 3px;
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 700;
+  }
+  .action-item.checked .action-text {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+  .action-item .action-text strong {
+    color: var(--white);
+  }
+
+  /* PRIORITY LABELS */
+  .priority {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+  .priority-high { background: rgba(248,113,113,0.2); color: var(--red); }
+  .priority-med { background: rgba(251,146,60,0.2); color: var(--orange); }
+  .priority-low { background: rgba(251,191,36,0.2); color: var(--yellow); }
+
+  /* TABLES */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  thead th {
+    background: rgba(194,122,90,0.12);
+    color: var(--terracotta-light);
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    color: var(--grey-light);
+    vertical-align: top;
+  }
+  tbody tr:hover {
+    background: rgba(194,122,90,0.04);
+  }
+
+  /* ENTITY CARDS */
+  .entity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .entity-purple { background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+  .entity-blue { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+  .entity-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+
+  .entity-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .entity-meta-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .entity-meta-item .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--grey-dim);
+    margin-bottom: 4px;
+  }
+  .entity-meta-item .value {
+    font-size: 0.9rem;
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  /* SUB-SECTIONS */
+  .sub-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .sub-section h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--terracotta);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  /* PARCOURS */
+  .parcours-step {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .parcours-step:last-child { border-bottom: none; }
+  .step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(194,122,90,0.15);
+    color: var(--terracotta-light);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content {
+    font-size: 0.88rem;
+    color: var(--grey-light);
+  }
+  .step-content strong {
+    color: var(--white);
+  }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    text-align: center;
+    margin: 32px 0;
+    color: var(--grey-dim);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--grey-dim);
+    vertical-align: middle;
+    margin: 0 12px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: var(--grey-dim);
+    font-size: 0.75rem;
+  }
+  .footer .brand-footer {
+    color: var(--terracotta);
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--terracotta-dark), var(--terracotta-light));
+    border-radius: 10px;
+    transition: width 0.5s;
+  }
+
+  /* CELEBRATION ITEM */
+  .celebration {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .celebration:last-child { border-bottom: none; }
+  .celebration strong { color: var(--white); }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; color: #000; }
+    .header { background: #f5f5f5 !important; border-bottom-color: var(--terracotta); }
+    .header h1, .header .brand { color: #000; }
+    .header .subtitle, .stat-box .stat-label { color: #555; }
+    .stat-box { border-color: #ccc; background: #f9f9f9; }
+    .stat-box .stat-value { color: var(--terracotta-dark); }
+    .card { background: #fff; border-color: #ddd; break-inside: avoid; }
+    .card-body { display: block !important; }
+    .card-header .chevron { display: none; }
+    .card-header { cursor: default; }
+    .card-header h2 { color: #000; }
+    blockquote { background: #faf5f2; border-left-color: var(--terracotta); color: #6b4a3a; }
+    .content-list li { color: #333; }
+    .content-list li strong { color: #000; }
+    .content-list li em { color: var(--terracotta-dark); }
+    .action-item { color: #333; }
+    .action-item .action-text strong { color: #000; }
+    table { font-size: 0.8rem; }
+    thead th { background: #f0e8e3; color: var(--terracotta-dark); }
+    tbody td { color: #333; border-top-color: #ddd; }
+    .entity-meta-item { background: #f9f9f9; border-color: #ddd; }
+    .entity-meta-item .value { color: #000; }
+    .sub-section { border-top-color: #ddd; }
+    .decision-header h3 { color: var(--terracotta-dark); }
+    .main { padding-top: 16px; }
+    .footer { border-top-color: #ddd; color: #999; }
+  }
+
+  @media (max-width: 600px) {
+    .header { padding: 28px 16px 24px; }
+    .header-inner { flex-direction: column; }
+    .header-stats { width: 100%; }
+    .main { padding: 20px 16px 40px; }
+    .card-header { padding: 16px 18px; }
+    .card-body { padding: 0 18px 18px; }
+    .entity-meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">CS Consulting Stratégique</div>
+      <h1>Compte-Rendu Session 4</h1>
+      <div class="subtitle">Repositionnement des marques &amp; feuille de route opérationnelle</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-box">
+        <div class="stat-value">4/19</div>
+        <div class="stat-label">Session</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">1h06</div>
+        <div class="stat-label">Durée</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value">16/03</div>
+        <div class="stat-label">Date</div>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:900px;margin:16px auto 0;display:flex;gap:8px;flex-wrap:wrap;font-size:0.8rem;color:var(--grey-light);">
+    <span style="background:rgba(194,122,90,0.1);padding:3px 10px;border-radius:8px;">Aurélia</span>
+    <span style="background:rgba(194,122,90,0.1);padding:3px 10px;border-radius:8px;">Laurie</span>
+    <span style="background:rgba(194,122,90,0.1);padding:3px 10px;border-radius:8px;">Catherine</span>
+    <span style="margin-left:auto;color:var(--grey-dim);">Visio</span>
+  </div>
+  <div style="max-width:900px;margin:12px auto 0;">
+    <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--grey-dim);margin-bottom:4px;">
+      <span>Progression accompagnement</span>
+      <span>21%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:21%;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main">
+
+  <!-- CELEBRATIONS -->
+  <div class="card open" id="celebrations">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-green">&#x2713;</span> Célébrations</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="celebration">
+        <strong>Aurélia a statué sur la séparation des 3 entités</strong>
+        <p style="color:var(--grey-light);font-size:0.9rem;margin-top:4px;">Après coaching avec Mélanie (mardi) et journée avec Romain (mercredi), Aurélia arrive avec une vision claire et assumée.</p>
+        <blockquote>J'ai vraiment statué qu'il y avait Face Yoga et il y a Aurélia.<span class="author">— Aurélia</span></blockquote>
+      </div>
+      <div class="celebration">
+        <strong>VA trouvée sur Upwork pour la migration</strong>
+        <p style="color:var(--grey-light);font-size:0.9rem;margin-top:4px;">Aurélia a pris l'initiative : brief rédigé avec Claude, 35 candidatures reçues, VA sélectionnée (Anam, Pakistan, 500$). Brief envoyé, prête à démarrer.</p>
+      </div>
+      <div class="celebration">
+        <strong>Aurélia utilise Claude en autonomie</strong>
+        <p style="color:var(--grey-light);font-size:0.9rem;margin-top:4px;">Brief de migration rédigé en anglais avec Claude en 2h.</p>
+        <blockquote>J'ai pris 2h ce week-end à faire le document de brief en anglais.<span class="author">— Aurélia</span></blockquote>
+      </div>
+      <div class="celebration">
+        <strong>Prix MTM relevé à 2 900 &euro;</strong>
+        <p style="color:var(--grey-light);font-size:0.9rem;margin-top:4px;">Validé par coach Romain. Aurélia assume enfin la valeur de sa formation.</p>
+        <blockquote>Ce qu'il y a dans la formation, c'est plus que 1 900 &euro;, c'est plus que 2 000 &euro;.<span class="author">— Aurélia</span></blockquote>
+      </div>
+      <div class="celebration">
+        <strong>Laurie alignée et structurante</strong>
+        <p style="color:var(--grey-light);font-size:0.9rem;margin-top:4px;">Laurie apporte une vision calendaire réaliste et pousse la séparation des identités.</p>
+        <blockquote>Une retraite, il faut l'avoir 9 mois avant.<span class="author">— Laurie</span></blockquote>
+        <blockquote>Il faut vraiment que le focus ce soit la méthode et pas toi.<span class="author">— Laurie</span></blockquote>
+      </div>
+      <div style="margin-top:16px;padding:12px 16px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);border-radius:10px;font-size:0.85rem;color:var(--green);">
+        <strong>A reproduire :</strong> Aurélia qui prend des décisions avec ses coachs puis arrive en session avec une vision claire = le meilleur mode de fonctionnement.
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCAGES -->
+  <div class="card" id="blocages">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-red">!</span> Blocages identifiés</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <ul class="content-list">
+        <li><strong>Brevo sans tags :</strong> Brevo fonctionne par listes, pas par tags comme Mailchimp. Segmentation complexe.<br>
+          <blockquote>It's not the kind of smoothest.<span class="author">— Laurie</span></blockquote>
+          Besoin d'une solution intermédiaire (base de données de tagging externe ?)</li>
+        <li><strong>Migration = risque de perte d'abonnés :</strong> les abonnés via Apple App ne migrent pas automatiquement. Plan de communication nécessaire dès mai pour prévenir les membres.</li>
+        <li><strong>Éparpillement toujours présent :</strong> Aurélia pense déjà aux retraites, au site, au SEO, aux articles de blog.
+          <blockquote>Pour moi, tu vas presque trop vite. Déjà, on met les choses en place.<span class="author">— Catherine</span></blockquote></li>
+        <li><strong>Contrats VA sans clause de confidentialité :</strong> Anam aura accès à toutes les données (vidéos, contacts) &rarr; nécessite NDA dans le contrat Upwork.</li>
+        <li><strong>Circle inconnu :</strong> ni Catherine ni Aurélia ne maîtrisent Circle. Besoin d'explorer les fonctionnalités (communautés séparées par produit, calendrier, intégrations).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DECISIONS -->
+  <div class="card open" id="decisions">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-terracotta">&#x2691;</span> Décisions prises</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+
+      <!-- Decision 1 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--terracotta);">1</span>
+          <h3>3 entités distinctes — séparation actée</h3>
+        </div>
+        <ul class="content-list">
+          <li><strong>Face Soul Yoga Studio</strong> (B2C mass-market) : abonnement 17 &euro;/mois, vidéos pré-enregistrées en batch, plus de lives, plus d'accès à Aurélia. Géré par Laurie. Objectif : tourne tout seul, revenu récurrent 10-15K&euro;/mois, revendable à terme.</li>
+          <li><strong>Master The Method</strong> (B2B) : formation evergreen à <strong>2 900 &euro;</strong> (early bird 2 500 &euro;), certification + licence annuelle 100 &euro;/an, communauté certifiées. 2 pushs/an (email urgency douce).</li>
+          <li><strong>Aurélia Del Sol</strong> (Premium) : nouvelle marque, nouvelle identité, programmes 390 &euro;+, immersions/retraites, contenu retourné intégralement.
+            <blockquote>Mon énergie, je suis en train de la mettre sur Aurélia Del Sol.<span class="author">— Aurélia</span></blockquote>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Decision 2 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--blue);">2</span>
+          <h3>Migration Uscreen &rarr; Circle (avant juillet 2026)</h3>
+        </div>
+        <ul class="content-list">
+          <li><strong>Circle remplace Uscreen ET Kajabi</strong> pour FSY Studio et MTM</li>
+          <li>Circle Business (199 &euro;/mois) inclut migration emails/paiements</li>
+          <li>Stripe transparent pour les abonnés existants (pas de re-saisie carte)</li>
+          <li>VA Anam (Upwork, 500$) gère la migration vidéos vers Bunny.net + import Circle</li>
+          <li>Laurie prend le lead sur la VA et Circle</li>
+          <li><strong>Plan de communication dès mai</strong> pour prévenir les abonnés app (apps FSY custom vont disparaître)</li>
+          <li>Kajabi gardé temporairement pendant la transition</li>
+        </ul>
+      </div>
+
+      <!-- Decision 3 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--green);">3</span>
+          <h3>Prix MTM : 1 950 &euro; &rarr; 2 900 &euro;</h3>
+        </div>
+        <blockquote>Les gens n'achètent pas parce que c'est pas assez cher. Inconsciemment, c'est se dire 1 950 &euro;, je vais payer une formation, mais elle n'est pas assez chère.<span class="author">— Romain (coach business)</span></blockquote>
+        <ul class="content-list">
+          <li>40h+ de contenu, retours Léa et Agnès : <em>&laquo; Hyper riche, j'ai pas encore fini après 3 mois et demi &raquo;</em></li>
+          <li>Early bird 2 500 &euro; lors des 2 pushs annuels (séquence email 7-8 emails avec urgence douce)</li>
+          <li>13 000 contacts Brevo = levier sous-exploité</li>
+        </ul>
+      </div>
+
+      <!-- Decision 4 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--purple);">4</span>
+          <h3>Site FSY = purement éducatif</h3>
+        </div>
+        <ul class="content-list">
+          <li>Enlever les immersions, articles lifestyle, belly typo</li>
+          <li>Focus : méthode, formation, studio</li>
+          <li>Articles de blog SEO : sommeil, mâchoire, bruxisme, système nerveux (Claude ou VA)</li>
+          <li>Laurie redesign avec Claude (benchmark + exemples)</li>
+          <li>Site Aurélia Del Sol = séparé, identité à créer (temps 2)</li>
+        </ul>
+      </div>
+
+      <!-- Decision 5 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--orange);">5</span>
+          <h3>Automatisation contrats B2B</h3>
+        </div>
+        <ul class="content-list">
+          <li>Contrats B2B (e-signature) à automatiser via n8n/Zapier, déclenché par achat</li>
+          <li>Pas de contrat pour les abonnements B2C (comme aujourd'hui)</li>
+          <li>Licence annuelle 100 &euro; : relance automatique 3 mois avant échéance</li>
+        </ul>
+      </div>
+
+      <!-- Decision 6 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--yellow);color:#000;">6</span>
+          <h3>4 temps forts par an pour FSY Studio</h3>
+        </div>
+        <ul class="content-list">
+          <li>Challenges de recrutement (push abonnement)</li>
+          <li>Anticipés dans un calendrier éditorial annuel</li>
+          <li>Laurie gère, Aurélia n'intervient pas</li>
+          <li>Même logique pour MTM : 2 lancements/an avec séquence email Brevo</li>
+        </ul>
+      </div>
+
+      <!-- Decision 7 -->
+      <div class="decision">
+        <div class="decision-header">
+          <span class="badge-num" style="background:var(--terracotta);">7</span>
+          <h3>Skills Claude pour Aurélia — session dédiée prévue</h3>
+        </div>
+        <ul class="content-list">
+          <li>Catherine développe des skills personnalisés (onboarding, rédaction, planification)</li>
+          <li>Proposition : session prochaine = formation Claude (skills, mémoire, projets, connecteurs)</li>
+          <li>Aurélia a déjà connecté Canva, Google Drive, Calendar</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-divider">Détail par entité</div>
+
+  <!-- ENTITE 1 : FSY Studio -->
+  <div class="card" id="entite-fsy">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-purple">&#9632;</span> Entité 1 — Face Soul Yoga Studio</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <span class="entity-badge entity-purple">B2C Mass-Market</span>
+
+      <div class="entity-meta">
+        <div class="entity-meta-item">
+          <div class="label">Positionnement</div>
+          <div class="value">Plateforme éducative face yoga accessible</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Prix</div>
+          <div class="value">17 &euro;/mois (139 &euro;/an)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Plateforme cible</div>
+          <div class="value">Circle (migration Uscreen avant juillet 2026)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Gérée par</div>
+          <div class="value">Laurie (Aurélia sort complètement)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Objectif</div>
+          <div class="value">10-15K&euro;/mois récurrent, tourne sans Aurélia, revendable</div>
+        </div>
+      </div>
+
+      <blockquote>Les gens qui n'ont pas les moyens de faire 35 &euro; la séance de pilates.<span class="author">— Aurélia</span></blockquote>
+
+      <div class="sub-section">
+        <h4>Ce qui existe aujourd'hui</h4>
+        <ul class="content-list">
+          <li>~613 abonnés courants sur Uscreen</li>
+          <li>~600 vidéos (~550 Go) en collections catégorisées</li>
+          <li>App mobile FSY custom (va disparaître)</li>
+          <li>Communauté WhatsApp ~300 membres</li>
+          <li>Newsletter "Monday Love Not" (Aurélia, hebdo, manuelle)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Ce qui change</h4>
+        <ul class="content-list">
+          <li>Plus de lives &rarr; vidéos pré-enregistrées en batch uniquement</li>
+          <li>Plus d'accès direct à Aurélia &rarr; communauté autonome</li>
+          <li>Site facesoulyoga.com &rarr; purement éducatif (exit lifestyle, immersions, belly typo)</li>
+          <li>Articles de blog SEO : sommeil, mâchoire, bruxisme, système nerveux</li>
+          <li>Pas de contrat pour les abonnés (comme aujourd'hui)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>4 temps forts par an</h4>
+        <ul class="content-list">
+          <li>Challenges de recrutement (push abonnement)</li>
+          <li>Anticipés dans calendrier éditorial annuel</li>
+          <li>Communication automatisée (emails Brevo)</li>
+          <li>Laurie gère, VA si besoin pour le contenu/DA</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Parcours client à mapper (Catherine)</h4>
+        <div class="parcours-step">
+          <span class="step-num">1</span>
+          <div class="step-content"><strong>Acquisition :</strong> Instagram &rarr; ManyChat ou formulaire quiz (pain point : sommeil/mâchoire/stress) &rarr; 3 vidéos gratuites personnalisées (via Bunny.net) &rarr; page de vente studio</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">2</span>
+          <div class="step-content"><strong>Conversion :</strong> LP Circle/Wix &rarr; checkout Stripe &rarr; email bienvenue auto (Brevo) &rarr; accès Circle + communauté Telegram</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">3</span>
+          <div class="step-content"><strong>Onboarding :</strong> Séquence email J+1, J+3, J+7 (comment utiliser la plateforme, premiers exercices, communauté)</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">4</span>
+          <div class="step-content"><strong>Engagement :</strong> Contenu hebdo (vidéos programmées en drip), challenges trimestriels, communauté Telegram + chatbot FAQ</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">5</span>
+          <div class="step-content"><strong>Rétention :</strong> Email automatique à J+30, J+60, J+90 (progrès, témoignages, encouragements)</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">6</span>
+          <div class="step-content"><strong>Relance churn :</strong> Email 7j avant fin d'essai, email si annulation, offre "reviens" à M+1</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">7</span>
+          <div class="step-content"><strong>Upsell :</strong> À M+3, proposer MTM (formation B2B) ou programmes Aurélia Del Sol (premium) — email ciblé basé sur l'engagement</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Aurélia &amp; Laurie</h4>
+        <div class="action-item" data-key="fsy-e1-al-1"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> explorer Circle, créer l'espace Studio, tester calendrier et communauté</span></div>
+        <div class="action-item" data-key="fsy-e1-al-2"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> prendre en main la VA Anam (Upwork) + clause NDA au contrat</span></div>
+        <div class="action-item" data-key="fsy-e1-al-3"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> valider la liste des vidéos/collections à migrer</span></div>
+        <div class="action-item" data-key="fsy-e1-al-4"><input type="checkbox" /><span class="action-text"><strong>Laurie + Claude :</strong> benchmark sites face yoga éducatifs &rarr; proposer nouveau positionnement site</span></div>
+        <div class="action-item" data-key="fsy-e1-al-5"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> valider nouvelle DA site FSY (exit lifestyle, exit belly typo)</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Catherine</h4>
+        <div class="action-item" data-key="fsy-e1-c-1"><input type="checkbox" /><span class="action-text">Mapper le parcours client complet Studio B2C (les 7 étapes ci-dessus)</span></div>
+        <div class="action-item" data-key="fsy-e1-c-2"><input type="checkbox" /><span class="action-text">Plan de migration Uscreen &rarr; Circle (timeline, communication membres dès mai, bascule Stripe, deprecation app)</span></div>
+        <div class="action-item" data-key="fsy-e1-c-3"><input type="checkbox" /><span class="action-text">Rechercher connexion Circle &harr; Brevo (webhook, API, Zapier ?)</span></div>
+        <div class="action-item" data-key="fsy-e1-c-4"><input type="checkbox" /><span class="action-text">Mettre à jour l'écosystème outils (Circle remplace Uscreen)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTITE 2 : MTM -->
+  <div class="card" id="entite-mtm">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-blue">&#9632;</span> Entité 2 — Master The Method</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <span class="entity-badge entity-blue">B2B Formation</span>
+
+      <div class="entity-meta">
+        <div class="entity-meta-item">
+          <div class="label">Positionnement</div>
+          <div class="value">Formation professionnelle certifiante face yoga</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Prix</div>
+          <div class="value">2 900 &euro; (early bird 2 500 &euro;)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Plateforme cible</div>
+          <div class="value">Circle (migration Kajabi, coexistence temporaire)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Certification</div>
+          <div class="value">Oui, automatique via Circle (quiz final)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Licence annuelle</div>
+          <div class="value">100 &euro;/an (accès + communauté + MAJ)</div>
+        </div>
+      </div>
+
+      <blockquote>Les gens derrière, ils vont vendre leur programme.<span class="author">— Aurélia</span></blockquote>
+
+      <div class="sub-section">
+        <h4>Ce qui existe aujourd'hui</h4>
+        <ul class="content-list">
+          <li>Formation sur Kajabi (40h+ de contenu)</li>
+          <li>Contrat de confidentialité signé manuellement (e-signatures) &rarr; chronophage</li>
+          <li>13 000 contacts dans Brevo (sous-exploité)</li>
+          <li>Retours Léa et Agnès : <em>&laquo; Hyper riche, j'ai pas fini après 3 mois et demi &raquo;</em></li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Ce qui change</h4>
+        <ul class="content-list">
+          <li>Prix 1 950 &rarr; 2 900 &euro; (early bird 2 500 &euro;)</li>
+          <li>Evergreen (plus de cohortes) avec 2 pushs/an (sept + mars)</li>
+          <li>Contrat automatisé (e-signature déclenchée par achat)</li>
+          <li>Licence 100 &euro;/an avec relance automatique 3 mois avant échéance</li>
+          <li>Kit communication "Formée par Face Soul Yoga" pour les certifiées</li>
+          <li>Programme ambassadrices (affilié 10-15% = 290-435 &euro;/vente)</li>
+          <li>Communauté certifiées dans Circle (séparée du Studio)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>2 pushs de lancement par an</h4>
+        <ul class="content-list">
+          <li>Séquence email Brevo : 7-8 emails sur ~10 jours</li>
+          <li>Récupération emailing via Instagram + ManyChat &rarr; lead magnet pro</li>
+          <li>Dernier email : <em>&laquo; Ça repasse ce soir à 2 900 &euro; &raquo;</em> (urgence douce)</li>
+          <li>Pas de push sur les réseaux sociaux &rarr; par email uniquement</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Parcours client à mapper (Catherine)</h4>
+        <div class="parcours-step">
+          <span class="step-num">1</span>
+          <div class="step-content"><strong>Acquisition :</strong> Instagram (contenu éducatif) &rarr; ManyChat &rarr; lead magnet pro (guide/webinar) &rarr; séquence nurturing Brevo</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">2</span>
+          <div class="step-content"><strong>Conversion :</strong> Séquence launch (7-8 emails) &rarr; LP formation &rarr; checkout Circle/Stripe &rarr; contrat e-signature automatique</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">3</span>
+          <div class="step-content"><strong>Onboarding :</strong> Email bienvenue + accès Circle + lien communauté certifiées + planning formation</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">4</span>
+          <div class="step-content"><strong>Pendant la formation :</strong> Emails automatiques à chaque palier (arrivée, mi-chemin, fin d'accès) — validé session 3</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">5</span>
+          <div class="step-content"><strong>Certification :</strong> Quiz final Circle &rarr; certificat auto &rarr; kit comm "Formée par FSY" &rarr; proposition licence</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">6</span>
+          <div class="step-content"><strong>Post-formation :</strong> Licence 100 &euro;/an &rarr; accès communauté + CPD (mises à jour) &rarr; relance auto M-3 avant échéance</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">7</span>
+          <div class="step-content"><strong>Ambassadrices :</strong> Lien affilié unique &rarr; 10-15% commission par vente</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Aurélia &amp; Laurie</h4>
+        <div class="action-item" data-key="fsy-e2-al-1"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> valider le nouveau prix 2 900 &euro; et réécrire la page de vente (commencé avec Claude)</span></div>
+        <div class="action-item" data-key="fsy-e2-al-2"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> lister tous les emails à créer par étape (bienvenue, certification, licence, relance)</span></div>
+        <div class="action-item" data-key="fsy-e2-al-3"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> migrer la formation dans Circle (après FSY Studio)</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Catherine</h4>
+        <div class="action-item" data-key="fsy-e2-c-1"><input type="checkbox" /><span class="action-text">Mapper le parcours client complet MTM B2B (les 7 étapes ci-dessus)</span></div>
+        <div class="action-item" data-key="fsy-e2-c-2"><input type="checkbox" /><span class="action-text">Plan de migration Kajabi &rarr; Circle pour MTM (coexistence temporaire)</span></div>
+        <div class="action-item" data-key="fsy-e2-c-3"><input type="checkbox" /><span class="action-text">Automatiser le contrat e-signature B2B (n8n : achat Circle &rarr; webhook &rarr; envoi contrat &rarr; signature &rarr; accès)</span></div>
+        <div class="action-item" data-key="fsy-e2-c-4"><input type="checkbox" /><span class="action-text">Automatiser la relance licence annuelle (email Brevo M-3 avant échéance)</span></div>
+        <div class="action-item" data-key="fsy-e2-c-5"><input type="checkbox" /><span class="action-text">Créer la séquence de lancement Brevo (template 7-8 emails réutilisable 2x/an)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTITE 3 : Aurélia Del Sol -->
+  <div class="card" id="entite-ads">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-yellow">&#9632;</span> Entité 3 — Aurélia Del Sol</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <span class="entity-badge entity-yellow">Premium</span>
+
+      <div class="entity-meta">
+        <div class="entity-meta-item">
+          <div class="label">Positionnement</div>
+          <div class="value">L'art de prendre soin de soi dans sa globalité</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Prix</div>
+          <div class="value">Programmes 390 &euro;+, retraites 6 000 &euro;</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Plateforme</div>
+          <div class="value">À définir (Circle séparé ? Site propre ?)</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Gérée par</div>
+          <div class="value">Aurélia directement</div>
+        </div>
+        <div class="entity-meta-item">
+          <div class="label">Statut</div>
+          <div class="value" style="color:var(--yellow);">Temps 2 — PAS la priorité</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Ce qu'on sait</h4>
+        <ul class="content-list">
+          <li>Programmes 100% retournés (nouvelles vidéos, pas du recyclage FSY)</li>
+          <li>Modèle : accès X mois + petit fee annuel pour garder le contenu &rarr; pousse les prochains programmes</li>
+          <li>Newsletter "Monday Love Not" reste manuelle (voix d'Aurélia)</li>
+          <li>Immersions/retraites = communication manuelle (pour l'instant)</li>
+          <li>DA et branding à créer (séparé de FSY)</li>
+          <li>2 sites internet séparés (Laurie l'a confirmé)</li>
+          <li>Instagram : 1 seul compte pour l'instant (renvoie vers les 2 sites)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Parcours client à mapper (Catherine — en temps 2)</h4>
+        <div class="parcours-step">
+          <span class="step-num">1</span>
+          <div class="step-content"><strong>Acquisition :</strong> Instagram (contenu lifestyle/holistique) &rarr; page Aurélia Del Sol &rarr; lead magnet (quiz pain point ?)</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">2</span>
+          <div class="step-content"><strong>Conversion :</strong> LP programme &rarr; checkout &rarr; email bienvenue</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">3</span>
+          <div class="step-content"><strong>Pendant le programme :</strong> Accès X mois, suivi automatisé</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">4</span>
+          <div class="step-content"><strong>Rétention :</strong> Fee annuel pour garder l'accès &rarr; push prochains programmes</div>
+        </div>
+        <div class="parcours-step">
+          <span class="step-num">5</span>
+          <div class="step-content"><strong>Upsell :</strong> Retraites/immersions (communication manuelle, 9 mois d'anticipation)</div>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Aurélia</h4>
+        <div class="action-item" data-key="fsy-e3-a-1"><input type="checkbox" /><span class="action-text">Commencer à écrire les premiers programmes (sommeil, respiration — <em>&laquo; j'ai déjà commencé, ça m'excite &raquo;</em>)</span></div>
+        <div class="action-item" data-key="fsy-e3-a-2"><input type="checkbox" /><span class="action-text">Réfléchir à l'identité visuelle Aurélia Del Sol (en temps 2, possible avec accompagnement externe)</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Catherine</h4>
+        <div class="action-item" data-key="fsy-e3-c-1"><input type="checkbox" /><span class="action-text">Mapper le parcours client Premium (temps 2, après que FSY Studio tourne)</span></div>
+        <div class="action-item" data-key="fsy-e3-c-2"><input type="checkbox" /><span class="action-text">Intégrer le lead magnet quiz (TypeForm ou formulaire Claude) dans l'écosystème</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">Stratégie &amp; outils</div>
+
+  <!-- STRATEGIE BREVO -->
+  <div class="card" id="brevo">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-orange">&#9993;</span> Stratégie Brevo</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="sub-section" style="border-top:none;padding-top:0;margin-top:0;">
+        <h4>Problème actuel</h4>
+        <p style="color:var(--grey-light);font-size:0.9rem;">Brevo fonctionne par listes (pas de tags comme Mailchimp). Segmentation laborieuse. 13 000 contacts sous-exploités.</p>
+      </div>
+
+      <div class="sub-section">
+        <h4>Solution proposée par Catherine</h4>
+        <ul class="content-list">
+          <li><strong>Option A :</strong> Créer des listes Brevo séparées par segment (FSY Studio, MTM prospect, MTM certifié, Aurélia Del Sol, etc.)</li>
+          <li><strong>Option B :</strong> Base de données intermédiaire (Notion ou n8n) qui tague les contacts au moment du paiement, puis pousse vers la bonne liste Brevo</li>
+          <li>Catherine va rechercher la meilleure approche</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Séquences email à créer</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Entité</th>
+                <th>Séquence</th>
+                <th>Trigger</th>
+                <th>Nb emails</th>
+                <th>Priorité</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>FSY Studio</td>
+                <td>Bienvenue</td>
+                <td>Nouvel abonné</td>
+                <td>3-5 (J+1, J+3, J+7)</td>
+                <td><span class="priority priority-high">Haute</span></td>
+              </tr>
+              <tr>
+                <td>FSY Studio</td>
+                <td>Relance churn</td>
+                <td>Annulation ou fin essai</td>
+                <td>2-3</td>
+                <td><span class="priority priority-med">Moyenne</span></td>
+              </tr>
+              <tr>
+                <td>FSY Studio</td>
+                <td>Upsell vers MTM</td>
+                <td>M+3 engagé</td>
+                <td>2-3</td>
+                <td><span class="priority priority-low">Basse</span></td>
+              </tr>
+              <tr>
+                <td>MTM</td>
+                <td>Launch (2x/an)</td>
+                <td>Manuel (sept + mars)</td>
+                <td>7-8</td>
+                <td><span class="priority priority-high">Haute</span></td>
+              </tr>
+              <tr>
+                <td>MTM</td>
+                <td>Onboarding</td>
+                <td>Achat formation</td>
+                <td>3 (arrivée, mi-chemin, fin)</td>
+                <td><span class="priority priority-high">Haute</span></td>
+              </tr>
+              <tr>
+                <td>MTM</td>
+                <td>Relance licence</td>
+                <td>M-3 avant échéance</td>
+                <td>2-3</td>
+                <td><span class="priority priority-med">Moyenne</span></td>
+              </tr>
+              <tr>
+                <td>MTM</td>
+                <td>Ambassadrices</td>
+                <td>Post-certification</td>
+                <td>1-2</td>
+                <td><span class="priority priority-low">Basse</span></td>
+              </tr>
+              <tr>
+                <td>Aurélia Del Sol</td>
+                <td>Nurturing</td>
+                <td>Lead magnet</td>
+                <td>5-7</td>
+                <td><span class="priority priority-low">Temps 2</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Catherine</h4>
+        <div class="action-item" data-key="fsy-brevo-c-1"><input type="checkbox" /><span class="action-text">Se connecter à Brevo (demander accès à Laurie) et auditer les listes existantes</span></div>
+        <div class="action-item" data-key="fsy-brevo-c-2"><input type="checkbox" /><span class="action-text">Proposer architecture de segmentation (listes ou tagging externe)</span></div>
+        <div class="action-item" data-key="fsy-brevo-c-3"><input type="checkbox" /><span class="action-text">Écrire les séquences prioritaires (FSY bienvenue + MTM launch)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS CLAUDE -->
+  <div class="card" id="skills-claude">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-blue">&#9881;</span> Skills Claude pour Aurélia</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <p style="color:var(--grey-light);font-size:0.9rem;margin-bottom:16px;">Aurélia utilise déjà Claude (connecteurs Canva, Google Drive, Calendar). Elle a des projets mais pas de skills structurés. Catherine va développer les skills prioritaires.</p>
+
+      <div class="sub-section" style="border-top:none;padding-top:0;margin-top:0;">
+        <h4>Skills à créer</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th>Description</th>
+                <th>Entité</th>
+                <th>Priorité</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Rédaction blog SEO</strong></td>
+                <td>Écrire des articles éducatifs (sommeil, mâchoire, bruxisme) pour le site FSY</td>
+                <td>FSY Studio</td>
+                <td><span class="priority priority-high">Haute</span></td>
+              </tr>
+              <tr>
+                <td><strong>Séquence email</strong></td>
+                <td>Générer une séquence email pour un lancement ou un parcours client</td>
+                <td>Toutes</td>
+                <td><span class="priority priority-high">Haute</span></td>
+              </tr>
+              <tr>
+                <td><strong>Planificateur de lancement</strong></td>
+                <td>"J'ai un lancement le [date]" &rarr; planning complet avec deadlines, emails, com</td>
+                <td>Toutes</td>
+                <td><span class="priority priority-med">Moyenne</span></td>
+              </tr>
+              <tr>
+                <td><strong>Rédaction LP</strong></td>
+                <td>Écrire une landing page (hook, pain points, transformation, témoignages, CTA)</td>
+                <td>Toutes</td>
+                <td><span class="priority priority-med">Moyenne</span></td>
+              </tr>
+              <tr>
+                <td><strong>Brief VA</strong></td>
+                <td>Générer un brief structuré pour envoyer à un VA (Upwork, etc.)</td>
+                <td>Toutes</td>
+                <td><span class="priority priority-low">Basse</span></td>
+              </tr>
+              <tr>
+                <td><strong>Benchmark concurrence</strong></td>
+                <td>Analyser les sites/offres concurrents et proposer des améliorations</td>
+                <td>Toutes</td>
+                <td><span class="priority priority-low">Basse</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h4>Session formation Claude prévue</h4>
+        <ul class="content-list">
+          <li>Montrer comment créer et utiliser les skills (slash commands)</li>
+          <li>Montrer la mémoire et les projets</li>
+          <li>Montrer les connecteurs (Canva, Drive, Calendar + explorer Stripe, Brevo MCP)</li>
+          <li>Challenge : <em>&laquo; Dis-lui de te challenger à chaque question &raquo;</em> (Catherine)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Actions Catherine</h4>
+        <div class="action-item" data-key="fsy-skills-c-1"><input type="checkbox" /><span class="action-text">Développer les 2 skills prioritaires (blog SEO + séquence email)</span></div>
+        <div class="action-item" data-key="fsy-skills-c-2"><input type="checkbox" /><span class="action-text">Préparer la session formation Claude (démo skills, mémoire, connecteurs)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">Résumé des actions</div>
+
+  <!-- ACTIONS AURELIA & LAURIE RESUME -->
+  <div class="card open" id="actions-al">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-purple">&#9889;</span> Actions Aurélia &amp; Laurie — Résumé</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="sub-section" style="border-top:none;padding-top:0;margin-top:0;">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 1 : Migration Circle — Laurie lead <span class="priority priority-high">Haute</span></h4>
+        <div class="action-item" data-key="fsy-sum-al-1"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> prendre la main sur VA Anam (Upwork) + clause NDA au contrat</span></div>
+        <div class="action-item" data-key="fsy-sum-al-2"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> explorer Circle Business, créer les espaces (Studio, MTM), tester fonctionnalités</span></div>
+        <div class="action-item" data-key="fsy-sum-al-3"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> valider la liste vidéos/collections à migrer depuis Uscreen</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 2 : Contenu &amp; identité <span class="priority priority-med">Moyenne</span></h4>
+        <div class="action-item" data-key="fsy-sum-al-4"><input type="checkbox" /><span class="action-text"><strong>Laurie + Claude :</strong> benchmark sites éducatifs &rarr; nouveau positionnement site FSY</span></div>
+        <div class="action-item" data-key="fsy-sum-al-5"><input type="checkbox" /><span class="action-text"><strong>Laurie :</strong> lister TOUS les emails par parcours (bienvenue, relance, certification, licence, upsell)</span></div>
+        <div class="action-item" data-key="fsy-sum-al-6"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> réécrire page de vente MTM à 2 900 &euro; (commencé avec Claude)</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 3 : Préparation Aurélia Del Sol <span class="priority priority-low">Basse</span></h4>
+        <div class="action-item" data-key="fsy-sum-al-7"><input type="checkbox" /><span class="action-text"><strong>Aurélia :</strong> écrire les premiers programmes (sommeil, respiration)</span></div>
+        <div class="action-item" data-key="fsy-sum-al-8"><input type="checkbox" /><span class="action-text">Réfléchir identité visuelle Aurélia Del Sol (temps 2)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS CATHERINE RESUME -->
+  <div class="card open" id="actions-c">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-terracotta">&#9889;</span> Actions Catherine — Résumé</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="sub-section" style="border-top:none;padding-top:0;margin-top:0;">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 1 : Les 3 parcours clients <span class="priority priority-high">Haute</span></h4>
+        <div class="action-item" data-key="fsy-sum-c-1"><input type="checkbox" /><span class="action-text">Mapper parcours FSY Studio B2C (acquisition &rarr; conversion &rarr; onboarding &rarr; engagement &rarr; rétention &rarr; relance &rarr; upsell)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-2"><input type="checkbox" /><span class="action-text">Mapper parcours MTM B2B (acquisition &rarr; conversion &rarr; onboarding &rarr; formation &rarr; certification &rarr; licence &rarr; ambassadrices)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-3"><input type="checkbox" /><span class="action-text">Mapper parcours Aurélia Del Sol Premium (temps 2, ébauche)</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 2 : Migration &amp; outils <span class="priority priority-high">Haute</span></h4>
+        <div class="action-item" data-key="fsy-sum-c-4"><input type="checkbox" /><span class="action-text">Plan migration Uscreen &rarr; Circle (timeline, com membres dès mai, bascule Stripe)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-5"><input type="checkbox" /><span class="action-text">Plan migration Kajabi &rarr; Circle pour MTM</span></div>
+        <div class="action-item" data-key="fsy-sum-c-6"><input type="checkbox" /><span class="action-text">Connexion Circle &harr; Brevo (recherche API/webhook/Zapier)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-7"><input type="checkbox" /><span class="action-text">Automatisation contrat e-signature B2B</span></div>
+      </div>
+
+      <div class="sub-section">
+        <h4 style="display:flex;align-items:center;gap:8px;">Priorité 3 : Brevo &amp; Claude <span class="priority priority-med">Moyenne</span></h4>
+        <div class="action-item" data-key="fsy-sum-c-8"><input type="checkbox" /><span class="action-text">Auditer Brevo (accès, listes, segmentation existante)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-9"><input type="checkbox" /><span class="action-text">Proposer architecture de segmentation</span></div>
+        <div class="action-item" data-key="fsy-sum-c-10"><input type="checkbox" /><span class="action-text">Développer 2 skills Claude prioritaires (blog SEO + séquence email)</span></div>
+        <div class="action-item" data-key="fsy-sum-c-11"><input type="checkbox" /><span class="action-text">Préparer session formation Claude</span></div>
+        <div class="action-item" data-key="fsy-sum-c-12"><input type="checkbox" /><span class="action-text">Mettre à jour portail client FSY + écosystème outils</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider">Mindset</div>
+
+  <!-- MINDSET -->
+  <div class="card" id="mindset">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-green">&#9775;</span> Mindset &amp; Insights</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="sub-section" style="border-top:none;padding-top:0;margin-top:0;">
+        <h4>Ce qui fonctionne</h4>
+        <ul class="content-list">
+          <li>Aurélia qui consulte ses coachs (Mélanie, Romain) puis arrive avec des décisions = moins d'hésitation en session</li>
+          <li>Laurie comme garde-fou calendaire :
+            <blockquote>Une retraite, il faut l'avoir 9 mois avant. Là on a fait du 4 mois.<span class="author">— Laurie</span></blockquote></li>
+          <li>La séparation des marques libère Aurélia mentalement : elle peut créer librement sous Aurélia Del Sol</li>
+          <li>L'augmentation de prix (1 950 &rarr; 2 900 &euro;) est portée par des retours concrets (Léa, Agnès, 40h+ de contenu)</li>
+        </ul>
+      </div>
+
+      <div class="sub-section">
+        <h4>Prises de conscience</h4>
+        <blockquote>À 17 &euro;, les gens n'ont pas accès à moi. Mon énergie, je suis en train de la mettre sur Aurélia Del Sol.<span class="author">— Aurélia assume la séparation entre la marque et elle-même</span></blockquote>
+        <blockquote>C'est un recurring revenue qui est intéressant et qui peut être complètement scalable et qui, à terme, si je ne suis plus dedans, est revendable.<span class="author">— Aurélia voit FSY Studio comme un actif, pas comme son identité</span></blockquote>
+        <blockquote>Inconsciemment, c'est se dire je vais payer une formation, mais elle n'est pas assez chère.<span class="author">— Le déclic pricing via Romain</span></blockquote>
+        <blockquote>Il faut qu'on arrive à prévoir un an à l'avance.<span class="author">— Laurie pose le cadre anti-chaos</span></blockquote>
+        <blockquote>Ça reste quand même un recurring revenue [...] qui est revendable parce que la communauté elle est là, parce que les datas elles sont là.<span class="author">— Aurélia pense en chef d'entreprise, pas en créatrice</span></blockquote>
+      </div>
+
+      <div class="sub-section">
+        <h4>Observations coaching</h4>
+        <ul class="content-list">
+          <li><strong>Session charnière :</strong> Aurélia est passée de "je m'éparpille" à "j'ai statué". Le travail avec ses coachs externes amplifie l'accompagnement de Catherine (pas en concurrence, en complémentarité).</li>
+          <li><strong>Risque identifié :</strong> Aurélia pense déjà à Aurélia Del Sol, aux retraites, au SEO &rarr; il faut tenir la ligne : d'abord les process FSY qui tournent, ensuite le premium. Catherine a recadré en session.</li>
+          <li><strong>Laurie est prête à prendre le lead</strong> sur Circle et la migration. C'est le moment de lui donner les outils et la confiance.</li>
+          <li><strong>Circle = nouveau dans l'écosystème :</strong> ni Catherine ni le client ne le maîtrisent. Prévoir un temps d'exploration avant de s'engager (vérifier : communautés séparées par produit, intégration Brevo, calendrier, app mobile).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEPITES LINKEDIN -->
+  <div class="card" id="linkedin">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-blue">&#9998;</span> Pépites LinkedIn</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Citation / Situation</th>
+              <th>Angle</th>
+              <th>Hook potentiel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge-num" style="background:var(--terracotta);font-size:0.65rem;">4.1</span></td>
+              <td><em>&laquo; À 17 &euro;, les gens n'ont pas accès à moi. Mon énergie, je la mets ailleurs. &raquo;</em> — une entrepreneuse qui sépare sa marque d'elle-même</td>
+              <td>Témoignage / Transformation</td>
+              <td>"Une entrepreneuse m'a dit : 'Les gens payent 17 &euro;. Ils n'ont pas accès à moi.' Ce jour-là, elle a créé sa deuxième marque."</td>
+            </tr>
+            <tr>
+              <td><span class="badge-num" style="background:var(--terracotta);font-size:0.65rem;">4.2</span></td>
+              <td><em>&laquo; C'est pas assez cher. Inconsciemment, les gens se disent : 1 950 &euro;, c'est pas sérieux. &raquo;</em> — le déclic du pricing premium</td>
+              <td>Expertise / Éducatif</td>
+              <td>"Une formation à 1 950 &euro;. Personne n'achète. On la passe à 2 900 &euro;. Les ventes décollent. Le prix, c'est un signal."</td>
+            </tr>
+            <tr>
+              <td><span class="badge-num" style="background:var(--terracotta);font-size:0.65rem;">4.3</span></td>
+              <td><em>&laquo; Ça tourne tout seul et c'est revendable parce que la communauté est là, parce que les datas sont là &raquo;</em> — penser son business comme un actif</td>
+              <td>Expertise / Éducatif</td>
+              <td>"Un business qui dépend de vous n'est pas un business. C'est un job. Le jour où elle a compris ça, tout a changé."</td>
+            </tr>
+            <tr>
+              <td><span class="badge-num" style="background:var(--terracotta);font-size:0.65rem;">4.4</span></td>
+              <td>Laurie (l'assistante) qui recadre : <em>&laquo; Une retraite, il faut l'avoir 9 mois avant. On a fait du 4 mois. &raquo;</em></td>
+              <td>Coulisses / Expertise</td>
+              <td>"Son assistante lui a dit : 'Il faut 9 mois pour organiser ça. On en est à 4.' La meilleure stratégie, c'est un calendrier."</td>
+            </tr>
+            <tr>
+              <td><span class="badge-num" style="background:var(--terracotta);font-size:0.65rem;">4.5</span></td>
+              <td>3 entités, 3 DA, 3 parcours clients — structurés en 1 session</td>
+              <td>Expertise / Éducatif</td>
+              <td>"3 marques. 3 cibles. 3 parcours clients. Construit en 1 heure. Pas besoin de 6 mois pour structurer son offre."</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCHAINE SESSION -->
+  <div class="card open" id="next-session">
+    <div class="card-header" onclick="toggleCard(this)">
+      <h2><span class="section-icon icon-terracotta">&#128197;</span> Prochaine session</h2>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="card-body">
+      <div style="background:rgba(194,122,90,0.08);border:1px solid rgba(194,122,90,0.2);border-radius:12px;padding:20px;">
+        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--terracotta);margin-bottom:8px;">Date</div>
+        <div style="font-size:1.1rem;font-weight:600;margin-bottom:16px;">À planifier — semaine du 24 mars 2026</div>
+        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--terracotta);margin-bottom:8px;">Focus</div>
+        <ul class="content-list">
+          <li>Présentation des 3 parcours clients mappés (Catherine)</li>
+          <li>Validation plans de migration Circle</li>
+          <li>Session formation Claude (skills, mémoire, connecteurs) si le temps</li>
+          <li>Point avancement VA migration (Laurie)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="brand-footer">CS Consulting Stratégique</div>
+  <p>Compte-rendu session 4 — Face Soul Yoga — 16 mars 2026</p>
+  <p style="margin-top:4px;">Document confidentiel</p>
+</div>
+
+<script>
+// Toggle collapsible cards
+function toggleCard(header) {
+  header.closest('.card').classList.toggle('open');
+}
+
+// localStorage persistence for checkboxes
+const STORAGE_KEY = 'fsy-cr-session4';
+
+function loadCheckboxes() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    document.querySelectorAll('.action-item[data-key]').forEach(item => {
+      const key = item.dataset.key;
+      const cb = item.querySelector('input[type="checkbox"]');
+      if (saved[key]) {
+        cb.checked = true;
+        item.classList.add('checked');
+      }
+    });
+  } catch (e) {}
+}
+
+function saveCheckboxes() {
+  const state = {};
+  document.querySelectorAll('.action-item[data-key]').forEach(item => {
+    const key = item.dataset.key;
+    const cb = item.querySelector('input[type="checkbox"]');
+    if (cb.checked) state[key] = true;
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadCheckboxes();
+  document.querySelectorAll('.action-item input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', function() {
+      this.closest('.action-item').classList.toggle('checked', this.checked);
+      saveCheckboxes();
+    });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -523,6 +523,7 @@ const CLIENT = {
     {
       num: 4, date: "2026-03-16",
       title: "Repositionnement des marques & feuille de route opérationnelle",
+      crUrl: "cr-session4-fsy.html",
       summary: "SESSION PIVOT. 3 entités distinctes actées : FSY Studio B2C (17€, Laurie gère, sans Aurélia), MTM B2B (2 900€ evergreen), Aurélia Del Sol (premium 390€+). Migration Uscreen+Kajabi → Circle avant juillet. VA recrutée (Upwork, 500$). Site FSY → éducatif.",
       decisions: [
         "3 entités distinctes : FSY Studio B2C + MTM B2B + Aurélia Del Sol Premium",
@@ -812,7 +813,8 @@ const CLIENT = {
         '</div>' +
         '<div class="session-body">' +
           '<p style="font-size:0.85rem; color:#ccc; margin-top:12px;">' + s.summary + '</p>' +
-          '<div class="session-decisions"><h4>Decisions cles</h4><ul>' + decisions + '</ul></div>' +
+          (s.crUrl ? '<a href="' + s.crUrl + '" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 16px;background:var(--terracotta);color:white;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;">📄 Voir le compte-rendu complet</a>' : '') +
+          '<div class="session-decisions"><h4>Décisions clés</h4><ul>' + decisions + '</ul></div>' +
         '</div>' +
       '</div>';
     });
