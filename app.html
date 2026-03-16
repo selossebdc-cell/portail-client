@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS — Consulting Stratégique | Mon Espace</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/client.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Loading -->
+  <div id="loading" class="login-container">
+    <div style="text-align:center">
+      <div class="spinner" style="width:40px;height:40px;border-width:3px"></div>
+      <p class="text-secondary mt-md">Chargement...</p>
+    </div>
+  </div>
+
+  <!-- ========== VUE CLIENT ========== -->
+  <div id="client-view" class="hidden">
+
+    <!-- Header -->
+    <header class="client-header">
+      <div style="max-width:900px;margin:0 auto;display:flex;justify-content:flex-end;padding:0 24px 8px">
+        <button style="color:#666666;font-size:0.75rem;background:none;border:none;cursor:pointer;font-family:inherit" onclick="signOut()">Deconnexion</button>
+      </div>
+      <div class="client-header-inner">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div id="client-logo"></div>
+          <div>
+            <div class="brand">CS Consulting Strategique</div>
+            <h1 id="client-title">Mon Espace</h1>
+            <p class="subtitle" id="client-subtitle"></p>
+          </div>
+        </div>
+        <div class="header-stats" id="client-stats"></div>
+      </div>
+    </header>
+
+    <!-- Nav 8 onglets -->
+    <nav class="client-nav" id="client-tabs">
+      <button class="tab active" data-tab="tab-dashboard">🏠</button>
+      <button class="tab" data-tab="tab-actions">Actions <span class="badge" id="badge-actions" style="display:none"></span></button>
+      <button class="tab" data-tab="tab-braindump">Brain Dump</button>
+      <button class="tab" data-tab="tab-tools">Mes outils</button>
+      <button class="tab" data-tab="tab-sessions">Sessions <span class="badge" id="badge-sessions" style="display:none"></span></button>
+      <button class="tab" data-tab="tab-tutos">Tutos <span class="badge" id="badge-tutos" style="display:none"></span></button>
+      <button class="tab" data-tab="tab-project">Mon projet</button>
+      <button class="tab" data-tab="tab-automations">Automatisations</button>
+      <button class="tab" data-tab="tab-contract">Mon contrat <span class="badge" id="badge-contract" style="display:none"></span></button>
+    </nav>
+
+    <div class="client-main">
+
+      <!-- TAB: TABLEAU DE BORD -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div id="dashboard-content">
+          <div style="text-align:center;padding:40px 0"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: ACTIONS -->
+      <div id="tab-actions" class="tab-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h2 class="section-title">Tes actions avant la prochaine seance</h2>
+        </div>
+        <div id="actions-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+        <div id="actions-done-section" style="margin-top:24px;display:none">
+          <div style="font-size:0.8rem;color:#666666;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;cursor:pointer" onclick="toggleDoneActions()">
+            ✅ Deja fait <span id="done-chevron">▶</span>
+          </div>
+          <div id="actions-done-list" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- TAB: BRAIN DUMP -->
+      <div id="tab-braindump" class="tab-panel">
+        <div class="braindump-intro">
+          <h3>Qu'est-ce qui te passe par la tete ?</h3>
+          <p>Note librement tes reflexions, blocages, idees, questions... Catherine les lira avant ta prochaine session.</p>
+        </div>
+        <textarea id="brain-dump-input" class="textarea" placeholder="Ecris ici... Tout est bon a noter." style="margin-bottom:12px"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:24px">
+          <button id="brain-dump-submit" class="tuto-btn" onclick="submitBrainDump()">Envoyer</button>
+        </div>
+        <div id="brain-dump-list"></div>
+      </div>
+
+      <!-- TAB: MES OUTILS -->
+      <div id="tab-tools" class="tab-panel">
+        <h2 class="section-title">Mes outils</h2>
+        <p class="section-subtitle">Les outils de ton ecosysteme digital. Tu peux en ajouter !</p>
+        <div id="tools-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: SESSIONS -->
+      <div id="tab-sessions" class="tab-panel">
+        <h2 class="section-title">Historique des seances</h2>
+        <p class="section-subtitle" id="sessions-subtitle"></p>
+        <div id="sessions-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: TUTOS & GUIDES -->
+      <div id="tab-tutos" class="tab-panel">
+        <h2 class="section-title">Tutos & Guides</h2>
+        <p class="section-subtitle">Guides pas-a-pas prepares pour toi. A suivre a ton rythme.</p>
+        <div id="tutos-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: MON PROJET -->
+      <div id="tab-project" class="tab-panel">
+        <h2 class="section-title">Mon projet</h2>
+        <p class="section-subtitle">Tes tableaux de bord, KPI et suivi d'avancement.</p>
+        <div id="project-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: AUTOMATISATIONS -->
+      <div id="tab-automations" class="tab-panel">
+        <h2 class="section-title">Automatisations</h2>
+        <div id="automations-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <!-- TAB: MON CONTRAT -->
+      <div id="tab-contract" class="tab-panel">
+        <h2 class="section-title">Mon contrat</h2>
+        <div class="admin-grid" id="contract-grid"></div>
+        <h3 id="contract-docs-title" style="font-size:0.85rem;color:#666666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:none">Documents</h3>
+        <div id="contract-docs"></div>
+      </div>
+
+      <!-- HELP FOOTER -->
+      <div class="help-footer">
+        <p>Un blocage ? Une question ? Envoie-moi un message.</p>
+        <a href="#" class="whatsapp" id="help-whatsapp">📱 WhatsApp Catherine</a>
+      </div>
+    </div>
+
+    <div class="client-footer">
+      <span>CS Consulting Strategique</span> — Espace client · 2026
+      <br>
+      <a href="#" onclick="requestPasswordChange(); return false;" style="color:#666666;font-size:0.7rem;text-decoration:underline;cursor:pointer">Changer mon mot de passe</a>
+    </div>
+  </div>
+
+  <!-- ========== VUE ADMIN ========== -->
+  <div id="admin-view" class="hidden">
+    <div class="app-container">
+      <header class="app-header">
+        <div class="app-header__brand">
+          <span class="app-header__logo">CS</span>
+          <span class="app-header__subtitle">Consulting Stratégique — Admin</span>
+        </div>
+        <div class="app-header__user">
+          <span id="user-name-admin"></span>
+          <button class="btn-link" onclick="signOut()">Déconnexion</button>
+        </div>
+      </header>
+
+      <nav class="tabs" id="admin-tabs">
+        <button class="tab active" data-tab="tab-clients">Mes clients</button>
+        <button class="tab" data-tab="tab-recap">Récap semaine</button>
+        <button class="tab" data-tab="tab-dashboards">Dashboards</button>
+      </nav>
+
+      <div id="tab-clients" class="tab-panel active">
+        <div id="clients-list">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <div id="tab-recap" class="tab-panel">
+        <div id="recap-content">
+          <div style="text-align:center"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <div id="tab-dashboards" class="tab-panel">
+        <div class="card">
+          <h3 class="card-title mb-md">Mes dashboards</h3>
+          <div style="display:grid;gap:var(--space-md)">
+            <a href="../01-entreprise/dashboard-financier.html" target="_blank" class="card" style="text-decoration:none;color:inherit">
+              <div class="card-title" style="font-size:var(--font-size-sm)">📊 Dashboard Financier</div>
+              <div class="text-secondary" style="font-size:var(--font-size-xs)">CA, trésorerie, objectifs 2026</div>
+            </a>
+            <a href="../01-entreprise/cartographie-process.html" target="_blank" class="card" style="text-decoration:none;color:inherit">
+              <div class="card-title" style="font-size:var(--font-size-sm)">🗺️ Cartographie Process</div>
+              <div class="text-secondary" style="font-size:var(--font-size-xs)">Vue d'ensemble des processus</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/client/badges.js"></script>
+  <script src="js/client/dashboard-client.js"></script>
+  <script src="js/client/actions.js"></script>
+  <script src="js/client/brain-dump.js"></script>
+  <script src="js/client/tools.js"></script>
+  <script src="js/client/sessions.js"></script>
+  <script src="js/client/tutos.js"></script>
+  <script src="js/client/project.js"></script>
+  <script src="js/client/automations.js"></script>
+  <script src="js/client/contract.js"></script>
+  <script src="js/admin/dashboard.js"></script>
+  <script src="js/admin/recap.js"></script>
+  <script src="js/router.js"></script>
+</body>
+</html>
