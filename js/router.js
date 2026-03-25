@@ -12,6 +12,16 @@ async function initApp() {
   if (profile.role === 'admin') {
     document.getElementById('admin-view').classList.remove('hidden');
     initAdminDashboard();
+
+    // Auto-navigate to client if #client=ID in URL
+    var hash = window.location.hash;
+    if (hash && hash.indexOf('#client=') === 0) {
+      var targetClientId = hash.replace('#client=', '');
+      if (targetClientId) {
+        // Wait for admin dashboard to finish loading before navigating
+        setTimeout(function() { viewClientDetail(targetClientId); }, 1500);
+      }
+    }
   } else {
     document.getElementById('client-view').classList.remove('hidden');
     initClientPortal(profile);
