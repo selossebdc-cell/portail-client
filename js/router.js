@@ -11,14 +11,13 @@ async function initApp() {
 
   if (profile.role === 'admin') {
     document.getElementById('admin-view').classList.remove('hidden');
-    initAdminDashboard();
+    await initAdminDashboard();
 
     // Auto-navigate to client if ?client=ID in URL
     var params = new URLSearchParams(window.location.search);
     var targetClientId = params.get('client');
     if (targetClientId) {
-      // Wait for admin dashboard to finish loading before navigating
-      setTimeout(function() { viewClientDetail(targetClientId); }, 1500);
+      viewClientDetail(targetClientId);
     }
   } else {
     document.getElementById('client-view').classList.remove('hidden');
