@@ -20,7 +20,7 @@ async function loadClientDashboard(profile) {
     html += '<div style="margin-bottom:20px;padding:14px 18px;background:rgba(194,122,90,0.08);border:1px solid rgba(194,122,90,0.2);border-radius:10px;display:flex;align-items:center;gap:12px">' +
       '<span style="font-size:1.4rem">📅</span>' +
       '<div style="flex:1">' +
-        '<div style="font-weight:600;font-size:0.9rem">Prochaine seance : ' + dateStr + '</div>' +
+        '<div style="font-weight:600;font-size:0.9rem">Prochaine séance : ' + dateStr + '</div>' +
         '<div style="font-size:0.8rem;color:#666666">' + (next.title || '') + '</div>' +
       '</div>' +
     '</div>';
@@ -134,7 +134,7 @@ async function loadClientDashboard(profile) {
   } else {
     html += '<div style="padding:16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;cursor:pointer;transition:border-color 0.2s" onclick="switchToTab(\'tab-sessions\')" onmouseover="this.style.borderColor=\'#C27A5A\'" onmouseout="this.style.borderColor=\'#2a2a2a\'">' +
       '<div style="font-size:1.2rem;margin-bottom:4px">📅</div>' +
-      '<div style="font-size:0.85rem;font-weight:600">Mes seances</div>' +
+      '<div style="font-size:0.85rem;font-weight:600">Mes séances</div>' +
       '<div style="font-size:0.75rem;color:#666666">Historique et CR</div>' +
     '</div>';
   }

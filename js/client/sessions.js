@@ -14,14 +14,14 @@ function renderSessions(sessions, allActions) {
   const subtitleEl = document.getElementById('sessions-subtitle');
 
   if (!sessions || sessions.length === 0) {
-    container.innerHTML = '<p style="color:#666666; text-align:center; padding:40px 0;">L\'historique de tes seances apparaitra ici.</p>';
+    container.innerHTML = '<p style="color:#666666; text-align:center; padding:40px 0;">L\'historique de tes séances apparaîtra ici.</p>';
     return;
   }
 
   const completed = sessions.filter(function(s) { return s.status === 'completed'; }).length;
   const total = currentProfile.total_sessions || '?';
   if (subtitleEl) {
-    subtitleEl.textContent = completed + ' seance' + (completed > 1 ? 's' : '') + ' realisee' + (completed > 1 ? 's' : '') + ' sur ' + total;
+    subtitleEl.textContent = completed + ' séance' + (completed > 1 ? 's' : '') + ' réalisée' + (completed > 1 ? 's' : '') + ' sur ' + total;
   }
 
   // Grouper actions par session d'origine
@@ -44,7 +44,7 @@ function renderSessions(sessions, allActions) {
     // Summary V1
     const summaryHtml = session.summary
       ? '<p style="font-size:0.85rem; color:#ccc; margin-top:12px;">' + session.summary + '</p>'
-      : '<p style="color:#666666;font-size:0.85rem;padding-top:16px">Le resume sera ajoute apres la seance.</p>';
+      : '<p style="color:#666666;font-size:0.85rem;padding-top:16px">Le résumé sera ajoute après la séance.</p>';
 
     // CR link button
     let crHtml = '';
@@ -96,7 +96,7 @@ function renderSessions(sessions, allActions) {
       '<div class="session-header" onclick="this.parentElement.classList.toggle(\'open\')">' +
         '<div class="session-num">' + session.session_number + '</div>' +
         '<div class="session-info">' +
-          '<div class="session-title">' + (session.title || (isPlanned ? 'Prochaine seance' : 'Seance ' + session.session_number)) + '</div>' +
+          '<div class="session-title">' + (session.title || (isPlanned ? 'Prochaine séance' : 'Séance ' + session.session_number)) + '</div>' +
           '<div class="session-date">' + dateStr + (isPlanned ? ' — A venir' : '') + '</div>' +
         '</div>' +
         '<span class="session-chevron">▼</span>' +

@@ -38,7 +38,7 @@ async function initClientPortal(profile) {
     logoEl.innerHTML = '<div style="width:48px;height:48px;border-radius:12px;background:rgba(194,122,90,0.15);color:#d4956f;display:flex;align-items:center;justify-content:center;font-family:Playfair Display,serif;font-size:1.4rem;font-weight:700">' + initials + '</div>';
   }
 
-  // Stats : Seances + Avancement + A faire
+  // Stats : Séances + Avancement + A faire
   var statsEl = document.getElementById('client-stats');
   var { data: sessions } = await db
     .from('sessions')
@@ -65,7 +65,7 @@ async function initClientPortal(profile) {
   }).length : 0;
 
   statsEl.innerHTML =
-    '<div class="stat-box"><div class="stat-value">' + completedSessions + '/' + totalSessions + '</div><div class="stat-label">Seances</div></div>' +
+    '<div class="stat-box"><div class="stat-value">' + completedSessions + '/' + totalSessions + '</div><div class="stat-label">Séances</div></div>' +
     '<div class="stat-box"><div class="stat-value">' + sessionPct + '%</div><div class="stat-label">Avancement</div></div>' +
     '<div class="stat-box"><div class="stat-value">' + pendingActions + '</div><div class="stat-label">A faire</div></div>' +
     '<div class="stat-box"><div class="stat-value">' + doneActions + ' ✓</div><div class="stat-label">Bravo !</div></div>';
