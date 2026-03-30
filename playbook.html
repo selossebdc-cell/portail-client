@@ -1788,7 +1788,8 @@ steps: [
         await db.processes.update(processId, { date_cible: newDate });
         await loadAllData();
       } catch (e) {
-        showToast('Erreur lors de la mise a jour de la date');
+        console.error('updateProcessDate error:', e);
+        showToast('Erreur : ' + (e.message || 'impossible de changer la date'));
       }
     }
 
@@ -2047,7 +2048,7 @@ steps: [
           return result.data;
         },
         update: async function(id, fields) {
-          if (!supabaseClient) return;
+          if (!supabaseClient) { showToast('Non connecte — modifications non sauvegardees'); return; }
           var result = await supabaseClient
             .from('playbook_processes')
             .update(fields)
@@ -2073,7 +2074,7 @@ steps: [
           return result.data;
         },
         update: async function(id, fields) {
-          if (!supabaseClient) return;
+          if (!supabaseClient) { showToast('Non connecte — modifications non sauvegardees'); return; }
           var result = await supabaseClient
             .from('playbook_steps')
             .update(fields)
