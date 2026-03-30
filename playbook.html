@@ -1,0 +1,3158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Soul Yoga — Playbook</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display+SC&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* === Design Tokens FSY === */
+    :root {
+      --fsy-terracotta: #B55B50;
+      --fsy-creme: #FFFBF7;
+      --fsy-teal: #033231;
+      --font-heading: 'Playfair Display SC', serif;
+      --font-body: 'Montserrat', sans-serif;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+      --radius: 8px;
+      --transition: 0.2s ease;
+    }
+
+    /* === Reset & Base === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--fsy-creme);
+      color: var(--fsy-teal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--fsy-teal);
+    }
+
+    /* === Header === */
+    .app-header {
+      background-color: var(--fsy-teal);
+      color: var(--fsy-creme);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .app-header h1 {
+      font-size: 1.25rem;
+      color: var(--fsy-creme);
+      letter-spacing: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .header-user {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-right: 8px;
+    }
+
+    /* === Navigation Desktop (Tabs) === */
+    .nav-tabs {
+      display: flex;
+      background-color: #fff;
+      border-bottom: 2px solid rgba(3,50,49,0.1);
+      padding: 0 24px;
+    }
+
+    .nav-tab {
+      padding: 12px 24px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--fsy-teal);
+      opacity: 0.5;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+
+    .nav-tab:hover { opacity: 0.8; }
+
+    .nav-tab.active {
+      opacity: 1;
+      border-bottom-color: var(--fsy-terracotta);
+      color: var(--fsy-terracotta);
+    }
+
+    /* === Navigation Mobile (Bottom Nav) === */
+    .nav-bottom {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      border-top: 2px solid rgba(3,50,49,0.1);
+      z-index: 100;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .nav-bottom-inner {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .nav-bottom-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--fsy-teal);
+      opacity: 0.5;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-bottom-btn.active {
+      opacity: 1;
+      color: var(--fsy-terracotta);
+    }
+
+    .nav-bottom-btn .nav-icon {
+      font-size: 1.3rem;
+    }
+
+    /* === Content === */
+    .app-content {
+      flex: 1;
+      padding: 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* === Login === */
+    .login-container {
+      display: none;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--fsy-teal);
+      padding: 24px;
+    }
+
+    .login-container.active {
+      display: flex;
+    }
+
+    .login-card {
+      background: var(--fsy-creme);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+
+    .login-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .login-card .login-subtitle {
+      color: var(--fsy-teal);
+      opacity: 0.6;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .login-field {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(3,50,49,0.15);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
+    .login-field:focus {
+      outline: none;
+      border-color: var(--fsy-terracotta);
+    }
+
+    .login-error {
+      color: #c0392b;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+      min-height: 20px;
+    }
+
+    /* === Buttons === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--fsy-terracotta);
+      color: #fff;
+    }
+
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--fsy-teal);
+      border: 2px solid rgba(3,50,49,0.2);
+    }
+
+    .btn-secondary:hover { border-color: var(--fsy-teal); }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .btn-icon {
+      padding: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      opacity: 0.5;
+      transition: var(--transition);
+    }
+
+    .btn-icon:hover { opacity: 1; }
+
+    .btn-logout {
+      background: rgba(255,255,255,0.15);
+      color: var(--fsy-creme);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    /* === Cards === */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    /* === Progress Bar === */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(3,50,49,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--fsy-terracotta);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* === Step Status Indicators === */
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .status-done { background-color: #27ae60; }
+    .status-overdue { background-color: #e74c3c; }
+    .status-upcoming { background-color: #bdc3c7; }
+
+    /* === Badge === */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-done {
+      background-color: #27ae60;
+      color: #fff;
+    }
+
+    .badge-active {
+      background-color: var(--fsy-terracotta);
+      color: #fff;
+    }
+
+    /* === Owner Pill === */
+    .owner-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* === Modal === */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3,50,49,0.5);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--fsy-creme);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal h3 {
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid rgba(3,50,49,0.15);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--fsy-terracotta);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* === Step List === */
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(3,50,49,0.08);
+    }
+
+    .step-item:last-child { border-bottom: none; }
+
+    .step-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--fsy-terracotta);
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .step-meta {
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-top: 4px;
+    }
+
+    .step-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .step-item:hover .step-actions { opacity: 1; }
+
+    /* === Section Header === */
+    .section-header {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--fsy-terracotta);
+      padding: 16px 0 8px;
+      border-bottom: 2px solid var(--fsy-terracotta);
+      margin-top: 16px;
+    }
+
+    /* === Gantt === */
+    .gantt-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 16px;
+    }
+
+    .gantt-grid {
+      min-width: 800px;
+      position: relative;
+    }
+
+    .gantt-row {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      border-bottom: 1px solid rgba(3,50,49,0.08);
+    }
+
+    .gantt-label {
+      width: 180px;
+      min-width: 180px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding-right: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .gantt-bars {
+      flex: 1;
+      position: relative;
+      height: 100%;
+    }
+
+    .gantt-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .gantt-today {
+      position: absolute;
+      width: 2px;
+      background: #e74c3c;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .gantt-jour-j {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 10px solid var(--fsy-terracotta);
+      top: 2px;
+      z-index: 5;
+    }
+
+    .gantt-legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      font-size: 0.8rem;
+    }
+
+    .gantt-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gantt-legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .gantt-month-header {
+      display: flex;
+      height: 30px;
+      border-bottom: 2px solid rgba(3,50,49,0.15);
+    }
+
+    .gantt-month {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+      border-right: 1px solid rgba(3,50,49,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* === Tasks Filter === */
+    .tasks-filter {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      border: 2px solid rgba(3,50,49,0.15);
+      border-radius: 20px;
+      background: none;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--fsy-teal);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .filter-btn.active {
+      background: var(--fsy-terracotta);
+      color: #fff;
+      border-color: var(--fsy-terracotta);
+    }
+
+    /* === Empty State === */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      opacity: 0.5;
+    }
+
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    /* === Toast === */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--fsy-teal);
+      color: var(--fsy-creme);
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      z-index: 300;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.visible { opacity: 1; }
+
+    /* === Process Detail Header === */
+    .process-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .process-header h2 { font-size: 1.2rem; }
+
+    .process-date {
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+
+    .process-actions-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* === Template Selector === */
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .template-card {
+      border: 2px solid rgba(3,50,49,0.12);
+      border-radius: var(--radius);
+      padding: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .template-card:hover { border-color: var(--fsy-terracotta); }
+
+    .template-card.selected {
+      border-color: var(--fsy-terracotta);
+      background: rgba(181,91,80,0.05);
+    }
+
+    .template-card .template-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .template-card .template-info {
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
+
+    /* === Export/Import === */
+    .data-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* === Confirm Dialog === */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3,50,49,0.5);
+      z-index: 250;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .confirm-overlay.active { display: flex; }
+
+    .confirm-card {
+      background: var(--fsy-creme);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .confirm-card p {
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+      .nav-tabs { display: none; }
+      .nav-bottom { display: block; }
+
+      .app-content {
+        padding: 16px;
+        padding-bottom: 80px;
+      }
+
+      .app-header h1 { font-size: 1rem; }
+
+      .process-header { flex-direction: column; align-items: flex-start; }
+
+      .template-grid { grid-template-columns: 1fr; }
+
+      .step-actions { opacity: 1; }
+
+      .gantt-label { width: 120px; min-width: 120px; }
+    }
+
+    /* === Print === */
+    @media print {
+      .app-header,
+      .nav-tabs,
+      .nav-bottom,
+      .btn,
+      .btn-icon,
+      .btn-logout,
+      .step-actions,
+      .modal-overlay,
+      .confirm-overlay,
+      .toast,
+      .data-actions,
+      .tasks-filter { display: none !important; }
+
+      body { background: #fff; color: #000; }
+
+      .app-content { max-width: 100%; padding: 0; }
+
+      .view-section { display: block !important; page-break-inside: avoid; }
+
+      .card { box-shadow: none; border: 1px solid #ddd; }
+
+      .progress-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      .status-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* === App Container (hidden when logged out) === */
+    .app-container {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .app-container.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- === LOGIN === -->
+  <div id="login-container" class="login-container">
+    <div class="login-card">
+      <h2>Face Soul Yoga</h2>
+      <p class="login-subtitle">Playbook Process</p>
+      <input type="email" id="login-email" class="login-field" placeholder="Email" autocomplete="email">
+      <input type="password" id="login-password" class="login-field" placeholder="Mot de passe" autocomplete="current-password">
+      <div id="login-error" class="login-error"></div>
+      <button id="login-btn" class="btn btn-primary" style="width:100%;">Se connecter</button>
+    </div>
+  </div>
+
+  <!-- === APP === -->
+  <div id="app-container" class="app-container">
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1>Face Soul Yoga — Playbook</h1>
+      <div class="header-actions">
+        <span id="header-user" class="header-user"></span>
+        <div class="data-actions">
+          <button id="btn-export" class="btn-logout" title="Exporter les donnees">Exporter</button>
+          <label class="btn-logout" style="cursor:pointer;" title="Importer des donnees">
+            Importer
+            <input type="file" id="import-file" accept=".json" style="display:none;">
+          </label>
+        </div>
+        <button id="btn-logout" class="btn-logout">Deconnexion</button>
+      </div>
+    </header>
+
+    <!-- Desktop Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-view="playbook">Playbook</button>
+      <button class="nav-tab" data-view="tasks">Mes Taches</button>
+      <button class="nav-tab" data-view="timeline">Timeline</button>
+      <button class="nav-tab" data-view="templates">Modèles</button>
+    </nav>
+
+    <!-- Content -->
+    <main class="app-content">
+
+      <!-- View: Playbook -->
+      <section id="view-playbook" class="view-section active">
+        <div id="playbook-list-view">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+            <h2>Mes Process</h2>
+            <button id="btn-new-process" class="btn btn-primary btn-sm">+ Nouveau process</button>
+          </div>
+          <div id="process-list"></div>
+        </div>
+        <div id="playbook-detail-view" style="display:none;">
+          <div id="process-detail"></div>
+        </div>
+      </section>
+
+      <!-- View: Mes Taches -->
+      <section id="view-tasks" class="view-section">
+        <h2 style="margin-bottom:16px;">Mes Taches</h2>
+        <div id="tasks-filter" class="tasks-filter"></div>
+        <div id="tasks-list"></div>
+      </section>
+
+      <!-- View: Timeline -->
+      <section id="view-timeline" class="view-section">
+        <h2 style="margin-bottom:16px;">Timeline</h2>
+        <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <label style="font-size:0.85rem;font-weight:600;">Afficher :</label>
+          <select id="gantt-filter" style="padding:6px 12px;border-radius:var(--radius);border:1px solid #ccc;font-family:var(--font-body);font-size:0.85rem;">
+            <option value="all">Tous les process</option>
+          </select>
+        </div>
+        <div id="gantt-container" class="gantt-container">
+          <div id="gantt-content" class="gantt-grid"></div>
+        </div>
+        <div id="gantt-legend" class="gantt-legend"></div>
+      </section>
+
+      <!-- View: Modèles -->
+      <section id="view-templates" class="view-section">
+        <h2 style="margin-bottom:16px;">Modèles</h2>
+        <div id="templates-list"></div>
+        <div id="template-detail-view" style="display:none;">
+          <button class="btn btn-secondary btn-sm" id="btn-back-templates" style="margin-bottom:12px;">&#8592; Retour aux modèles</button>
+          <div id="template-detail-content"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="nav-bottom">
+      <div class="nav-bottom-inner">
+        <button class="nav-bottom-btn active" data-view="playbook">
+          <span class="nav-icon">&#9776;</span>
+          <span>Playbook</span>
+        </button>
+        <button class="nav-bottom-btn" data-view="tasks">
+          <span class="nav-icon">&#9745;</span>
+          <span>Taches</span>
+        </button>
+        <button class="nav-bottom-btn" data-view="timeline">
+          <span class="nav-icon">&#9866;</span>
+          <span>Timeline</span>
+        </button>
+        <button class="nav-bottom-btn" data-view="templates">
+          <span class="nav-icon">&#128221;</span>
+          <span>Modèles</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- === Modal: New Process === -->
+  <div id="modal-new-process" class="modal-overlay">
+    <div class="modal">
+      <h3>Nouveau Process</h3>
+      <div class="form-group">
+        <label for="process-name">Nom du process</label>
+        <input type="text" id="process-name" placeholder="Ex: Lancement formation printemps">
+      </div>
+      <div class="form-group">
+        <label for="process-date">Date cible (Jour J)</label>
+        <input type="date" id="process-date">
+      </div>
+      <div class="form-group">
+        <label>Template</label>
+        <div id="template-selector" class="template-grid"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="modal-cancel">Annuler</button>
+        <button class="btn btn-primary" id="modal-create">Creer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Modal: Edit Step === -->
+  <div id="modal-edit-step" class="modal-overlay">
+    <div class="modal">
+      <h3>Modifier l'etape</h3>
+      <div class="form-group">
+        <label for="step-title">Titre</label>
+        <input type="text" id="step-title">
+      </div>
+      <div class="form-group">
+        <label for="step-desc">Description</label>
+        <textarea id="step-desc" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="step-section">Section</label>
+        <input type="text" id="step-section" placeholder="Ex: CONCEPTION">
+      </div>
+      <div class="form-group">
+        <label for="step-date-abs">Date</label>
+        <input type="date" id="step-date-abs">
+        <span style="font-size:0.75rem;opacity:0.5;">Modifier la date recalcule le timing automatiquement</span>
+      </div>
+      <div class="form-group">
+        <label for="step-timing">Timing (jours relatifs au Jour J)</label>
+        <input type="number" id="step-timing">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label for="step-raci-r">Responsable (R)</label>
+          <select id="step-raci-r"></select>
+        </div>
+        <div class="form-group">
+          <label for="step-raci-a">Approbateur (A)</label>
+          <select id="step-raci-a"></select>
+        </div>
+        <div class="form-group">
+          <label for="step-raci-c">Consulte (C)</label>
+          <select id="step-raci-c"><option value="">—</option></select>
+        </div>
+        <div class="form-group">
+          <label for="step-raci-i">Informe (I)</label>
+          <select id="step-raci-i"><option value="">—</option></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="step-edit-cancel">Annuler</button>
+        <button class="btn btn-primary" id="step-edit-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Modal: Task Detail === -->
+  <div id="modal-task-detail" class="modal-overlay">
+    <div class="modal" style="max-width:500px;">
+      <h3 id="task-detail-title" style="margin-bottom:12px;"></h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;" id="task-detail-badges"></div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--fsy-terracotta);">RACI</div>
+        <div id="task-detail-raci" style="font-size:0.85rem;"></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--fsy-terracotta);">Process</div>
+        <div id="task-detail-process" style="font-size:0.85rem;"></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:0.8rem;font-weight:600;margin-bottom:4px;color:var(--fsy-terracotta);">Date</div>
+        <div id="task-detail-date" style="font-size:0.85rem;"></div>
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.8rem;font-weight:600;color:var(--fsy-terracotta);">Description / Notes</label>
+        <textarea id="task-detail-desc" rows="4" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:var(--radius);font-family:var(--font-body);font-size:0.85rem;resize:vertical;" placeholder="Ajoutez des notes, instructions, liens..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="task-detail-close">Fermer</button>
+        <button class="btn btn-primary" id="task-detail-save">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Modal: Add Step === -->
+  <div id="modal-add-step" class="modal-overlay">
+    <div class="modal">
+      <h3>Ajouter une etape</h3>
+      <div class="form-group">
+        <label for="new-step-title">Titre</label>
+        <input type="text" id="new-step-title">
+      </div>
+      <div class="form-group">
+        <label for="new-step-section">Section</label>
+        <input type="text" id="new-step-section" placeholder="Ex: CONCEPTION">
+      </div>
+      <div class="form-group">
+        <label for="new-step-timing">Timing (jours)</label>
+        <input type="number" id="new-step-timing" value="0">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label for="new-step-raci-r">Responsable (R)</label>
+          <select id="new-step-raci-r"></select>
+        </div>
+        <div class="form-group">
+          <label for="new-step-raci-a">Approbateur (A)</label>
+          <select id="new-step-raci-a"></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="add-step-cancel">Annuler</button>
+        <button class="btn btn-primary" id="add-step-save">Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Modal: Change Date === -->
+  <div id="modal-change-date" class="modal-overlay">
+    <div class="modal">
+      <h3>Changer la date cible</h3>
+      <p style="margin-bottom:16px;font-size:0.9rem;opacity:0.7;">
+        Toutes les dates des etapes seront recalculees.
+      </p>
+      <div class="form-group">
+        <label for="new-date-cible">Nouvelle date cible</label>
+        <input type="date" id="new-date-cible">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="date-cancel">Annuler</button>
+        <button class="btn btn-primary" id="date-confirm">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Modal: Add Owner === -->
+  <div id="modal-add-owner" class="modal-overlay">
+    <div class="modal">
+      <h3>Ajouter une personne</h3>
+      <div class="form-group">
+        <label for="new-owner-name">Nom</label>
+        <input type="text" id="new-owner-name" placeholder="Ex: Marie">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="owner-cancel">Annuler</button>
+        <button class="btn btn-primary" id="owner-save">Ajouter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Confirm Dialog === -->
+  <div id="confirm-dialog" class="confirm-overlay">
+    <div class="confirm-card">
+      <p id="confirm-message"></p>
+      <div class="form-actions" style="justify-content:center;">
+        <button class="btn btn-secondary" id="confirm-no">Annuler</button>
+        <button class="btn btn-primary" id="confirm-yes">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Toast === -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ============================================================
+    // === SECTION: DOMAIN ===
+    // ============================================================
+
+    // --- Templates (constantes) ---
+
+    const TEMPLATES = {
+T1: {id:'T1',name:'Creer un espace Circle',category:'Projet',steps:[
+{title:'Definir la vision et les objectifs',section:'CONCEPTION',timing:-21,raci:{r:'Aurélia',a:'Aurélia',c:'Catherine' }},
+{title:'Identifier le public cible',section:'CONCEPTION',timing:-21,raci:{r:'Aurélia',a:'Aurélia' }},
+{title:'Choisir le type d\'espace',section:'CONCEPTION',timing:-20,raci:{r:'Aurélia',a:'Aurélia',c:'Catherine' }},
+{title:'Definir l\'arborescence des sections',section:'CONCEPTION',timing:-19,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Lister les contenus a integrer',section:'CONCEPTION',timing:-18,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Definir le branding visuel',section:'CONCEPTION',timing:-17,raci:{r:'Aurélia',a:'Aurélia',c:'VA' }},
+{title:'Creer l\'espace dans Circle',section:'CONFIGURATION',timing:-16,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Configurer les parametres',section:'CONFIGURATION',timing:-15,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Creer les sections de contenu',section:'CONFIGURATION',timing:-14,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Configurer les permissions',section:'CONFIGURATION',timing:-14,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Uploader le branding',section:'CONFIGURATION',timing:-13,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Configurer les emails de bienvenue',section:'CONFIGURATION',timing:-12,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Configurer les automatisations d\'onboarding',section:'CONFIGURATION',timing:-11,raci:{r:'Automatique',a:'Laurie' }},
+{title:'Rediger la base de connaissances du chatbot (questions frequentes, reponses)',section:'CONFIGURATION',timing:-10,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Alimenter le chatbot avec les donnees de l\'espace',section:'CONFIGURATION',timing:-9,raci:{r:'Laurie',a:'Laurie' }},
+{title:'Tester le chatbot (poser les questions types, verifier les reponses)',section:'CONFIGURATION',timing:-8,raci:{r:'Laurie',a:'Laurie' }},
+{title:'Rediger le contenu de bienvenue',section:'CONTENU',timing:-10,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Creer les premiers posts',section:'CONTENU',timing:-10,raci:{r:'Laurie',a:'Aurélia',c:'Externe' }},
+{title:'Preparer les visuels',section:'CONTENU',timing:-9,raci:{r:'VA',a:'Laurie' }},
+{title:'Integrer les videos existantes',section:'CONTENU',timing:-8,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Creer les drip contents',section:'CONTENU',timing:-7,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Programmer les contenus',section:'CONTENU',timing:-6,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Verifier tous les liens et medias',section:'TESTS',timing:-5,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Tester l\'inscription d\'un membre test',section:'TESTS',timing:-5,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Tester le parcours de bienvenue',section:'TESTS',timing:-4,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Tester sur mobile',section:'TESTS',timing:-4,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Tester les notifications email',section:'TESTS',timing:-3,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Corriger les anomalies detectees',section:'TESTS',timing:-3,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Validation finale par Aurelia',section:'TESTS',timing:-2,raci:{r:'Aurélia',a:'Aurélia' }},
+{title:'Preparer l\'email d\'annonce',section:'LANCEMENT',timing:-1,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Activer l\'espace',section:'LANCEMENT',timing:0,raci:{r:'Laurie',a:'Aurélia' }},
+{title:'Envoyer l\'email d\'annonce',section:'LANCEMENT',timing:0,raci:{r:'Automatique',a:'Laurie' }},
+{title:'Publier sur les reseaux sociaux',section:'LANCEMENT',timing:0,raci:{r:'Laurie',a:'Aurélia' }}
+]},
+T2: {
+id: 'T2',
+name: 'Migrer un contenu existant vers Circle',
+category: 'Projet',
+description: 'Template pour migrer des contenus d\'une plateforme vers Circle',
+steps: [
+{ title: 'Inventorier tous les contenus a migrer', section: 'AUDIT', timing: -90, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Categoriser les contenus (video, texte, PDF, quiz)', section: 'AUDIT', timing: -88, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Identifier les contenus obsoletes a ne pas migrer', section: 'AUDIT', timing: -85, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Evaluer la qualite des contenus a migrer', section: 'AUDIT', timing: -83, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Documenter la structure actuelle', section: 'AUDIT', timing: -80, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Lister les membres actifs actuels', section: 'AUDIT', timing: -78, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Definir la nouvelle arborescence dans Circle', section: 'PREPARATION', timing: -75, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Creer les espaces et sections dans Circle', section: 'PREPARATION', timing: -70, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les permissions', section: 'PREPARATION', timing: -68, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Preparer les templates de publication', section: 'PREPARATION', timing: -65, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Telecharger/exporter tous les fichiers medias', section: 'PREPARATION', timing: -60, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les automatisations de migration', section: 'PREPARATION', timing: -58, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Migrer les contenus texte — lot 1', section: 'MIGRATION', timing: -55, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Migrer les contenus texte — lot 2', section: 'MIGRATION', timing: -50, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Migrer les videos — lot 1', section: 'MIGRATION', timing: -48, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Migrer les videos — lot 2', section: 'MIGRATION', timing: -43, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Migrer les PDF et documents', section: 'MIGRATION', timing: -40, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Migrer les quiz et evaluations', section: 'MIGRATION', timing: -37, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Mettre a jour les liens internes', section: 'MIGRATION', timing: -35, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Ajouter les ameliorations identifiees', section: 'MIGRATION', timing: -32, raci: { r: 'Laurie', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Configurer les drip contents', section: 'MIGRATION', timing: -30, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Verifier chaque contenu migre (texte)', section: 'VERIFICATION', timing: -25, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Verifier chaque contenu migre (videos)', section: 'VERIFICATION', timing: -22, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Verifier les liens et la navigation', section: 'VERIFICATION', timing: -20, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester sur mobile', section: 'VERIFICATION', timing: -18, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester l\'acces avec un compte membre', section: 'VERIFICATION', timing: -15, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Validation finale par Aurelia', section: 'VERIFICATION', timing: -10, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Envoyer la communication aux membres', section: 'POST-MIGRATION', timing: -5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Importer les membres existants', section: 'POST-MIGRATION', timing: -3, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Activer le nouvel espace', section: 'POST-MIGRATION', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Desactiver l\'ancien espace', section: 'POST-MIGRATION', timing: 5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Monitorer les retours membres pendant 2 semaines', section: 'POST-MIGRATION', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Corriger les problemes remontes', section: 'POST-MIGRATION', timing: 15, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Bilan de migration (retour d\'experience)', section: 'POST-MIGRATION', timing: 21, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Archiver l\'ancien espace', section: 'POST-MIGRATION', timing: 30, raci: { r: 'Laurie', a: 'Aurélia' } }
+]
+},
+T3: {
+id: 'T3',
+name: 'Lancer une formation en ligne',
+category: 'Lancement',
+steps: [
+{ title: 'Definir la thematique et l\'angle de la formation', section: 'CONCEPTION', timing: -120, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Definir le public cible et les prerequis', section: 'CONCEPTION', timing: -118, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir les objectifs pedagogiques', section: 'CONCEPTION', timing: -115, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Structurer le programme (modules et lecons)', section: 'CONCEPTION', timing: -112, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le format (video, PDF, exercices, live)', section: 'CONCEPTION', timing: -110, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Laurie' } },
+{ title: 'Definir le prix et le modele de vente', section: 'CONCEPTION', timing: -108, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Creer le plan detaille de chaque module', section: 'CONCEPTION', timing: -105, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Rediger les scripts video du module 1', section: 'PRODUCTION', timing: -100, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Tourner les videos du module 1', section: 'PRODUCTION', timing: -95, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Monter les videos du module 1', section: 'PRODUCTION', timing: -90, raci: { r: 'Externe', a: 'Aurélia' } },
+{ title: 'Creer les supports PDF du module 1', section: 'PRODUCTION', timing: -88, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Rediger les scripts video des modules 2-3', section: 'PRODUCTION', timing: -85, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Tourner les videos des modules 2-3', section: 'PRODUCTION', timing: -80, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Monter les videos des modules 2-3', section: 'PRODUCTION', timing: -75, raci: { r: 'Externe', a: 'Aurélia' } },
+{ title: 'Creer les supports PDF des modules 2-3', section: 'PRODUCTION', timing: -73, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer les exercices et quiz', section: 'PRODUCTION', timing: -70, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Integrer tous les contenus dans Circle', section: 'PRODUCTION', timing: -60, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer le drip content (deblocage progressif)', section: 'PRODUCTION', timing: -55, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les automatisations de suivi', section: 'PRODUCTION', timing: -50, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Definir la strategie de communication', section: 'COMMUNICATION', timing: -45, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Creer la page de vente', section: 'COMMUNICATION', timing: -40, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer les visuels de promotion', section: 'COMMUNICATION', timing: -38, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Rediger les emails de lancement (sequence)', section: 'COMMUNICATION', timing: -35, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Preparer les publications reseaux sociaux', section: 'COMMUNICATION', timing: -30, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer le systeme de paiement', section: 'PRE-LANCEMENT', timing: -25, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester le parcours d\'achat complet', section: 'PRE-LANCEMENT', timing: -20, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester tous les contenus (videos, PDF, quiz)', section: 'PRE-LANCEMENT', timing: -18, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester sur mobile', section: 'PRE-LANCEMENT', timing: -15, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Relecture finale par Aurelia', section: 'PRE-LANCEMENT', timing: -10, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Envoyer le teasing (email + reseaux)', section: 'PRE-LANCEMENT', timing: -7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Offre early bird (si applicable)', section: 'PRE-LANCEMENT', timing: -5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Lancer les inscriptions', section: 'LANCEMENT', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer l\'email de lancement', section: 'LANCEMENT', timing: 0, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Publier sur les reseaux sociaux', section: 'LANCEMENT', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Repondre aux questions entrantes', section: 'LANCEMENT', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de relance (J+3)', section: 'POST-LANCEMENT', timing: 3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Suivi des premieres inscriptions', section: 'POST-LANCEMENT', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de relance finale', section: 'POST-LANCEMENT', timing: 14, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Recueillir les premiers retours', section: 'POST-LANCEMENT', timing: 30, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Analyser les metriques (inscriptions, progression, completion)', section: 'POST-LANCEMENT', timing: 60, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Ameliorer les contenus selon les retours', section: 'POST-LANCEMENT', timing: 90, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Bilan final de la formation', section: 'POST-LANCEMENT', timing: 120, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } }
+]
+},
+T4: {
+id: 'T4',
+name: 'Lancer un challenge recrutement',
+category: 'Lancement',
+steps: [
+{ title: 'Definir le theme et la duree du challenge', section: 'CONCEPTION', timing: -60, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Definir la cible et le nombre de participants vise', section: 'CONCEPTION', timing: -58, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir les recompenses / incentives', section: 'CONCEPTION', timing: -55, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Creer le programme jour par jour', section: 'CONCEPTION', timing: -50, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir les KPIs de succes', section: 'CONCEPTION', timing: -48, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Creer l\'espace Circle dedie', section: 'PREPARATION', timing: -45, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer la page d\'inscription', section: 'PREPARATION', timing: -42, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Produire les contenus du challenge', section: 'PREPARATION', timing: -40, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Preparer les emails automatiques du challenge', section: 'PREPARATION', timing: -35, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les automatisations d\'inscription', section: 'PREPARATION', timing: -33, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Rediger les reponses du chatbot pour le challenge (FAQ, motivation)', section: 'PREPARATION', timing: -30, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Alimenter le chatbot avec les donnees du challenge', section: 'PREPARATION', timing: -28, raci: { r: 'Laurie', a: 'Laurie' } },
+{ title: 'Tester le chatbot du challenge', section: 'PREPARATION', timing: -27, raci: { r: 'Laurie', a: 'Laurie' } },
+{ title: 'Integrer tous les contenus dans Circle', section: 'PREPARATION', timing: -30, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Tester le parcours complet (y compris chatbot)', section: 'PREPARATION', timing: -25, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer les visuels de promotion', section: 'COMMUNICATION', timing: -20, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Rediger la sequence email de teasing', section: 'COMMUNICATION', timing: -18, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Planifier les publications reseaux sociaux', section: 'COMMUNICATION', timing: -15, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Lancer la campagne de teasing', section: 'COMMUNICATION', timing: -10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de rappel d\'inscription', section: 'COMMUNICATION', timing: -3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Email de dernier rappel', section: 'COMMUNICATION', timing: -1, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Lancer le challenge (Jour 1)', section: 'LANCEMENT', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Publication quotidienne du contenu', section: 'LANCEMENT', timing: 1, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Animation quotidienne (reponses, encouragements)', section: 'LANCEMENT', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Live de mi-parcours (si applicable)', section: 'LANCEMENT', timing: 3, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Dernier jour du challenge', section: 'SUIVI', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le sondage de satisfaction', section: 'SUIVI', timing: 8, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Proposer l\'offre de conversion (abonnement)', section: 'SUIVI', timing: 8, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de relance conversion', section: 'SUIVI', timing: 10, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Analyser les resultats (inscriptions, engagement, conversion)', section: 'SUIVI', timing: 12, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Rediger le bilan du challenge', section: 'SUIVI', timing: 14, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Archiver les contenus du challenge', section: 'SUIVI', timing: 15, raci: { r: 'Laurie', a: 'Aurélia' } }
+]
+},
+T5a: {
+id: 'T5a',
+name: 'Onboarder un nouveau membre Studio B2C',
+category: 'Cycle',
+steps: [
+{ title: 'Envoyer l\'email de bienvenue personnalise', section: 'ACCUEIL', timing: 0, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Creer le compte Circle du membre', section: 'ACCUEIL', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer les identifiants de connexion', section: 'ACCUEIL', timing: 0, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Presenter le guide de demarrage', section: 'ACCUEIL', timing: 1, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Le chatbot accueille et oriente le nouveau membre (premiers pas, contenu recommande)', section: 'ACCUEIL', timing: 1, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Inviter au groupe de bienvenue', section: 'ACCUEIL', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer l\'acces aux espaces du Studio', section: 'CONFIGURATION', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Activer l\'acces aux replays', section: 'CONFIGURATION', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les notifications du membre', section: 'CONFIGURATION', timing: 2, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Ajouter au calendrier des lives', section: 'CONFIGURATION', timing: 2, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Envoyer le rappel de premier cours', section: 'SUIVI', timing: 3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Verifier la premiere connexion du membre', section: 'SUIVI', timing: 5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le message de suivi J+7', section: 'SUIVI', timing: 7, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Verifier l\'engagement a J+10', section: 'SUIVI', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Appel de bienvenue si non engage (n\'a pas participe)', section: 'SUIVI', timing: 12, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le sondage de satisfaction onboarding', section: 'SUIVI', timing: 14, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Inviter a laisser un temoignage', section: 'SUIVI', timing: 21, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Verifier l\'engagement a J+28', section: 'SUIVI', timing: 28, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Bilan du premier mois', section: 'SUIVI', timing: 30, raci: { r: 'Laurie', a: 'Aurélia' } }
+]
+},
+T5b: {
+id: 'T5b',
+name: 'Onboarder une certifiee MTM B2B',
+category: 'Cycle',
+steps: [
+{ title: 'Envoyer le contrat et les conditions', section: 'ACCUEIL', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Recevoir le contrat signe', section: 'ACCUEIL', timing: 2, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer l\'email de bienvenue officiel', section: 'ACCUEIL', timing: 3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Creer le compte Circle dedie', section: 'ACCUEIL', timing: 3, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le kit de bienvenue (digital)', section: 'ACCUEIL', timing: 3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Le chatbot accompagne la certifiee (progression, rappels modules, FAQ formation)', section: 'ACCUEIL', timing: 3, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Planifier le premier appel de decouverte', section: 'ACCUEIL', timing: 5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Premier appel de decouverte avec Aurelia', section: 'FORMATION', timing: 7, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Donner acces au module 1 de formation', section: 'FORMATION', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Suivi completion module 1', section: 'FORMATION', timing: 14, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Appel de suivi module 1', section: 'FORMATION', timing: 17, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Donner acces au module 2', section: 'FORMATION', timing: 21, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Suivi completion module 2', section: 'FORMATION', timing: 35, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Appel de suivi module 2', section: 'FORMATION', timing: 38, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Donner acces au module 3', section: 'FORMATION', timing: 42, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Suivi completion module 3', section: 'FORMATION', timing: 56, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Soumission du cas pratique', section: 'CERTIFICATION', timing: 60, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Evaluation du cas pratique par Aurelia', section: 'CERTIFICATION', timing: 67, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Session de certification (live)', section: 'CERTIFICATION', timing: 75, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Delivrer le certificat', section: 'CERTIFICATION', timing: 76, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Ajouter au repertoire des certifiees', section: 'CERTIFICATION', timing: 77, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Activer l\'acces a l\'espace certifiees', section: 'CERTIFICATION', timing: 77, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Donner acces aux ressources marketing', section: 'SUIVI', timing: 80, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Premiere session de supervision de groupe', section: 'SUIVI', timing: 85, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Envoyer le sondage de satisfaction formation', section: 'SUIVI', timing: 90, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Appel de suivi a 3 mois', section: 'SUIVI', timing: 90, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Inviter a temoigner', section: 'SUIVI', timing: 95, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Verifier l\'activite dans la communaute certifiees', section: 'SUIVI', timing: 100, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Rappel supervision de groupe trimestrielle', section: 'SUIVI', timing: 110, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Point a 4 mois (retention et satisfaction)', section: 'SUIVI', timing: 115, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Bilan d\'onboarding complet', section: 'SUIVI', timing: 120, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } }
+]
+},
+T6: {
+id: 'T6',
+name: 'Plan de communication lancement',
+category: 'Transverse',
+steps: [
+{ title: 'Definir les objectifs de communication (inscriptions cible, audience visee)', section: 'STRATEGIE', timing: -30, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Identifier les canaux de diffusion', section: 'STRATEGIE', timing: -29, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le calendrier editorial', section: 'STRATEGIE', timing: -28, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Definir les messages cles et l\'angle', section: 'STRATEGIE', timing: -27, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le budget communication', section: 'STRATEGIE', timing: -26, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Creer la charte visuelle du lancement', section: 'CONTENU', timing: -25, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Creer les visuels pour les reseaux sociaux', section: 'CONTENU', timing: -23, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Creer les visuels pour les emails', section: 'CONTENU', timing: -22, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Rediger les posts Instagram (10 posts)', section: 'CONTENU', timing: -21, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer les stories Instagram', section: 'CONTENU', timing: -20, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Rediger les posts Facebook', section: 'CONTENU', timing: -19, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Rediger l\'email de teasing', section: 'CONTENU', timing: -18, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Rediger la sequence email de lancement (5 emails)', section: 'CONTENU', timing: -17, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Enregistrer une video teaser', section: 'CONTENU', timing: -15, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Contacter les partenaires pour relayer', section: 'CONTENU', timing: -14, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Programmer les publications dans l\'outil de planification', section: 'DIFFUSION', timing: -12, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Configurer les automatisations email', section: 'DIFFUSION', timing: -11, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Publier le teasing (email)', section: 'DIFFUSION', timing: -10, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Publier le teasing (reseaux sociaux)', section: 'DIFFUSION', timing: -10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Publier la video teaser', section: 'DIFFUSION', timing: -8, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Publication quotidienne reseaux (J-7 a J-1)', section: 'DIFFUSION', timing: -7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de relance inscriptions', section: 'DIFFUSION', timing: -5, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Stories quotidiennes (J-5 a J-1)', section: 'DIFFUSION', timing: -5, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Relais partenaires', section: 'DIFFUSION', timing: -4, raci: { r: 'Externe', a: 'Aurélia' } },
+{ title: 'Email dernier rappel (J-2)', section: 'DIFFUSION', timing: -2, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Live countdown ou FAQ (J-1)', section: 'JOUR J', timing: -1, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Publication d\'ouverture Jour J', section: 'JOUR J', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email d\'ouverture Jour J', section: 'JOUR J', timing: 0, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Stories de lancement', section: 'JOUR J', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Live d\'ouverture (si prevu)', section: 'JOUR J', timing: 0, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Repondre aux commentaires et DMs', section: 'JOUR J', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de relance post-lancement', section: 'JOUR J', timing: 0, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Bilan de la campagne de communication', section: 'JOUR J', timing: 0, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } }
+]
+},
+T7: {
+id: 'T7',
+name: 'Lancer une retraite',
+category: 'Lancement',
+steps: [
+{ title: 'Definir le concept et la thematique de la retraite', section: 'CONCEPTION', timing: -270, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir les dates et la duree', section: 'CONCEPTION', timing: -265, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le nombre de participants (min/max)', section: 'CONCEPTION', timing: -260, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le programme jour par jour', section: 'CONCEPTION', timing: -255, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Definir le tarif et les options (hebergement, repas)', section: 'CONCEPTION', timing: -250, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Rechercher et visiter les lieux potentiels', section: 'LOGISTIQUE', timing: -240, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Laurie' } },
+{ title: 'Negocier et reserver le lieu', section: 'LOGISTIQUE', timing: -230, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Signer le contrat de location', section: 'LOGISTIQUE', timing: -225, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Organiser la restauration (traiteur/cuisinier)', section: 'LOGISTIQUE', timing: -220, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Organiser les transferts (si necessaire)', section: 'LOGISTIQUE', timing: -210, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Verifier les assurances', section: 'LOGISTIQUE', timing: -200, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Commander le materiel (tapis, accessoires)', section: 'LOGISTIQUE', timing: -180, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Prevoir les intervenants externes', section: 'LOGISTIQUE', timing: -170, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Preparer les goodies/cadeaux participants', section: 'LOGISTIQUE', timing: -120, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Creer la page de vente de la retraite', section: 'COMMUNICATION', timing: -150, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Produire les visuels de promotion', section: 'COMMUNICATION', timing: -145, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Tourner la video de presentation', section: 'COMMUNICATION', timing: -140, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Rediger la sequence email d\'annonce', section: 'COMMUNICATION', timing: -130, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Planifier les publications reseaux (3 mois)', section: 'COMMUNICATION', timing: -120, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Lancer les premieres communications', section: 'COMMUNICATION', timing: -120, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Activer les partenariats de diffusion', section: 'COMMUNICATION', timing: -100, raci: { r: 'Laurie', a: 'Aurélia', c: 'Externe' } },
+{ title: 'Configurer le systeme de paiement/acompte', section: 'COMMUNICATION', timing: -90, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer les rappels aux inscrits (logistique)', section: 'COMMUNICATION', timing: -60, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Relance des hesitants', section: 'COMMUNICATION', timing: -45, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Email de dernier appel', section: 'COMMUNICATION', timing: -30, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Confirmer le nombre final de participants', section: 'PRE-RETRAITE', timing: -21, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Confirmer la restauration (menus, allergies)', section: 'PRE-RETRAITE', timing: -14, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le guide pratique aux participants', section: 'PRE-RETRAITE', timing: -10, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Preparer les supports de la retraite', section: 'PRE-RETRAITE', timing: -7, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Verifier le lieu (etat, equipement)', section: 'PRE-RETRAITE', timing: -3, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Installer le materiel et la decoration', section: 'PRE-RETRAITE', timing: -1, raci: { r: 'Laurie', a: 'Aurélia', c: 'VA' } },
+{ title: 'Accueillir les participants', section: 'RETRAITE', timing: 0, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Laurie' } },
+{ title: 'Animer le programme jour 1', section: 'RETRAITE', timing: 0, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Animer le programme jour 2', section: 'RETRAITE', timing: 1, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Animer le programme jour 3', section: 'RETRAITE', timing: 2, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Prendre des photos/videos pendant la retraite', section: 'RETRAITE', timing: 0, raci: { r: 'VA', a: 'Aurélia' } },
+{ title: 'Gerer la logistique quotidienne', section: 'RETRAITE', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Ceremonie de cloture', section: 'RETRAITE', timing: 3, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Ranger et quitter le lieu', section: 'RETRAITE', timing: 3, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer l\'email de remerciement', section: 'POST-RETRAITE', timing: 1, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Partager les photos/videos', section: 'POST-RETRAITE', timing: 3, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer le sondage de satisfaction', section: 'POST-RETRAITE', timing: 5, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Inviter a temoigner', section: 'POST-RETRAITE', timing: 7, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Publier les temoignages (avec accord)', section: 'POST-RETRAITE', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Proposer l\'offre de suivi (abonnement Studio)', section: 'POST-RETRAITE', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Bilan financier de la retraite', section: 'POST-RETRAITE', timing: 15, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } },
+{ title: 'Bilan qualitatif (satisfaction, apprentissages)', section: 'POST-RETRAITE', timing: 20, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Publier le recap sur les reseaux sociaux', section: 'POST-RETRAITE', timing: 14, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Decider de la prochaine edition', section: 'POST-RETRAITE', timing: 30, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' } }
+]
+},
+T8: {
+id: 'T8',
+name: 'Gerer une licence annuelle',
+category: 'Cycle',
+description: 'Template pour gerer le cycle de vie d\'une licence annuelle (certifiees MTM)',
+steps: [
+{ title: 'Envoyer le contrat de renouvellement', section: 'SIGNATURE', timing: 0, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Recevoir le contrat signe', section: 'SIGNATURE', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Confirmer le paiement', section: 'SIGNATURE', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer la facture', section: 'SIGNATURE', timing: 10, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Activer/renouveler l\'acces aux espaces Circle', section: 'INTEGRATION', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Mettre a jour le repertoire des certifiees', section: 'INTEGRATION', timing: 12, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Envoyer les nouvelles ressources de l\'annee', section: 'INTEGRATION', timing: 14, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Planifier l\'appel de demarrage d\'annee', section: 'INTEGRATION', timing: 15, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Appel de demarrage d\'annee avec Aurelia', section: 'INTEGRATION', timing: 21, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Point trimestriel Q1 — suivi activite', section: 'SUIVI TRIMESTRIEL', timing: 90, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Supervision de groupe Q1', section: 'SUIVI TRIMESTRIEL', timing: 90, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Envoyer les nouveaux contenus Q1', section: 'SUIVI TRIMESTRIEL', timing: 95, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Point trimestriel Q2 — suivi activite', section: 'SUIVI TRIMESTRIEL', timing: 180, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Supervision de groupe Q2', section: 'SUIVI TRIMESTRIEL', timing: 180, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Sondage de satisfaction semestriel', section: 'SUIVI TRIMESTRIEL', timing: 185, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Point trimestriel Q3 — suivi activite', section: 'SUIVI TRIMESTRIEL', timing: 270, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Supervision de groupe Q3', section: 'SUIVI TRIMESTRIEL', timing: 270, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Envoyer les nouveaux contenus Q3', section: 'SUIVI TRIMESTRIEL', timing: 275, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Bilan annuel de la certifiee', section: 'RENOUVELLEMENT', timing: 330, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Appel de bilan annuel avec Aurelia', section: 'RENOUVELLEMENT', timing: 335, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Sondage de satisfaction annuel', section: 'RENOUVELLEMENT', timing: 340, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Envoyer la proposition de renouvellement', section: 'RENOUVELLEMENT', timing: 345, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Premier rappel de renouvellement', section: 'RENOUVELLEMENT', timing: 352, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Deuxieme rappel de renouvellement', section: 'RENOUVELLEMENT', timing: 360, raci: { r: 'Automatique', a: 'Laurie' } },
+{ title: 'Appel de retention (si pas de reponse)', section: 'RENOUVELLEMENT', timing: 365, raci: { r: 'Aurélia', a: 'Aurélia' } },
+{ title: 'Confirmer le renouvellement ou noter le depart', section: 'RENOUVELLEMENT', timing: 370, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Desactiver l\'acces si non renouvellement', section: 'RENOUVELLEMENT', timing: 375, raci: { r: 'Laurie', a: 'Aurélia' } },
+{ title: 'Bilan cycle de licence (retour d\'experience)', section: 'RENOUVELLEMENT', timing: 375, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' } }
+]
+},
+T9: {
+id: 'T9',
+name: 'Animer et retenir les abonnees Studio B2C',
+category: 'CycleContinu',
+description: 'Template de cycle mensuel pour l\'animation et la retention du Studio B2C',
+steps: [
+{ title: 'Planifier le calendrier des cours du mois', section: 'CONTENU', timing: 0, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Preparer les playlists musicales', section: 'CONTENU', timing: 1, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Creer le contenu bonus du mois', section: 'CONTENU', timing: 2, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Publier le recap du mois precedent', section: 'CONTENU', timing: 1, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Mettre en ligne les replays de la semaine 1', section: 'CONTENU', timing: 7, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Envoyer la newsletter mensuelle', section: 'ANIMATION', timing: 3, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Animer le fil de discussion communautaire', section: 'ANIMATION', timing: 5, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Publier les stories inspirantes', section: 'ANIMATION', timing: 10, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Live surprise ou Q&A (optionnel)', section: 'ANIMATION', timing: 15, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Verifier les metriques de frequentation', section: 'SUIVI MENSUEL', timing: 20, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Identifier les membres inactifs', section: 'SUIVI MENSUEL', timing: 20, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Le chatbot relance automatiquement les membres inactifs (message personnalise)', section: 'SUIVI MENSUEL', timing: 20, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Le chatbot gere les questions recurrentes des membres (support automatise)', section: 'ANIMATION', timing: 0, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Envoyer un message personnalise aux inactifs', section: 'SUIVI MENSUEL', timing: 22, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Contacter les membres a risque de resiliation', section: 'SUIVI MENSUEL', timing: 23, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Suivre les renouvellements/resiliations du mois', section: 'SUIVI MENSUEL', timing: 25, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Celebrer les anniversaires d\'abonnement', section: 'SUIVI MENSUEL', timing: 25, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'mensuel' },
+{ title: 'Preparer le rapport mensuel de retention', section: 'SUIVI MENSUEL', timing: 28, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' }, recurrence: 'mensuel' },
+{ title: 'Point avec Aurelia sur les actions du mois suivant', section: 'SUIVI MENSUEL', timing: 28, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'mensuel' }
+]
+},
+T10: {
+id: 'T10',
+name: 'Animer la communaute certifiees MTM',
+category: 'CycleContinu',
+description: 'Template de cycle trimestriel pour l\'animation de la communaute des certifiees MTM',
+steps: [
+{ title: 'Preparer le contenu exclusif du trimestre', section: 'CONTENU', timing: 0, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Publier la newsletter trimestrielle', section: 'CONTENU', timing: 3, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'trimestriel' },
+{ title: 'Mettre a jour les ressources partagees', section: 'CONTENU', timing: 5, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Publier un article ou une video de fond', section: 'CONTENU', timing: 10, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Organiser la session de supervision de groupe', section: 'EVENEMENT', timing: 15, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Envoyer le rappel de supervision', section: 'EVENEMENT', timing: 25, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'trimestriel' },
+{ title: 'Animer la session de supervision', section: 'EVENEMENT', timing: 30, raci: { r: 'Aurélia', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Envoyer le compte-rendu de supervision', section: 'EVENEMENT', timing: 32, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Lancer le sujet de discussion du trimestre', section: 'EVENEMENT', timing: 35, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Verifier l\'engagement des certifiees', section: 'SUIVI TRIMESTRIEL', timing: 60, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Contacter les certifiees inactives', section: 'SUIVI TRIMESTRIEL', timing: 62, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Recueillir les retours et suggestions', section: 'SUIVI TRIMESTRIEL', timing: 65, raci: { r: 'Automatique', a: 'Laurie' }, recurrence: 'trimestriel' },
+{ title: 'Mettre en avant les succes des certifiees', section: 'SUIVI TRIMESTRIEL', timing: 70, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' },
+{ title: 'Preparer le rapport trimestriel', section: 'SUIVI TRIMESTRIEL', timing: 80, raci: { r: 'Laurie', a: 'Aurélia', c: 'Catherine' }, recurrence: 'trimestriel' },
+{ title: 'Point strategique avec Aurelia', section: 'SUIVI TRIMESTRIEL', timing: 85, raci: { r: 'Aurélia', a: 'Aurélia', c: 'Catherine' }, recurrence: 'trimestriel' },
+{ title: 'Planifier les actions du trimestre suivant', section: 'SUIVI TRIMESTRIEL', timing: 88, raci: { r: 'Laurie', a: 'Aurélia' }, recurrence: 'trimestriel' }
+]
+},
+T11: {
+id: 'T11',
+name: 'Publier le contenu hebdo Studio B2C',
+category: 'CycleContinu',
+description: 'Cycle hebdomadaire de publication de contenu pour le Studio FSY (video, email, communaute)',
+steps: [
+{ title: 'Verifier le planning du mois (videos prevues cette semaine)', section: 'PREPARATION', timing: 0, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Recuperer la video montee aupres du monteur', section: 'PREPARATION', timing: 0, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Verifier la qualite video (son, sous-titres, duree)', section: 'PREPARATION', timing: 0, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Uploader la video sur Bunny.net (CDN)', section: 'PUBLICATION', timing: 1, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'hebdo' },
+{ title: 'Publier la video sur Circle (espace Studio)', section: 'PUBLICATION', timing: 1, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Rediger le titre et la description (focus de la semaine)', section: 'PUBLICATION', timing: 1, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Envoyer le reminder dimanche soir (chatbot WhatsApp)', section: 'DIFFUSION', timing: 0, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'hebdo' },
+{ title: 'Envoyer l\'email recap + astuce de la semaine (Brevo)', section: 'DIFFUSION', timing: 2, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'hebdo' },
+{ title: 'Publier la story Instagram teaser (video de la semaine)', section: 'DIFFUSION', timing: 3, raci: { r: 'Antoine', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Publier le post communaute Circle (question ou defi)', section: 'ANIMATION', timing: 4, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Verifier les commentaires et repondre si necessaire', section: 'ANIMATION', timing: 5, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' },
+{ title: 'Verifier les stats de la semaine precedente (vues, engagement)', section: 'SUIVI', timing: 5, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'hebdo' }
+]
+},
+T12: {
+id: 'T12',
+name: 'Gerer les abonnements Studio B2C',
+category: 'CycleContinu',
+description: 'Cycle mensuel de gestion des abonnements : inscriptions, paiements, relances, resiliations, retention',
+steps: [
+{ title: 'Verifier les nouvelles inscriptions du mois', section: 'INSCRIPTIONS', timing: 1, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Declencher la sequence onboarding pour chaque nouvel abonne (Brevo)', section: 'INSCRIPTIONS', timing: 1, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Verifier les acces Circle des nouveaux (compte actif, espaces visibles)', section: 'INSCRIPTIONS', timing: 2, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Extraire le rapport de paiements du mois (Circle ou Stripe)', section: 'FACTURATION', timing: 5, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Identifier les paiements echoues', section: 'FACTURATION', timing: 5, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Envoyer relance automatique J+3 apres echec de paiement', section: 'RELANCES', timing: 8, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Envoyer relance J+7 si toujours impaye', section: 'RELANCES', timing: 12, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Contact personnel J+10 (email ou message WhatsApp)', section: 'RELANCES', timing: 15, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Suspendre l\'acces si impaye > 14 jours', section: 'RELANCES', timing: 19, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Lister les demandes de resiliation du mois', section: 'RESILIATION', timing: 20, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Envoyer l\'email de retention (offre ou question)', section: 'RESILIATION', timing: 20, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Si depart confirme : desactiver acces, envoyer email de depart bienveillant', section: 'RESILIATION', timing: 22, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Calculer le MRR du mois (abonnes x 17 EUR)', section: 'KPI MENSUEL', timing: 25, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Calculer le churn mensuel (departs / total)', section: 'KPI MENSUEL', timing: 25, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Calculer les nouveaux abonnes nets (entrees - sorties)', section: 'KPI MENSUEL', timing: 25, raci: { r: 'Automatique', a: 'CM' }, recurrence: 'mensuel' },
+{ title: 'Declencher alerte si churn > 8% ou MRR < seuil', section: 'KPI MENSUEL', timing: 26, raci: { r: 'Automatique', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Preparer le tableau de bord mensuel abonnements', section: 'KPI MENSUEL', timing: 27, raci: { r: 'CM', a: 'Aurélia' }, recurrence: 'mensuel' },
+{ title: 'Point mensuel Aurelia : KPIs + decisions retention', section: 'KPI MENSUEL', timing: 28, raci: { r: 'Aurélia', a: 'Aurélia', c: 'CM' }, recurrence: 'mensuel' }
+]
+}
+};
+
+    // --- Fonctions pures ---
+
+    function calculateAbsoluteDate(dateCible, timing) {
+      const date = new Date(dateCible);
+      date.setDate(date.getDate() + timing);
+      return date;
+    }
+
+    function calculateProgress(steps) {
+      const total = steps.length;
+      if (total === 0) return { done: 0, total: 0, percent: 0 };
+      const done = steps.filter(function(s) { return s.done; }).length;
+      return { done: done, total: total, percent: Math.round(done / total * 100) };
+    }
+
+    function getStepStatus(step, dateCible) {
+      if (step.done) return 'done';
+      const absDate = calculateAbsoluteDate(dateCible, step.timing);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      absDate.setHours(0, 0, 0, 0);
+      if (absDate < now) return 'overdue';
+      return 'upcoming';
+    }
+
+    function filterTasksByOwner(processes, ownerName) {
+      var results = [];
+      processes.forEach(function(process) {
+        if (process.status === 'termine') return;
+        var steps = process.playbook_steps || process.steps || [];
+        steps.forEach(function(step) {
+          if (step.raci_r === ownerName || step.raci_a === ownerName) {
+            results.push({ step: step, process: process });
+          }
+        });
+      });
+      return results;
+    }
+
+    function sortStepsByDate(steps, dateCible) {
+      return steps.slice().sort(function(a, b) {
+        var dateA = calculateAbsoluteDate(dateCible, a.timing);
+        var dateB = calculateAbsoluteDate(dateCible, b.timing);
+        return dateA - dateB;
+      });
+    }
+
+    function buildGanttData(processes, owners) {
+      var ownerColorMap = {};
+      owners.forEach(function(o) { ownerColorMap[o.name] = o.color; });
+
+      var allDates = [];
+      var rows = [];
+
+      processes.forEach(function(process) {
+        var steps = process.playbook_steps || process.steps || [];
+        var dots = [];
+        steps.forEach(function(step) {
+          var absDate = calculateAbsoluteDate(process.date_cible, step.timing);
+          allDates.push(absDate);
+          dots.push({
+            date: absDate,
+            color: ownerColorMap[step.raci_r] || '#bdc3c7',
+            done: step.done,
+            title: step.title
+          });
+        });
+        var jourJ = new Date(process.date_cible);
+        allDates.push(jourJ);
+        rows.push({
+          processId: process.id,
+          name: process.name,
+          status: process.status,
+          jourJ: jourJ,
+          dots: dots
+        });
+      });
+
+      var minDate = allDates.length > 0 ? new Date(Math.min.apply(null, allDates)) : new Date();
+      var maxDate = allDates.length > 0 ? new Date(Math.max.apply(null, allDates)) : new Date();
+      minDate.setDate(1);
+      maxDate.setMonth(maxDate.getMonth() + 1, 0);
+
+      return { rows: rows, minDate: minDate, maxDate: maxDate, ownerColorMap: ownerColorMap };
+    }
+
+    function instantiateTemplate(template, dateCible, name) {
+      var process = {
+        id: crypto.randomUUID(),
+        name: name || template.name,
+        date_cible: dateCible,
+        template_id: template.id,
+        category: template.category,
+        status: 'actif',
+        created_at: new Date().toISOString()
+      };
+      var steps = template.steps.map(function(s, i) {
+        return {
+          id: crypto.randomUUID(),
+          process_id: process.id,
+          title: s.title,
+          description: s.desc || null,
+          section: s.section,
+          raci_r: s.raci.r,
+          raci_a: s.raci.a,
+          raci_c: s.raci.c || null,
+          raci_i: s.raci.i || null,
+          timing: s.timing,
+          done: false,
+          step_order: i + 1,
+          recurrence: s.recurrence || null
+        };
+      });
+      return { process: process, steps: steps };
+    }
+
+    function duplicateProcess(process, steps, newDateCible) {
+      var newProcess = {
+        id: crypto.randomUUID(),
+        name: process.name + ' (copie)',
+        date_cible: newDateCible,
+        template_id: process.template_id,
+        category: process.category,
+        status: 'actif',
+        created_at: new Date().toISOString()
+      };
+      var newSteps = steps.map(function(s, i) {
+        return {
+          id: crypto.randomUUID(),
+          process_id: newProcess.id,
+          title: s.title,
+          description: s.description,
+          section: s.section,
+          raci_r: s.raci_r,
+          raci_a: s.raci_a,
+          raci_c: s.raci_c,
+          raci_i: s.raci_i,
+          timing: s.timing,
+          done: false,
+          step_order: s.step_order || (i + 1),
+          recurrence: s.recurrence || null
+        };
+      });
+      return { process: newProcess, steps: newSteps };
+    }
+
+    // ============================================================
+    // === SECTION: APPLICATION ===
+    // ============================================================
+
+    var appState = {
+      processes: [],
+      owners: [],
+      currentProcessId: null,
+      selectedTemplateId: null,
+      editingStepId: null,
+      currentFilter: 'Tous'
+    };
+
+    // Palette contrastée : Aurélia=terracotta, Laurie=bleu marine, Catherine=doré, VA=vert, Automatique=violet, Externe=gris ardoise
+    var OWNER_PALETTE = ['#B55B50','#2B5EA7','#4CAF50','#C4882B','#ff9800','#2E8B6A','#7B52AB','#6B7D8D','#D4577A','#3B9B9B'];
+
+    // Ordre d'affichage des owners : Aurélia, Laurie, puis le reste alphabétique
+    var OWNER_ORDER = ['Aurélia', 'Laurie', 'CM', 'Catherine', 'Antoine', 'VA', 'Automatique', 'Externe'];
+
+    function sortOwners(owners) {
+      return owners.slice().sort(function(a, b) {
+        var idxA = OWNER_ORDER.indexOf(a.name);
+        var idxB = OWNER_ORDER.indexOf(b.name);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        return idxA - idxB;
+      });
+    }
+
+    async function loadAllData() {
+      try {
+        var processesResult = await db.processes.getAll();
+        var ownersResult = await db.owners.getAll();
+        appState.processes = processesResult;
+        appState.owners = sortOwners(ownersResult);
+      } catch (e) {
+        showToast('Erreur de chargement des donnees');
+      }
+    }
+
+    async function createProcess(templateId, name, dateCible) {
+      try {
+        var process, steps;
+        if (templateId && TEMPLATES[templateId]) {
+          var inst = instantiateTemplate(TEMPLATES[templateId], dateCible, name);
+          process = inst.process;
+          steps = inst.steps;
+        } else {
+          process = {
+            id: crypto.randomUUID(),
+            name: name,
+            date_cible: dateCible,
+            template_id: null,
+            category: 'Projet',
+            status: 'actif',
+            created_at: new Date().toISOString()
+          };
+          steps = [];
+        }
+        var created = await db.processes.create(process);
+        if (steps.length > 0) {
+          await db.steps.bulkCreate(steps);
+        }
+        await loadAllData();
+        return created;
+      } catch (e) {
+        showToast('Erreur lors de la creation du process');
+      }
+    }
+
+    async function updateProcessDate(processId, newDate) {
+      try {
+        await db.processes.update(processId, { date_cible: newDate });
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de la mise a jour de la date');
+      }
+    }
+
+    async function toggleStep(stepId) {
+      try {
+        var step = findStepById(stepId);
+        if (!step) return;
+        var newDone = !step.done;
+        await db.steps.update(stepId, { done: newDone });
+        await loadAllData();
+        // Check if process is 100% done
+        var process = findProcessByStepId(stepId);
+        if (process) {
+          var pSteps = getProcessSteps(process.id);
+          var progress = calculateProgress(pSteps);
+          if (progress.percent === 100 && process.status !== 'termine') {
+            await db.processes.update(process.id, { status: 'termine' });
+            await loadAllData();
+          } else if (progress.percent < 100 && process.status === 'termine') {
+            await db.processes.update(process.id, { status: 'actif' });
+            await loadAllData();
+          }
+        }
+      } catch (e) {
+        showToast('Erreur lors de la mise a jour');
+      }
+    }
+
+    async function updateStep(stepId, fields) {
+      try {
+        await db.steps.update(stepId, fields);
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de la mise a jour de l\'etape');
+      }
+    }
+
+    async function addStep(processId, step) {
+      try {
+        var pSteps = getProcessSteps(processId);
+        step.id = crypto.randomUUID();
+        step.process_id = processId;
+        step.step_order = pSteps.length + 1;
+        step.done = false;
+        await db.steps.bulkCreate([step]);
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de l\'ajout de l\'etape');
+      }
+    }
+
+    async function removeStep(stepId) {
+      try {
+        await db.steps.remove(stepId);
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de la suppression');
+      }
+    }
+
+    async function reorderStep(stepId, direction) {
+      try {
+        var step = findStepById(stepId);
+        if (!step) return;
+        var pSteps = getProcessSteps(step.process_id);
+        pSteps.sort(function(a, b) { return a.step_order - b.step_order; });
+        var idx = pSteps.findIndex(function(s) { return s.id === stepId; });
+        var swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= pSteps.length) return;
+        var orderA = pSteps[idx].step_order;
+        var orderB = pSteps[swapIdx].step_order;
+        await db.steps.update(pSteps[idx].id, { step_order: orderB });
+        await db.steps.update(pSteps[swapIdx].id, { step_order: orderA });
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors du reordonnement');
+      }
+    }
+
+    async function addOwner(name) {
+      try {
+        var color = OWNER_PALETTE[appState.owners.length % OWNER_PALETTE.length];
+        await db.owners.create({ name: name, color: color });
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de l\'ajout (le nom existe peut-etre deja)');
+      }
+    }
+
+    async function appDuplicateProcess(processId, newDateCible) {
+      try {
+        var process = appState.processes.find(function(p) { return p.id === processId; });
+        if (!process) return;
+        var steps = getProcessSteps(processId);
+        var result = duplicateProcess(process, steps, newDateCible);
+        await db.processes.create(result.process);
+        if (result.steps.length > 0) {
+          await db.steps.bulkCreate(result.steps);
+        }
+        await loadAllData();
+      } catch (e) {
+        showToast('Erreur lors de la duplication');
+      }
+    }
+
+    async function exportData() {
+      try {
+        await loadAllData();
+        var data = {
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          processes: appState.processes,
+          owners: appState.owners
+        };
+        var json = JSON.stringify(data, null, 2);
+        var blob = new Blob([json], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'playbook-fsy-' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Export reussi');
+      } catch (e) {
+        showToast('Erreur lors de l\'export');
+      }
+    }
+
+    async function importData(jsonBlob) {
+      try {
+        var text = await jsonBlob.text();
+        var data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          showToast('Le fichier importe n\'est pas un JSON valide');
+          return;
+        }
+        if (!data.version || !data.processes || !data.owners) {
+          showToast('Le fichier importe n\'est pas compatible');
+          return;
+        }
+        // Import owners
+        for (var i = 0; i < data.owners.length; i++) {
+          try {
+            await db.owners.create(data.owners[i]);
+          } catch (e) { /* ignore duplicates */ }
+        }
+        // Import processes and steps
+        for (var j = 0; j < data.processes.length; j++) {
+          var proc = data.processes[j];
+          var steps = proc.playbook_steps || proc.steps || [];
+          delete proc.playbook_steps;
+          delete proc.steps;
+          try {
+            await db.processes.create(proc);
+            if (steps.length > 0) {
+              await db.steps.bulkCreate(steps);
+            }
+          } catch (e) { /* ignore duplicates */ }
+        }
+        await loadAllData();
+        renderAll();
+        showToast('Import reussi');
+      } catch (e) {
+        showToast('Erreur lors de l\'import');
+      }
+    }
+
+    // Helpers
+    function findStepById(stepId) {
+      for (var i = 0; i < appState.processes.length; i++) {
+        var steps = appState.processes[i].playbook_steps || [];
+        for (var j = 0; j < steps.length; j++) {
+          if (steps[j].id === stepId) return steps[j];
+        }
+      }
+      return null;
+    }
+
+    function findProcessByStepId(stepId) {
+      for (var i = 0; i < appState.processes.length; i++) {
+        var steps = appState.processes[i].playbook_steps || [];
+        for (var j = 0; j < steps.length; j++) {
+          if (steps[j].id === stepId) return appState.processes[i];
+        }
+      }
+      return null;
+    }
+
+    function getProcessSteps(processId) {
+      var process = appState.processes.find(function(p) { return p.id === processId; });
+      return (process && process.playbook_steps) ? process.playbook_steps : [];
+    }
+
+    function getOwnerColor(ownerName) {
+      var owner = appState.owners.find(function(o) { return o.name === ownerName; });
+      return owner ? owner.color : '#bdc3c7';
+    }
+
+    // ============================================================
+    // === SECTION: INFRASTRUCTURE ===
+    // ============================================================
+
+    var SUPABASE_URL = 'https://dcynlifggjiqqihincbp.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjeW5saWZnZ2ppcXFpaGluY2JwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NTUyNTIsImV4cCI6MjA4OTIzMTI1Mn0.zsJnkswhmnzLCcO--0PwxJtIfTFL8C2p6_gqMM-V3bI';
+
+    var supabaseClient;
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+      console.warn('Supabase non initialise (cle manquante ou CDN indisponible)');
+    }
+
+    var AUTH_ERRORS = {
+      'Invalid login credentials': 'Email ou mot de passe incorrect',
+      'Email not confirmed': 'Email non confirme',
+      'User not found': 'Utilisateur non trouve',
+      'default': 'Erreur de connexion'
+    };
+
+    function translateAuthError(error) {
+      if (!error) return '';
+      return AUTH_ERRORS[error.message] || AUTH_ERRORS['default'];
+    }
+
+    var db = {
+      processes: {
+        getAll: async function() {
+          if (!supabaseClient) return [];
+          var result = await supabaseClient
+            .from('playbook_processes')
+            .select('*, playbook_steps(*)')
+            .order('created_at', { ascending: false });
+          if (result.error) throw result.error;
+          return result.data || [];
+        },
+        create: async function(process) {
+          if (!supabaseClient) return process;
+          var toInsert = {
+            id: process.id,
+            name: process.name,
+            date_cible: process.date_cible,
+            template_id: process.template_id,
+            category: process.category,
+            status: process.status
+          };
+          var result = await supabaseClient
+            .from('playbook_processes')
+            .insert(toInsert)
+            .select()
+            .single();
+          if (result.error) throw result.error;
+          return result.data;
+        },
+        update: async function(id, fields) {
+          if (!supabaseClient) return;
+          var result = await supabaseClient
+            .from('playbook_processes')
+            .update(fields)
+            .eq('id', id);
+          if (result.error) throw result.error;
+        },
+        delete: async function(id) {
+          if (!supabaseClient) return;
+          var result = await supabaseClient
+            .from('playbook_processes')
+            .delete()
+            .eq('id', id);
+          if (result.error) throw result.error;
+        }
+      },
+      steps: {
+        bulkCreate: async function(steps) {
+          if (!supabaseClient) return steps;
+          var result = await supabaseClient
+            .from('playbook_steps')
+            .insert(steps);
+          if (result.error) throw result.error;
+          return result.data;
+        },
+        update: async function(id, fields) {
+          if (!supabaseClient) return;
+          var result = await supabaseClient
+            .from('playbook_steps')
+            .update(fields)
+            .eq('id', id);
+          if (result.error) throw result.error;
+        },
+        remove: async function(id) {
+          if (!supabaseClient) return;
+          var result = await supabaseClient
+            .from('playbook_steps')
+            .delete()
+            .eq('id', id);
+          if (result.error) throw result.error;
+        }
+      },
+      owners: {
+        getAll: async function() {
+          if (!supabaseClient) return [];
+          var result = await supabaseClient
+            .from('playbook_owners')
+            .select('*')
+            .order('name');
+          if (result.error) throw result.error;
+          return result.data || [];
+        },
+        create: async function(owner) {
+          if (!supabaseClient) return owner;
+          var result = await supabaseClient
+            .from('playbook_owners')
+            .insert(owner)
+            .select()
+            .single();
+          if (result.error) throw result.error;
+          return result.data;
+        }
+      },
+      auth: {
+        signIn: async function(email, password) {
+          if (!supabaseClient) throw { message: 'default' };
+          var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+          if (result.error) throw result.error;
+          return result.data;
+        },
+        signOut: async function() {
+          if (!supabaseClient) return;
+          await supabaseClient.auth.signOut();
+        },
+        getSession: async function() {
+          if (!supabaseClient) return null;
+          var result = await supabaseClient.auth.getSession();
+          return (result && result.data) ? result.data.session : null;
+        },
+        onAuthStateChange: function(callback) {
+          if (!supabaseClient) return;
+          supabaseClient.auth.onAuthStateChange(callback);
+        }
+      }
+    };
+
+    // ============================================================
+    // === SECTION: UI ===
+    // ============================================================
+
+    // --- Helpers UI ---
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function formatDate(date) {
+      if (typeof date === 'string') date = new Date(date);
+      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function getInitials(name) {
+      if (!name) return '?';
+      return name.substring(0, 2).toUpperCase();
+    }
+
+    // --- Toast ---
+    function showToast(message) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('visible');
+      setTimeout(function() { toast.classList.remove('visible'); }, 3000);
+    }
+
+    // --- Navigation ---
+    function switchView(viewName) {
+      document.querySelectorAll('.view-section').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-tab, .nav-bottom-btn').forEach(function(el) {
+        el.classList.toggle('active', el.getAttribute('data-view') === viewName);
+      });
+      document.getElementById('view-' + viewName).classList.add('active');
+
+      if (viewName === 'playbook') renderProcessList();
+      if (viewName === 'tasks') renderTasksList();
+      if (viewName === 'timeline') renderGantt();
+      if (viewName === 'templates') renderTemplatesList();
+    }
+
+    // --- Auth UI ---
+    function showLogin() {
+      document.getElementById('login-container').classList.add('active');
+      document.getElementById('app-container').classList.remove('active');
+    }
+
+    function showApp(session) {
+      document.getElementById('login-container').classList.remove('active');
+      document.getElementById('app-container').classList.add('active');
+      document.getElementById('header-user').textContent = '';
+      var logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    }
+
+    // --- Process List ---
+    function renderProcessList() {
+      var container = document.getElementById('process-list');
+      document.getElementById('playbook-list-view').style.display = '';
+      document.getElementById('playbook-detail-view').style.display = 'none';
+      appState.currentProcessId = null;
+
+      if (appState.processes.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128203;</div><p>Aucun process. Creez-en un pour commencer.</p></div>';
+        return;
+      }
+
+      var html = '';
+      appState.processes.forEach(function(proc) {
+        var steps = proc.playbook_steps || [];
+        var progress = calculateProgress(steps);
+        var statusBadge = proc.status === 'termine'
+          ? '<span class="badge badge-done">Termine</span>'
+          : '<span class="badge badge-active">Actif</span>';
+
+        html += '<div class="card" style="cursor:pointer;" data-process-id="' + proc.id + '">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+          + '<div><strong>' + escapeHtml(proc.name) + '</strong> ' + statusBadge + '</div>'
+          + '<span style="font-size:0.8rem;opacity:0.6;">' + formatDate(proc.date_cible) + '</span>'
+          + '</div>'
+          + '<div class="progress-bar"><div class="progress-fill" style="width:' + progress.percent + '%;"></div></div>'
+          + '<div style="font-size:0.8rem;opacity:0.6;margin-top:4px;">' + progress.done + '/' + progress.total + ' (' + progress.percent + '%)</div>'
+          + '</div>';
+      });
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var pid = this.getAttribute('data-process-id');
+          appState.currentProcessId = pid;
+          renderProcessDetail(pid);
+        });
+      });
+    }
+
+    // --- Process Detail ---
+    function renderProcessDetail(processId) {
+      var process = appState.processes.find(function(p) { return p.id === processId; });
+      if (!process) return;
+
+      document.getElementById('playbook-list-view').style.display = 'none';
+      document.getElementById('playbook-detail-view').style.display = '';
+
+      var steps = (process.playbook_steps || []).slice().sort(function(a, b) {
+        return (a.step_order || 0) - (b.step_order || 0);
+      });
+
+      var progress = calculateProgress(steps);
+      var statusBadge = process.status === 'termine'
+        ? '<span class="badge badge-done">Termine</span>'
+        : '<span class="badge badge-active">Actif</span>';
+
+      var html = '<div class="process-header">'
+        + '<div>'
+        + '<button class="btn btn-secondary btn-sm" id="btn-back-list" style="margin-bottom:8px;">&#8592; Retour</button>'
+        + '<h2>' + escapeHtml(process.name) + ' ' + statusBadge + '</h2>'
+        + '<span class="process-date">Jour J : ' + formatDate(process.date_cible) + '</span>'
+        + '</div>'
+        + '<div class="process-actions-bar">'
+        + '<button class="btn btn-secondary btn-sm" id="btn-change-date">Changer date</button>'
+        + '<button class="btn btn-secondary btn-sm" id="btn-duplicate">Dupliquer</button>'
+        + '<button class="btn btn-secondary btn-sm" id="btn-add-owner">+ Personne</button>'
+        + (process.status === 'actif'
+          ? '<button class="btn btn-sm" id="btn-archive" style="background:#7B52AB;color:#fff;">Terminer</button>'
+          : '<button class="btn btn-sm" id="btn-reactivate" style="background:#2E8B6A;color:#fff;">Réactiver</button>')
+        + '<button class="btn btn-sm" id="btn-delete-process" style="background:#D94040;color:#fff;">Supprimer</button>'
+        + '</div>'
+        + '</div>';
+
+      html += '<div class="progress-bar" style="margin-bottom:16px;"><div class="progress-fill" style="width:' + progress.percent + '%;"></div></div>'
+        + '<div style="font-size:0.85rem;opacity:0.6;margin-bottom:16px;">' + progress.done + '/' + progress.total + ' (' + progress.percent + '%)</div>';
+
+      if (steps.length === 0) {
+        html += '<div class="empty-state"><p>Aucune etape. Ajoutez-en une.</p></div>';
+      } else {
+        var currentSection = '';
+        steps.forEach(function(step) {
+          if (step.section && step.section !== currentSection) {
+            currentSection = step.section;
+            html += '<div class="section-header">' + escapeHtml(currentSection) + '</div>';
+          }
+          var status = getStepStatus(step, process.date_cible);
+          var absDate = calculateAbsoluteDate(process.date_cible, step.timing);
+          var ownerColor = getOwnerColor(step.raci_r);
+          var timingLabel = step.timing > 0 ? 'J+' + step.timing : step.timing === 0 ? 'Jour J' : 'J' + step.timing;
+
+          html += '<div class="step-item" data-step-id="' + step.id + '">'
+            + '<input type="checkbox" class="step-checkbox" ' + (step.done ? 'checked' : '') + ' data-step-id="' + step.id + '">'
+            + '<span class="status-dot status-' + status + '"></span>'
+            + '<div class="step-content">'
+            + '<div class="step-title">' + escapeHtml(step.title) + '</div>'
+            + '<div class="step-meta">'
+            + '<span class="owner-pill" style="background:' + ownerColor + ';display:inline-flex;width:22px;height:22px;font-size:0.6rem;vertical-align:middle;margin-right:4px;">' + getInitials(step.raci_r) + '</span>'
+            + ' ' + timingLabel + ' &middot; ' + formatDate(absDate)
+            + '</div>'
+            + '</div>'
+            + '<div class="step-actions">'
+            + '<button class="btn-icon" title="Modifier" data-action="edit" data-step-id="' + step.id + '">&#9998;</button>'
+            + '<button class="btn-icon" title="Monter" data-action="up" data-step-id="' + step.id + '">&#9650;</button>'
+            + '<button class="btn-icon" title="Descendre" data-action="down" data-step-id="' + step.id + '">&#9660;</button>'
+            + '<button class="btn-icon" title="Supprimer" data-action="delete" data-step-id="' + step.id + '">&#10005;</button>'
+            + '</div>'
+            + '</div>';
+        });
+      }
+
+      html += '<button class="btn btn-primary btn-sm" id="btn-add-step" style="margin-top:16px;">+ Ajouter une etape</button>';
+
+      var container = document.getElementById('process-detail');
+      container.innerHTML = html;
+
+      // Events
+      document.getElementById('btn-back-list').addEventListener('click', function() {
+        renderProcessList();
+      });
+
+      document.getElementById('btn-change-date').addEventListener('click', function() {
+        document.getElementById('new-date-cible').value = process.date_cible;
+        openModal('modal-change-date');
+      });
+
+      document.getElementById('btn-duplicate').addEventListener('click', function() {
+        var today = new Date().toISOString().slice(0, 10);
+        showConfirm('Dupliquer ce process avec la date d\'aujourd\'hui comme nouvelle date cible ?', async function() {
+          await appDuplicateProcess(processId, today);
+          renderProcessList();
+          showToast('Process duplique');
+        });
+      });
+
+      document.getElementById('btn-add-owner').addEventListener('click', function() {
+        openModal('modal-add-owner');
+      });
+
+      // Archiver / Réactiver
+      var archiveBtn = document.getElementById('btn-archive');
+      var reactivateBtn = document.getElementById('btn-reactivate');
+      if (archiveBtn) {
+        archiveBtn.addEventListener('click', function() {
+          showConfirm('Marquer ce process comme terminé ?', async function() {
+            await db.processes.update(processId, { status: 'termine' });
+            await loadAllData();
+            renderProcessDetail(processId);
+            showToast('Process terminé');
+          });
+        });
+      }
+      if (reactivateBtn) {
+        reactivateBtn.addEventListener('click', function() {
+          showConfirm('Réactiver ce process ?', async function() {
+            await db.processes.update(processId, { status: 'actif' });
+            await loadAllData();
+            renderProcessDetail(processId);
+            showToast('Process réactivé');
+          });
+        });
+      }
+
+      // Supprimer
+      document.getElementById('btn-delete-process').addEventListener('click', function() {
+        showConfirm('Supprimer définitivement ce process et toutes ses étapes ?', async function() {
+          await db.processes.delete(processId);
+          await loadAllData();
+          renderProcessList();
+          showToast('Process supprimé');
+        });
+      });
+
+      document.getElementById('btn-add-step').addEventListener('click', function() {
+        populateOwnerSelects('new-step-raci-r', 'new-step-raci-a');
+        document.getElementById('new-step-title').value = '';
+        document.getElementById('new-step-section').value = '';
+        document.getElementById('new-step-timing').value = '0';
+        openModal('modal-add-step');
+      });
+
+      // Step interactions via delegation
+      container.addEventListener('change', function(e) {
+        if (e.target.classList.contains('step-checkbox')) {
+          var sid = e.target.getAttribute('data-step-id');
+          toggleStep(sid).then(function() { renderProcessDetail(processId); });
+        }
+      });
+
+      container.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        var action = btn.getAttribute('data-action');
+        var sid = btn.getAttribute('data-step-id');
+
+        if (action === 'edit') {
+          openEditStepModal(sid);
+        } else if (action === 'up') {
+          reorderStep(sid, 'up').then(function() { renderProcessDetail(processId); });
+        } else if (action === 'down') {
+          reorderStep(sid, 'down').then(function() { renderProcessDetail(processId); });
+        } else if (action === 'delete') {
+          showConfirm('Supprimer cette etape ?', async function() {
+            await removeStep(sid);
+            renderProcessDetail(processId);
+            showToast('Etape supprimee');
+          });
+        }
+      });
+    }
+
+    // --- Edit Step Modal ---
+    function openEditStepModal(stepId) {
+      var step = findStepById(stepId);
+      if (!step) return;
+      appState.editingStepId = stepId;
+      document.getElementById('step-title').value = step.title || '';
+      document.getElementById('step-desc').value = step.description || '';
+      document.getElementById('step-section').value = step.section || '';
+      document.getElementById('step-timing').value = step.timing;
+      // Calculate and show absolute date
+      var currentProcess = appState.processes.find(function(p) {
+        var steps = p.playbook_steps || p.steps || [];
+        return steps.some(function(s) { return s.id === stepId; });
+      });
+      if (currentProcess) {
+        var absDate = calculateAbsoluteDate(currentProcess.date_cible, step.timing);
+        document.getElementById('step-date-abs').value = absDate.toISOString().slice(0, 10);
+        // Store process date_cible for recalculation
+        document.getElementById('step-date-abs').dataset.dateCible = currentProcess.date_cible;
+      }
+      populateOwnerSelects('step-raci-r', 'step-raci-a', 'step-raci-c', 'step-raci-i');
+      document.getElementById('step-raci-r').value = step.raci_r || '';
+      document.getElementById('step-raci-a').value = step.raci_a || '';
+      document.getElementById('step-raci-c').value = step.raci_c || '';
+      document.getElementById('step-raci-i').value = step.raci_i || '';
+      openModal('modal-edit-step');
+    }
+
+    function populateOwnerSelects() {
+      var ids = Array.from(arguments);
+      ids.forEach(function(id) {
+        var select = document.getElementById(id);
+        if (!select) return;
+        var isOptional = id.includes('raci-c') || id.includes('raci-i');
+        var html = isOptional ? '<option value="">—</option>' : '';
+        appState.owners.forEach(function(o) {
+          html += '<option value="' + escapeHtml(o.name) + '">' + escapeHtml(o.name) + '</option>';
+        });
+        select.innerHTML = html;
+      });
+    }
+
+    // --- Tasks List (Mes Taches) ---
+    function renderTasksList() {
+      var filterContainer = document.getElementById('tasks-filter');
+      var listContainer = document.getElementById('tasks-list');
+
+      // Render filter buttons
+      var filterHtml = '<button class="filter-btn ' + (appState.currentFilter === 'Tous' ? 'active' : '') + '" data-filter="Tous">Tous</button>';
+      appState.owners.forEach(function(o) {
+        filterHtml += '<button class="filter-btn ' + (appState.currentFilter === o.name ? 'active' : '') + '" data-filter="' + escapeHtml(o.name) + '">' + escapeHtml(o.name) + '</button>';
+      });
+      filterContainer.innerHTML = filterHtml;
+
+      filterContainer.querySelectorAll('.filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          appState.currentFilter = this.getAttribute('data-filter');
+          renderTasksList();
+        });
+      });
+
+      // Get tasks
+      var activeProcesses = appState.processes.filter(function(p) { return p.status !== 'termine'; });
+      var allTasks = [];
+
+      if (appState.currentFilter === 'Tous') {
+        activeProcesses.forEach(function(proc) {
+          var steps = proc.playbook_steps || [];
+          steps.forEach(function(step) {
+            allTasks.push({ step: step, process: proc });
+          });
+        });
+      } else {
+        allTasks = filterTasksByOwner(activeProcesses, appState.currentFilter);
+      }
+
+      // Sort by absolute date
+      allTasks.sort(function(a, b) {
+        var dateA = calculateAbsoluteDate(a.process.date_cible, a.step.timing);
+        var dateB = calculateAbsoluteDate(b.process.date_cible, b.step.timing);
+        return dateA - dateB;
+      });
+
+      if (allTasks.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">&#9745;</div><p>Aucune tache assignee</p></div>';
+        return;
+      }
+
+      var html = '';
+      allTasks.forEach(function(item) {
+        var step = item.step;
+        var proc = item.process;
+        var status = getStepStatus(step, proc.date_cible);
+        var absDate = calculateAbsoluteDate(proc.date_cible, step.timing);
+        var ownerColor = getOwnerColor(step.raci_r);
+
+        // Déterminer le rôle de la personne filtrée sur cette étape
+        var roleLabel = '';
+        if (appState.currentFilter !== 'Tous') {
+          var isR = step.raci_r === appState.currentFilter;
+          var isA = step.raci_a === appState.currentFilter;
+          if (isR) {
+            roleLabel = '<span style="font-size:0.7rem;background:#2B5EA7;color:#fff;padding:1px 6px;border-radius:4px;margin-left:6px;">à faire</span>';
+          } else if (isA) {
+            roleLabel = '<span style="font-size:0.7rem;background:#7B52AB;color:#fff;padding:1px 6px;border-radius:4px;margin-left:6px;">à valider</span>';
+          }
+        }
+
+        var hasDesc = step.description ? ' · &#128196;' : '';
+
+        html += '<div class="card step-item" style="cursor:pointer;" data-task-step-id="' + step.id + '" data-task-process-id="' + proc.id + '">'
+          + '<input type="checkbox" class="step-checkbox" ' + (step.done ? 'checked' : '') + ' data-step-id="' + step.id + '">'
+          + '<span class="status-dot status-' + status + '"></span>'
+          + '<div class="step-content">'
+          + '<div class="step-title">' + escapeHtml(step.title) + roleLabel + hasDesc + '</div>'
+          + '<div class="step-meta">'
+          + '<span class="owner-pill" style="background:' + ownerColor + ';display:inline-flex;width:22px;height:22px;font-size:0.6rem;vertical-align:middle;margin-right:4px;">' + getInitials(step.raci_r) + '</span>'
+          + ' ' + escapeHtml(proc.name) + ' &middot; ' + formatDate(absDate)
+          + '</div>'
+          + '</div>'
+          + '</div>';
+      });
+
+      listContainer.innerHTML = html;
+
+      listContainer.querySelectorAll('.step-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', function(e) {
+          e.stopPropagation();
+          var sid = this.getAttribute('data-step-id');
+          toggleStep(sid).then(function() { renderTasksList(); });
+        });
+      });
+
+      // Clic sur une carte = ouvrir le détail
+      listContainer.querySelectorAll('.card[data-task-step-id]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          if (e.target.classList.contains('step-checkbox')) return;
+          var stepId = this.getAttribute('data-task-step-id');
+          var procId = this.getAttribute('data-task-process-id');
+          openTaskDetail(stepId, procId);
+        });
+      });
+    }
+
+    function openTaskDetail(stepId, processId) {
+      var proc = appState.processes.find(function(p) { return p.id === processId; });
+      if (!proc) return;
+      var step = (proc.playbook_steps || []).find(function(s) { return s.id === stepId; });
+      if (!step) return;
+
+      var absDate = calculateAbsoluteDate(proc.date_cible, step.timing);
+      var status = getStepStatus(step, proc.date_cible);
+      var timing = step.timing || 0;
+      var timingLabel = timing < 0 ? 'J' + timing : timing === 0 ? 'Jour J' : 'J+' + timing;
+
+      document.getElementById('task-detail-title').textContent = step.title;
+
+      // Badges
+      var badgesHtml = '';
+      if (step.section) badgesHtml += '<span style="font-size:0.7rem;background:var(--fsy-terracotta);color:#fff;padding:2px 8px;border-radius:4px;">' + escapeHtml(step.section) + '</span>';
+      if (status === 'overdue') badgesHtml += '<span style="font-size:0.7rem;background:#D94040;color:#fff;padding:2px 8px;border-radius:4px;">En retard</span>';
+      if (step.done) badgesHtml += '<span style="font-size:0.7rem;background:#2E8B6A;color:#fff;padding:2px 8px;border-radius:4px;">Fait</span>';
+      document.getElementById('task-detail-badges').innerHTML = badgesHtml;
+
+      // RACI
+      var raciHtml = '<b>R</b> (fait) : ' + escapeHtml(step.raci_r || '')
+        + ' · <b>A</b> (valide) : ' + escapeHtml(step.raci_a || '');
+      if (step.raci_c) raciHtml += ' · <b>C</b> (consulté) : ' + escapeHtml(step.raci_c);
+      if (step.raci_i) raciHtml += ' · <b>I</b> (informé) : ' + escapeHtml(step.raci_i);
+      document.getElementById('task-detail-raci').innerHTML = raciHtml;
+
+      // Process
+      document.getElementById('task-detail-process').innerHTML = escapeHtml(proc.name)
+        + ' <span style="opacity:0.5;">(' + timingLabel + ')</span>';
+
+      // Date
+      document.getElementById('task-detail-date').textContent = formatDate(absDate);
+
+      // Description
+      document.getElementById('task-detail-desc').value = step.description || '';
+
+      openModal('modal-task-detail');
+
+      // Save handler
+      var saveBtn = document.getElementById('task-detail-save');
+      var closeBtn = document.getElementById('task-detail-close');
+
+      // Nettoyer les anciens listeners
+      var newSave = saveBtn.cloneNode(true);
+      saveBtn.parentNode.replaceChild(newSave, saveBtn);
+      var newClose = closeBtn.cloneNode(true);
+      closeBtn.parentNode.replaceChild(newClose, closeBtn);
+
+      newSave.addEventListener('click', async function() {
+        var newDesc = document.getElementById('task-detail-desc').value.trim();
+        await db.steps.update(stepId, { description: newDesc || null });
+        await loadAllData();
+        closeModal('modal-task-detail');
+        renderTasksList();
+        showToast('Description enregistrée');
+      });
+
+      newClose.addEventListener('click', function() {
+        closeModal('modal-task-detail');
+      });
+    }
+
+    // --- Gantt ---
+    function renderGantt() {
+      var container = document.getElementById('gantt-content');
+      var legendContainer = document.getElementById('gantt-legend');
+      var filterSelect = document.getElementById('gantt-filter');
+
+      var allProcesses = appState.processes.filter(function(p) {
+        return (p.playbook_steps || []).length > 0;
+      });
+
+      // Mettre à jour le filtre
+      var currentFilter = filterSelect.value || 'all';
+      filterSelect.innerHTML = '<option value="all">Tous les process</option>';
+      allProcesses.forEach(function(p) {
+        var sel = currentFilter === p.id ? ' selected' : '';
+        filterSelect.innerHTML += '<option value="' + p.id + '"' + sel + '>' + escapeHtml(p.name) + '</option>';
+      });
+
+      // Attacher le listener (une seule fois)
+      if (!filterSelect._bound) {
+        filterSelect.addEventListener('change', function() { renderGantt(); });
+        filterSelect._bound = true;
+      }
+
+      // Filtrer
+      var activeProcesses = currentFilter === 'all'
+        ? allProcesses
+        : allProcesses.filter(function(p) { return p.id === currentFilter; });
+
+      if (activeProcesses.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">&#9866;</div><p>Aucun process à afficher</p></div>';
+        legendContainer.innerHTML = '';
+        return;
+      }
+
+      var ganttData = buildGanttData(activeProcesses, appState.owners);
+      var totalDays = Math.max(1, Math.ceil((ganttData.maxDate - ganttData.minDate) / (1000 * 60 * 60 * 24)));
+      // Plus de place par jour quand on filtre un seul process
+      var minDayWidth = currentFilter === 'all' ? 4 : 8;
+      var targetWidth = currentFilter === 'all' ? 800 : 900;
+      var dayWidth = Math.max(minDayWidth, targetWidth / totalDays);
+      var totalWidth = dayWidth * totalDays;
+      var labelWidth = 180;
+
+      // Month headers
+      var monthHtml = '';
+      var d = new Date(ganttData.minDate);
+      while (d <= ganttData.maxDate) {
+        var monthStart = new Date(d);
+        var monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+        if (monthEnd > ganttData.maxDate) monthEnd = ganttData.maxDate;
+        var startDay = Math.ceil((monthStart - ganttData.minDate) / (1000 * 60 * 60 * 24));
+        var endDay = Math.ceil((monthEnd - ganttData.minDate) / (1000 * 60 * 60 * 24));
+        var width = (endDay - startDay + 1) * dayWidth;
+        var label = monthStart.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+        monthHtml += '<div class="gantt-month" style="width:' + width + 'px;">' + label + '</div>';
+        d = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      }
+
+      // Today marker
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      var todayOffset = Math.ceil((today - ganttData.minDate) / (1000 * 60 * 60 * 24));
+      var todayLeft = todayOffset * dayWidth + labelWidth;
+
+      var html = '<div style="position:relative;min-width:' + (totalWidth + labelWidth) + 'px;">';
+      html += '<div class="gantt-month-header" style="padding-left:' + labelWidth + 'px;">' + monthHtml + '</div>';
+
+      // Today line
+      if (todayOffset >= 0 && todayOffset <= totalDays) {
+        html += '<div class="gantt-today" style="left:' + todayLeft + 'px;top:30px;"></div>';
+      }
+
+      // Mode un seul process : afficher les étapes individuellement
+      if (currentFilter !== 'all' && activeProcesses.length === 1) {
+        var proc = activeProcesses[0];
+        var steps = (proc.playbook_steps || []).slice().sort(function(a, b) {
+          return (a.step_order || 0) - (b.step_order || 0);
+        });
+        var currentSection = '';
+
+        steps.forEach(function(step) {
+          // Section header
+          if (step.section && step.section !== currentSection) {
+            currentSection = step.section;
+            html += '<div style="padding:4px ' + labelWidth + 'px 2px;font-size:0.7rem;font-weight:700;color:var(--fsy-terracotta);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">' + escapeHtml(currentSection) + '</div>';
+          }
+
+          var stepDate = calculateAbsoluteDate(proc.date_cible, step.timing);
+          var stepOffset = Math.ceil((stepDate - ganttData.minDate) / (1000 * 60 * 60 * 24));
+          var ownerColor = getOwnerColor(step.raci_r);
+          var status = getStepStatus(step, proc.date_cible);
+          var opacity = step.done ? 'opacity:0.4;' : '';
+          var borderColor = status === 'overdue' ? 'border-left:3px solid #D94040;' : '';
+
+          html += '<div class="gantt-row" style="height:28px;' + opacity + borderColor + '">';
+          html += '<div class="gantt-label" style="font-size:0.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHtml(step.title) + '">'
+            + (step.done ? '&#9745; ' : '&#9744; ')
+            + escapeHtml(step.title.substring(0, 30)) + (step.title.length > 30 ? '...' : '')
+            + '</div>';
+          html += '<div class="gantt-bars" style="position:relative;width:' + totalWidth + 'px;">';
+          html += '<div class="gantt-dot" style="left:' + (stepOffset * dayWidth) + 'px;background:' + ownerColor + ';width:10px;height:10px;" title="' + escapeHtml(step.title) + ' (' + escapeHtml(step.raci_r) + ')"></div>';
+          html += '</div></div>';
+        });
+
+        // Jour J marker
+        var jourJDate = new Date(proc.date_cible + 'T00:00:00');
+        var jourJOffset = Math.ceil((jourJDate - ganttData.minDate) / (1000 * 60 * 60 * 24));
+        html += '<div class="gantt-jour-j" style="position:absolute;left:' + (jourJOffset * dayWidth + labelWidth - 6) + 'px;top:30px;height:calc(100% - 30px);"></div>';
+
+      } else {
+        // Mode multi-process (vue d'ensemble)
+        ganttData.rows.forEach(function(row) {
+          var opacity = row.status === 'termine' ? 'opacity:0.4;' : '';
+          var progress = calculateProgress(
+            (appState.processes.find(function(p) { return p.name === row.name; }) || {}).playbook_steps || []
+          );
+
+          html += '<div class="gantt-row" style="' + opacity + '">';
+          html += '<div class="gantt-label">'
+            + '<div>' + escapeHtml(row.name) + '</div>'
+            + '<div style="font-size:0.65rem;opacity:0.6;">' + progress.percent + '%</div>'
+            + '</div>';
+          html += '<div class="gantt-bars" style="position:relative;width:' + totalWidth + 'px;">';
+
+          // Jour J marker
+          var jourJOffset = Math.ceil((row.jourJ - ganttData.minDate) / (1000 * 60 * 60 * 24));
+          html += '<div class="gantt-jour-j" style="left:' + (jourJOffset * dayWidth - 6) + 'px;" title="Jour J"></div>';
+
+          // Barre de progression au lieu de dots individuels
+          var minDot = Infinity, maxDot = -Infinity;
+          row.dots.forEach(function(dot) {
+            var offset = Math.ceil((dot.date - ganttData.minDate) / (1000 * 60 * 60 * 24));
+            if (offset < minDot) minDot = offset;
+            if (offset > maxDot) maxDot = offset;
+          });
+          if (minDot !== Infinity) {
+            var barLeft = minDot * dayWidth;
+            var barWidth = Math.max(4, (maxDot - minDot) * dayWidth);
+            html += '<div style="position:absolute;left:' + barLeft + 'px;top:12px;width:' + barWidth + 'px;height:8px;background:var(--fsy-terracotta);opacity:0.2;border-radius:4px;"></div>';
+            html += '<div style="position:absolute;left:' + barLeft + 'px;top:12px;width:' + (barWidth * progress.percent / 100) + 'px;height:8px;background:var(--fsy-terracotta);border-radius:4px;"></div>';
+          }
+
+          // Dots clés (non terminés uniquement, pour ne pas surcharger)
+          row.dots.forEach(function(dot) {
+            if (dot.done) return;
+            var dotOffset = Math.ceil((dot.date - ganttData.minDate) / (1000 * 60 * 60 * 24));
+            html += '<div class="gantt-dot" style="left:' + (dotOffset * dayWidth) + 'px;background:' + dot.color + ';" title="' + escapeHtml(dot.title) + '"></div>';
+          });
+
+          html += '</div></div>';
+        });
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
+
+      // Legend
+      var usedOwners = {};
+      activeProcesses.forEach(function(p) {
+        (p.playbook_steps || []).forEach(function(s) {
+          usedOwners[s.raci_r] = true;
+        });
+      });
+
+      var legendHtml = '<div class="gantt-legend-item"><div style="width:12px;height:12px;border-radius:50%;border:2px solid var(--fsy-terracotta);background:transparent;"></div><span>Jour J</span></div>';
+      legendHtml += '<div class="gantt-legend-item"><div style="width:12px;height:2px;background:#D94040;"></div><span>Aujourd\'hui</span></div>';
+      appState.owners.forEach(function(o) {
+        if (usedOwners[o.name]) {
+          legendHtml += '<div class="gantt-legend-item"><div class="gantt-legend-color" style="background:' + o.color + ';"></div><span>' + escapeHtml(o.name) + '</span></div>';
+        }
+      });
+      legendContainer.innerHTML = legendHtml;
+    }
+
+    // --- Templates Review ---
+    function renderTemplatesList() {
+      var listContainer = document.getElementById('templates-list');
+      var detailContainer = document.getElementById('template-detail-view');
+      listContainer.style.display = '';
+      detailContainer.style.display = 'none';
+
+      var categories = {
+        'Projet': [],
+        'Lancement': [],
+        'Cycle': [],
+        'Cycle continu': [],
+        'Transverse': []
+      };
+
+      Object.keys(TEMPLATES).forEach(function(key) {
+        var t = TEMPLATES[key];
+        var cat = t.category || 'Autre';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push({ key: key, template: t });
+      });
+
+      var html = '';
+      Object.keys(categories).forEach(function(cat) {
+        var items = categories[cat];
+        if (items.length === 0) return;
+        html += '<h3 style="margin:16px 0 8px;font-size:1rem;color:var(--fsy-terracotta);">' + cat + '</h3>';
+        items.forEach(function(item) {
+          var t = item.template;
+          var stepsCount = t.steps ? t.steps.length : 0;
+          html += '<div class="card" style="cursor:pointer;margin-bottom:8px;" data-template-key="' + item.key + '">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+            + '<div>'
+            + '<div style="font-weight:600;">' + escapeHtml(t.name) + '</div>'
+            + '<div style="font-size:0.8rem;opacity:0.6;">' + item.key.toUpperCase() + ' — ' + stepsCount + ' étapes</div>'
+            + '</div>'
+            + '<span style="font-size:1.2rem;opacity:0.3;">&#8250;</span>'
+            + '</div>'
+            + '</div>';
+        });
+      });
+
+      listContainer.innerHTML = html;
+
+      listContainer.querySelectorAll('.card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var key = this.getAttribute('data-template-key');
+          renderTemplateDetail(key);
+        });
+      });
+    }
+
+    function renderTemplateDetail(templateKey) {
+      var t = TEMPLATES[templateKey];
+      if (!t) return;
+
+      document.getElementById('templates-list').style.display = 'none';
+      var detailView = document.getElementById('template-detail-view');
+      detailView.style.display = '';
+      var container = document.getElementById('template-detail-content');
+
+      var steps = t.steps || [];
+      var html = '<h2 style="margin-bottom:4px;">' + escapeHtml(t.name) + '</h2>'
+        + '<div style="font-size:0.85rem;opacity:0.6;margin-bottom:16px;">'
+        + templateKey.toUpperCase() + ' — ' + (t.category || '') + ' — ' + steps.length + ' étapes'
+        + '</div>';
+
+      var currentSection = '';
+      steps.forEach(function(step, i) {
+        if (step.section && step.section !== currentSection) {
+          currentSection = step.section;
+          html += '<div style="margin-top:16px;margin-bottom:6px;font-size:0.75rem;font-weight:700;color:var(--fsy-terracotta);text-transform:uppercase;letter-spacing:1px;">' + escapeHtml(currentSection) + '</div>';
+        }
+
+        var rOwnerColor = getOwnerColor(step.raci ? step.raci.r : '');
+        var aOwnerColor = getOwnerColor(step.raci ? step.raci.a : '');
+        var timing = step.timing || 0;
+        var timingLabel = timing < 0 ? 'J' + timing : timing === 0 ? 'Jour J' : 'J+' + timing;
+
+        html += '<div class="card" style="margin-bottom:4px;padding:8px 12px;">'
+          + '<div style="display:flex;align-items:center;gap:8px;">'
+          + '<span style="font-size:0.75rem;opacity:0.4;min-width:24px;">' + (i + 1) + '</span>'
+          + '<div style="flex:1;">'
+          + '<div style="font-size:0.85rem;">' + escapeHtml(step.title) + '</div>'
+          + '<div style="font-size:0.75rem;opacity:0.6;margin-top:2px;">'
+          + '<span class="owner-pill" style="background:' + rOwnerColor + ';display:inline-flex;width:18px;height:18px;font-size:0.55rem;vertical-align:middle;">' + getInitials(step.raci ? step.raci.r : '') + '</span>'
+          + ' <b>R:</b> ' + escapeHtml(step.raci ? step.raci.r : '') + ' '
+          + '<span class="owner-pill" style="background:' + aOwnerColor + ';display:inline-flex;width:18px;height:18px;font-size:0.55rem;vertical-align:middle;">' + getInitials(step.raci ? step.raci.a : '') + '</span>'
+          + ' <b>A:</b> ' + escapeHtml(step.raci ? step.raci.a : '')
+          + (step.raci && step.raci.c ? ' · <b>C:</b> ' + escapeHtml(step.raci.c) : '')
+          + (step.raci && step.raci.i ? ' · <b>I:</b> ' + escapeHtml(step.raci.i) : '')
+          + ' · ' + timingLabel
+          + '</div>'
+          + '</div>'
+          + '</div>'
+          + '</div>';
+      });
+
+      container.innerHTML = html;
+
+      document.getElementById('btn-back-templates').addEventListener('click', function() {
+        renderTemplatesList();
+      });
+    }
+
+    // --- Template Selector ---
+    function renderTemplateSelector() {
+      var container = document.getElementById('template-selector');
+      var html = '<div class="template-card' + (appState.selectedTemplateId === null ? ' selected' : '') + '" data-template="">'
+        + '<div class="template-name">Process vide</div>'
+        + '<div class="template-info">0 etapes</div>'
+        + '</div>';
+
+      Object.keys(TEMPLATES).forEach(function(key) {
+        var t = TEMPLATES[key];
+        var selected = appState.selectedTemplateId === key ? ' selected' : '';
+        html += '<div class="template-card' + selected + '" data-template="' + key + '">'
+          + '<div class="template-name">' + escapeHtml(t.name) + '</div>'
+          + '<div class="template-info">' + escapeHtml(t.category) + ' &middot; ' + t.steps.length + ' etapes</div>'
+          + '</div>';
+      });
+
+      container.innerHTML = html;
+
+      container.querySelectorAll('.template-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var tid = this.getAttribute('data-template') || null;
+          appState.selectedTemplateId = tid;
+          renderTemplateSelector();
+        });
+      });
+    }
+
+    // --- Modals ---
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // --- Confirm Dialog ---
+    var confirmCallback = null;
+    function showConfirm(message, onConfirm) {
+      document.getElementById('confirm-message').textContent = message;
+      confirmCallback = onConfirm;
+      document.getElementById('confirm-dialog').classList.add('active');
+    }
+
+    // --- Render All ---
+    function renderAll() {
+      var currentView = document.querySelector('.nav-tab.active');
+      var viewName = currentView ? currentView.getAttribute('data-view') : 'playbook';
+      switchView(viewName);
+    }
+
+    // ============================================================
+    // === INITIALIZATION ===
+    // ============================================================
+
+    (async function init() {
+      // --- Event Listeners (toujours attaches, meme si Supabase plante) ---
+
+      // Login
+      document.getElementById('login-btn').addEventListener('click', async function() {
+        var email = document.getElementById('login-email').value.trim();
+        var password = document.getElementById('login-password').value;
+        var errorEl = document.getElementById('login-error');
+        errorEl.textContent = '';
+        if (!email || !password) {
+          errorEl.textContent = 'Veuillez remplir tous les champs';
+          return;
+        }
+        try {
+          await db.auth.signIn(email, password);
+        } catch (e) {
+          errorEl.textContent = translateAuthError(e);
+        }
+      });
+
+      document.getElementById('login-password').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('login-btn').click();
+      });
+
+      // Logout
+      document.getElementById('btn-logout').addEventListener('click', async function() {
+        await db.auth.signOut();
+        showLogin();
+      });
+
+      // Navigation
+      document.querySelectorAll('.nav-tab, .nav-bottom-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          switchView(this.getAttribute('data-view'));
+        });
+      });
+
+      // New Process Modal
+      document.getElementById('btn-new-process').addEventListener('click', function() {
+        document.getElementById('process-name').value = '';
+        document.getElementById('process-date').value = '';
+        appState.selectedTemplateId = null;
+        renderTemplateSelector();
+        openModal('modal-new-process');
+      });
+
+      document.getElementById('modal-cancel').addEventListener('click', function() {
+        closeModal('modal-new-process');
+      });
+
+      document.getElementById('modal-create').addEventListener('click', async function() {
+        var name = document.getElementById('process-name').value.trim();
+        var date = document.getElementById('process-date').value;
+        if (!name || !date) {
+          showToast('Veuillez remplir le nom et la date cible');
+          return;
+        }
+        await createProcess(appState.selectedTemplateId, name, date);
+        closeModal('modal-new-process');
+        renderProcessList();
+        showToast('Process cree');
+      });
+
+      // Change Date Modal
+      document.getElementById('date-cancel').addEventListener('click', function() {
+        closeModal('modal-change-date');
+      });
+
+      document.getElementById('date-confirm').addEventListener('click', async function() {
+        var newDate = document.getElementById('new-date-cible').value;
+        if (!newDate || !appState.currentProcessId) return;
+        await updateProcessDate(appState.currentProcessId, newDate);
+        closeModal('modal-change-date');
+        renderProcessDetail(appState.currentProcessId);
+        showToast('Date cible mise a jour');
+      });
+
+      // Edit Step Modal — date ↔ timing sync
+      document.getElementById('step-date-abs').addEventListener('change', function() {
+        var dateVal = this.value;
+        var dateCible = this.dataset.dateCible;
+        if (dateVal && dateCible) {
+          var chosen = new Date(dateVal + 'T00:00:00');
+          var jourJ = new Date(dateCible + 'T00:00:00');
+          var diff = Math.round((chosen - jourJ) / (1000 * 60 * 60 * 24));
+          document.getElementById('step-timing').value = diff;
+        }
+      });
+      document.getElementById('step-timing').addEventListener('input', function() {
+        var dateEl = document.getElementById('step-date-abs');
+        var dateCible = dateEl.dataset.dateCible;
+        if (dateCible) {
+          var timing = parseInt(this.value) || 0;
+          var absDate = calculateAbsoluteDate(dateCible, timing);
+          dateEl.value = absDate.toISOString().slice(0, 10);
+        }
+      });
+
+      document.getElementById('step-edit-cancel').addEventListener('click', function() {
+        closeModal('modal-edit-step');
+      });
+
+      document.getElementById('step-edit-save').addEventListener('click', async function() {
+        if (!appState.editingStepId) return;
+        var fields = {
+          title: document.getElementById('step-title').value.trim(),
+          description: document.getElementById('step-desc').value.trim() || null,
+          section: document.getElementById('step-section').value.trim() || null,
+          timing: parseInt(document.getElementById('step-timing').value) || 0,
+          raci_r: document.getElementById('step-raci-r').value,
+          raci_a: document.getElementById('step-raci-a').value,
+          raci_c: document.getElementById('step-raci-c').value || null,
+          raci_i: document.getElementById('step-raci-i').value || null
+        };
+        await updateStep(appState.editingStepId, fields);
+        closeModal('modal-edit-step');
+        if (appState.currentProcessId) renderProcessDetail(appState.currentProcessId);
+        showToast('Etape mise a jour');
+      });
+
+      // Add Step Modal
+      document.getElementById('add-step-cancel').addEventListener('click', function() {
+        closeModal('modal-add-step');
+      });
+
+      document.getElementById('add-step-save').addEventListener('click', async function() {
+        if (!appState.currentProcessId) return;
+        var step = {
+          title: document.getElementById('new-step-title').value.trim(),
+          description: null,
+          section: document.getElementById('new-step-section').value.trim() || null,
+          timing: parseInt(document.getElementById('new-step-timing').value) || 0,
+          raci_r: document.getElementById('new-step-raci-r').value,
+          raci_a: document.getElementById('new-step-raci-a').value,
+          raci_c: null,
+          raci_i: null
+        };
+        if (!step.title) {
+          showToast('Veuillez saisir un titre');
+          return;
+        }
+        await addStep(appState.currentProcessId, step);
+        closeModal('modal-add-step');
+        renderProcessDetail(appState.currentProcessId);
+        showToast('Etape ajoutee');
+      });
+
+      // Add Owner Modal
+      document.getElementById('owner-cancel').addEventListener('click', function() {
+        closeModal('modal-add-owner');
+      });
+
+      document.getElementById('owner-save').addEventListener('click', async function() {
+        var name = document.getElementById('new-owner-name').value.trim();
+        if (!name) {
+          showToast('Veuillez saisir un nom');
+          return;
+        }
+        await addOwner(name);
+        closeModal('modal-add-owner');
+        document.getElementById('new-owner-name').value = '';
+        if (appState.currentProcessId) renderProcessDetail(appState.currentProcessId);
+        showToast('Personne ajoutee');
+      });
+
+      // Confirm Dialog
+      document.getElementById('confirm-no').addEventListener('click', function() {
+        document.getElementById('confirm-dialog').classList.remove('active');
+        confirmCallback = null;
+      });
+
+      document.getElementById('confirm-yes').addEventListener('click', function() {
+        document.getElementById('confirm-dialog').classList.remove('active');
+        if (confirmCallback) {
+          confirmCallback();
+          confirmCallback = null;
+        }
+      });
+
+      // Export
+      document.getElementById('btn-export').addEventListener('click', exportData);
+
+      // Import
+      document.getElementById('import-file').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (file) {
+          importData(file);
+          e.target.value = '';
+        }
+      });
+
+      // Close modals on overlay click
+      document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
+
+      // --- Init Direct (pas d'auth, protection via portail chiffre) ---
+      try {
+        showApp(null);
+        await loadAllData();
+        renderAll();
+      } catch (e) {
+        console.error('Erreur init:', e);
+        showApp(null);
+        renderAll();
+      }
+
+    })();
+  </script>
+</body>
+</html>
