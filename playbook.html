@@ -924,6 +924,10 @@
         <label for="process-date">Date cible (Jour J)</label>
         <input type="date" id="process-date">
       </div>
+      <div id="process-span-preview" style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.85rem;display:none;">
+        <div style="color:#B55B50;font-weight:600;margin-bottom:4px;">Durée du projet</div>
+        <div id="process-span-text" style="color:#ccc;"></div>
+      </div>
       <div class="form-group">
         <label>Template</label>
         <div id="template-selector" class="template-grid"></div>
@@ -2925,8 +2929,35 @@ steps: [
           var tid = this.getAttribute('data-template') || null;
           appState.selectedTemplateId = tid;
           renderTemplateSelector();
+          updateProcessSpanPreview();
         });
       });
+    }
+
+    function updateProcessSpanPreview() {
+      var preview = document.getElementById('process-span-preview');
+      var text = document.getElementById('process-span-text');
+      var dateVal = document.getElementById('process-date').value;
+      var tid = appState.selectedTemplateId;
+
+      if (!dateVal || !tid || !TEMPLATES[tid]) {
+        preview.style.display = 'none';
+        return;
+      }
+
+      var t = TEMPLATES[tid];
+      var timings = t.steps.map(function(s) { return s.timing; });
+      var minT = Math.min.apply(null, timings);
+      var maxT = Math.max.apply(null, timings);
+      var startDate = calculateAbsoluteDate(dateVal, minT);
+      var endDate = calculateAbsoluteDate(dateVal, maxT);
+      var totalDays = maxT - minT;
+
+      text.innerHTML = '<strong>' + formatDate(startDate) + '</strong> → <strong>' + formatDate(endDate) + '</strong>'
+        + '<br><span style="opacity:0.6;">' + totalDays + ' jours &middot; ' + t.steps.length + ' étapes &middot; '
+        + (minT < 0 ? 'Début J' + minT : 'Début Jour J') + ' → '
+        + (maxT > 0 ? 'Fin J+' + maxT : 'Fin Jour J') + '</span>';
+      preview.style.display = 'block';
     }
 
     // --- Modals ---
@@ -3003,6 +3034,10 @@ steps: [
         openModal('modal-new-process');
       });
 
+      document.getElementById('process-date').addEventListener('change', function() {
+        updateProcessSpanPreview();
+      });
+
       document.getElementById('modal-cancel').addEventListener('click', function() {
         closeModal('modal-new-process');
       });
@@ -3027,11 +3062,19 @@ steps: [
 
       document.getElementById('date-confirm').addEventListener('click', async function() {
         var newDate = document.getElementById('new-date-cible').value;
-        if (!newDate || !appState.currentProcessId) return;
-        await updateProcessDate(appState.currentProcessId, newDate);
-        closeModal('modal-change-date');
-        renderProcessDetail(appState.currentProcessId);
-        showToast('Date cible mise a jour');
+        if (!newDate || !appState.currentProcessId) {
+          showToast('Erreur : pas de date ou pas de process selectionne');
+          return;
+        }
+        try {
+          await updateProcessDate(appState.currentProcessId, newDate);
+          closeModal('modal-change-date');
+          renderProcessDetail(appState.currentProcessId);
+          showToast('Date cible mise a jour : ' + newDate);
+        } catch (e) {
+          console.error('Changer date erreur:', e);
+          showToast('Erreur : ' + (e.message || 'impossible de changer la date'));
+        }
       });
 
       // Edit Step Modal — date ↔ timing sync
@@ -3071,10 +3114,15 @@ steps: [
           raci_c: document.getElementById('step-raci-c').value || null,
           raci_i: document.getElementById('step-raci-i').value || null
         };
-        await updateStep(appState.editingStepId, fields);
-        closeModal('modal-edit-step');
-        if (appState.currentProcessId) renderProcessDetail(appState.currentProcessId);
-        showToast('Etape mise a jour');
+        try {
+          await updateStep(appState.editingStepId, fields);
+          closeModal('modal-edit-step');
+          if (appState.currentProcessId) renderProcessDetail(appState.currentProcessId);
+          showToast('Etape mise a jour');
+        } catch (e) {
+          console.error('Edit step erreur:', e);
+          showToast('Erreur : ' + (e.message || 'impossible de modifier l etape'));
+        }
       });
 
       // Add Step Modal — date ↔ timing sync
