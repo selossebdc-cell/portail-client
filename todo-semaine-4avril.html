@@ -125,11 +125,9 @@
   }
   .add-bar input[type="text"]:focus { border-color: #C27A5A; }
   .add-bar input[type="text"]::placeholder { color: #555; }
-  .add-btn {
-    background: #C27A5A;
+  .add-btn, .mic-btn {
     border: none;
     border-radius: 8px;
-    color: #0f0f0f;
     font-weight: 700;
     font-size: 1.3rem;
     width: 44px;
@@ -137,7 +135,25 @@
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
-  .add-btn:active { opacity: 0.7; }
+  .add-btn {
+    background: #C27A5A;
+    color: #0f0f0f;
+  }
+  .mic-btn {
+    background: #333;
+    color: #e8e0d8;
+    font-size: 1.2rem;
+  }
+  .mic-btn.recording {
+    background: #e55;
+    color: #fff;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .add-btn:active, .mic-btn:active { opacity: 0.7; }
   .counter-row {
     text-align: center;
     font-size: 0.85rem;
@@ -233,6 +249,7 @@
 <div class="add-bar">
   <div class="add-row">
     <input type="text" id="new-task" placeholder="Ajouter une t&acirc;che..." enterkeyhint="done">
+    <button class="mic-btn" id="mic-btn">&#127908;</button>
     <button class="add-btn" id="add-btn">+</button>
   </div>
   <div class="counter-row" id="counter"></div>
@@ -334,6 +351,48 @@ document.getElementById('add-btn').addEventListener('click', addTask);
 document.getElementById('new-task').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') { e.preventDefault(); addTask(); }
 });
+
+// Speech recognition (micro)
+const micBtn = document.getElementById('mic-btn');
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  let isRecording = false;
+
+  micBtn.addEventListener('click', () => {
+    if (isRecording) {
+      recognition.stop();
+    } else {
+      recognition.start();
+      micBtn.classList.add('recording');
+      isRecording = true;
+    }
+  });
+
+  recognition.addEventListener('result', (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('new-task').value = transcript;
+  });
+
+  recognition.addEventListener('end', () => {
+    micBtn.classList.remove('recording');
+    isRecording = false;
+    const text = document.getElementById('new-task').value.trim();
+    if (text) addTask();
+  });
+
+  recognition.addEventListener('error', () => {
+    micBtn.classList.remove('recording');
+    isRecording = false;
+  });
+} else {
+  micBtn.style.display = 'none';
+}
 
 function updateProgress() {
   const fixedTasks = document.querySelectorAll('#task-list .task[data-id]');
