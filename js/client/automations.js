@@ -59,8 +59,9 @@ function renderAutomations(contract) {
             (auto.description ? '<div style="font-size:0.8rem;color:#b0b0b0;margin-bottom:4px">' + auto.description + '</div>' : '') +
             (auto.value ? '<div style="font-size:0.75rem;color:#666666">Valeur : ' + auto.value.toLocaleString('fr-FR') + ' EUR HT</div>' : '') +
           '</div>' +
-          '<div style="text-align:right;flex-shrink:0;margin-left:12px">' +
+          '<div style="text-align:right;flex-shrink:0;margin-left:12px;display:flex;flex-direction:column;align-items:flex-end;gap:6px">' +
             '<span style="font-size:0.75rem;color:' + statusColor + ';font-weight:500">' + statusIcon + ' ' + statusLabel + '</span>' +
+            (auto.url ? '<a href="' + auto.url + '" target="_blank" style="font-size:0.72rem;padding:4px 10px;background:rgba(194,122,90,0.15);color:#C27A5A;border-radius:6px;text-decoration:none;font-weight:600">Voir le d&eacute;tail</a>' : '') +
           '</div>' +
         '</div>' +
       '</div>';

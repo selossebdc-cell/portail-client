@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSY — Plan d'implémentation Workflow Complet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; color: #e8e0d8; font-family: 'Inter', sans-serif; padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+  h1 { color: #C27A5A; font-size: 1.8rem; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 6px; }
+  .date { color: #666; font-size: 0.78rem; margin-bottom: 24px; }
+
+  .context-box { background: #1a1a1a; border: 2px solid #C27A5A; border-radius: 8px; padding: 16px; margin-bottom: 32px; }
+  .context-box h3 { color: #C27A5A; font-size: 0.95rem; margin-bottom: 8px; }
+  .context-box p { font-size: 0.82rem; color: #bbb; line-height: 1.6; }
+  .context-box .stat { display: inline-block; background: #2a1a14; border: 1px solid #C27A5A; border-radius: 4px; padding: 2px 8px; color: #d4956f; font-weight: 600; margin: 2px 4px 2px 0; font-size: 0.78rem; }
+
+  /* Audit summary */
+  .audit-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .audit-card { background: #1a1a1a; border-radius: 8px; padding: 16px; border: 1px solid #333; }
+  .audit-card h3 { font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .audit-card .icon { font-size: 1.2rem; }
+  .audit-card ul { list-style: none; font-size: 0.78rem; color: #aaa; }
+  .audit-card ul li { padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+  .audit-card ul li::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .li-ok::before { background: #4CAF50; }
+  .li-ko::before { background: #ef5350; }
+  .li-partial::before { background: #ffd54f; }
+  .brevo-card h3 { color: #2196F3; }
+  .circle-card h3 { color: #4CAF50; }
+
+  /* Phase blocks */
+  .phase { margin-bottom: 28px; border-radius: 10px; overflow: hidden; }
+  .phase-header { padding: 14px 20px; display: flex; align-items: center; gap: 14px; cursor: default; }
+  .phase-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; color: #000; }
+  .phase-title { font-size: 1.05rem; font-weight: 700; }
+  .phase-meta { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .phase-who { font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+  .who-laurie { background: #1b2a3a; color: #90caf9; }
+  .who-catherine { background: #2a1a14; color: #d4956f; }
+  .who-claude { background: #1a2e1a; color: #81c784; }
+  .who-aurelia { background: #2e1a2e; color: #ce93d8; }
+  .phase-time { font-size: 0.7rem; color: #888; background: #222; padding: 3px 8px; border-radius: 4px; }
+
+  .phase-body { padding: 0 20px 20px 20px; }
+
+  /* Steps */
+  .step { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 14px; margin-bottom: 10px; position: relative; }
+  .step-header { display: flex; align-items: flex-start; gap: 10px; }
+  .step-checkbox { width: 20px; height: 20px; border: 2px solid #555; border-radius: 4px; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.2s; }
+  .step-checkbox.checked { background: #4CAF50; border-color: #4CAF50; }
+  .step-checkbox.checked::after { content: '✓'; color: #fff; font-size: 0.75rem; font-weight: 700; }
+  .step.done { opacity: 0.5; }
+  .step.done .step-title { text-decoration: line-through; }
+  .step-content { flex: 1; }
+  .step-title { font-size: 0.88rem; font-weight: 600; color: #e8e0d8; margin-bottom: 4px; }
+  .step-desc { font-size: 0.78rem; color: #999; line-height: 1.5; }
+  .step-desc code { background: #2a2a2a; padding: 1px 5px; border-radius: 3px; font-size: 0.75rem; color: #d4956f; }
+  .step-tools { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .tool-tag { font-size: 0.65rem; padding: 2px 7px; border-radius: 3px; font-weight: 500; }
+  .t-brevo { background: #1b2a3a; color: #64b5f6; }
+  .t-circle { background: #1a2e1a; color: #81c784; }
+  .t-stripe { background: #2e2a1a; color: #ffd54f; }
+  .t-n8n { background: #2e1a1a; color: #ef9a9a; }
+  .t-manychat { background: #1a2e2e; color: #80cbc4; }
+  .t-esign { background: #2e2e1a; color: #c8e6c9; }
+
+  .step-detail { margin-top: 8px; background: #222; border-radius: 6px; padding: 10px; font-size: 0.75rem; color: #aaa; line-height: 1.6; display: none; }
+  .step-detail.open { display: block; }
+  .step-toggle { font-size: 0.7rem; color: #C27A5A; cursor: pointer; margin-top: 4px; display: inline-block; }
+  .step-toggle:hover { text-decoration: underline; }
+
+  /* Dependency arrow */
+  .dep-arrow { text-align: center; color: #444; font-size: 0.9rem; margin: -4px 0 8px 0; }
+  .dep-label { font-size: 0.68rem; color: #666; }
+
+  /* Phase colors */
+  .ph-0 .phase-header { background: linear-gradient(135deg, #2e1c14, #151515); }
+  .ph-0 .phase-num { background: #C27A5A; }
+  .ph-0 .phase-title { color: #C27A5A; }
+  .ph-0 .phase-body { border-left: 3px solid #C27A5A; margin-left: 18px; }
+
+  .ph-1 .phase-header { background: linear-gradient(135deg, #1a2e1a, #151515); }
+  .ph-1 .phase-num { background: #4CAF50; }
+  .ph-1 .phase-title { color: #4CAF50; }
+  .ph-1 .phase-body { border-left: 3px solid #4CAF50; margin-left: 18px; }
+
+  .ph-2 .phase-header { background: linear-gradient(135deg, #1a2433, #151515); }
+  .ph-2 .phase-num { background: #2196F3; color: #fff; }
+  .ph-2 .phase-title { color: #2196F3; }
+  .ph-2 .phase-body { border-left: 3px solid #2196F3; margin-left: 18px; }
+
+  .ph-3 .phase-header { background: linear-gradient(135deg, #2e2410, #151515); }
+  .ph-3 .phase-num { background: #FF9800; }
+  .ph-3 .phase-title { color: #FF9800; }
+  .ph-3 .phase-body { border-left: 3px solid #FF9800; margin-left: 18px; }
+
+  .ph-4 .phase-header { background: linear-gradient(135deg, #231428, #151515); }
+  .ph-4 .phase-num { background: #9C27B0; color: #fff; }
+  .ph-4 .phase-title { color: #9C27B0; }
+  .ph-4 .phase-body { border-left: 3px solid #9C27B0; margin-left: 18px; }
+
+  .ph-5 .phase-header { background: linear-gradient(135deg, #1a1a2e, #151515); }
+  .ph-5 .phase-num { background: #5c6bc0; color: #fff; }
+  .ph-5 .phase-title { color: #5c6bc0; }
+  .ph-5 .phase-body { border-left: 3px solid #5c6bc0; margin-left: 18px; }
+
+  /* Blocker callout */
+  .blocker { background: #2a1515; border: 1px dashed #ef5350; border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.78rem; color: #ef9a9a; display: flex; align-items: flex-start; gap: 8px; }
+  .blocker strong { color: #ef5350; }
+
+  /* Progress bar */
+  .progress-bar-container { background: #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 32px; border: 1px solid #333; }
+  .progress-bar-container h3 { font-size: 0.9rem; color: #C27A5A; margin-bottom: 10px; }
+  .progress-bar { background: #333; border-radius: 6px; height: 24px; overflow: hidden; position: relative; }
+  .progress-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; background: linear-gradient(90deg, #C27A5A, #4CAF50); }
+  .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.75rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+  .progress-phases { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .progress-phase { font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; background: #222; color: #888; }
+  .progress-phase.active { border: 1px solid #C27A5A; color: #C27A5A; }
+  .progress-phase.completed { background: #1a2e1a; color: #81c784; }
+
+  footer { text-align: center; color: #555; font-size: 0.72rem; margin-top: 40px; padding-top: 16px; border-top: 1px solid #222; }
+
+  @media (max-width: 700px) {
+    .audit-summary { grid-template-columns: 1fr; }
+    .phase-meta { flex-direction: column; gap: 4px; }
+    .phase-body { margin-left: 0; border-left: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Plan d'implémentation — Workflow FSY</h1>
+<p class="subtitle">De l'audit à l'automatisation complète du parcours client Face Soul Yoga</p>
+<p class="date">Généré le 6 avril 2026 — Basé sur l'audit Brevo + Circle</p>
+
+<!-- CE QUI EST FAIT -->
+<div style="background:#1a2e1a;border:2px solid #4CAF50;border-radius:8px;padding:16px;margin-bottom:16px;">
+  <h3 style="color:#4CAF50;font-size:0.95rem;margin-bottom:10px;">✅ Ce qui a été fait (6 avril 2026)</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.82rem;">
+    <div style="color:#81c784;">✓ Audit complet Brevo (13 302 contacts, 19 listes, 35 templates)</div>
+    <div style="color:#81c784;">✓ Audit complet Circle (2 membres, 12 spaces, 2 groups)</div>
+    <div style="color:#81c784;">✓ 9 attributs Brevo créés (SOURCE, INTERET, OFFRE, etc.)</div>
+    <div style="color:#81c784;">✓ 12 templates nurture (Sommeil #184-187, Face Yoga #188-191, Générale #192-195)</div>
+    <div style="color:#81c784;">✓ 3 templates onboarding FSY Studio (#196-198)</div>
+    <div style="color:#81c784;">✓ 7 templates rétention (#199-205)</div>
+    <div style="color:#81c784;">✓ 9 workflows n8n créés (JSON importés)</div>
+    <div style="color:#81c784;">✓ Rapport hebdo testé et fonctionnel</div>
+    <div style="color:#81c784;">✓ Credentials Brevo configurés dans n8n</div>
+    <div style="color:#81c784;">✓ Liste UTM complète préparée</div>
+  </div>
+</div>
+
+<!-- CE QUI RESTE -->
+<div style="background:#2a1515;border:2px solid #ef5350;border-radius:8px;padding:16px;margin-bottom:16px;">
+  <h3 style="color:#ef5350;font-size:0.95rem;margin-bottom:10px;">⏳ Ce qui reste à faire</h3>
+  <div style="font-size:0.82rem;color:#ef9a9a;line-height:1.8;">
+    <strong style="color:#ef5350;">Accès Stripe nécessaire :</strong> Connecter Stripe↔Circle + webhooks Stripe→n8n<br>
+    <strong style="color:#ef5350;">Dans Circle (admin) :</strong> Configurer 1 webhook → URL n8n<br>
+    <strong style="color:#ef5350;">Dans Brevo (interface) :</strong> Créer 8 automations (pas-à-pas ci-dessous)<br>
+    <strong style="color:#ef5350;">Templates email :</strong> Remplacer les [LIEN_...] par les vrais liens + validation Aurélia<br>
+    <strong style="color:#ef5350;">eSignatures.com :</strong> Créer compte + template contrat MTM<br>
+    <strong style="color:#ef5350;">Migration :</strong> Anam termine les vidéos → puis migrer les 592 membres<br>
+  </div>
+</div>
+
+<!-- CONTEXTE -->
+<div class="context-box">
+  <h3>Résultat de l'audit (6 avril 2026)</h3>
+  <p>
+    <span class="stat">13 302 contacts Brevo</span>
+    <span class="stat">19 listes</span>
+    <span class="stat">35 templates email</span>
+    <span class="stat">0 webhook</span>
+    <span class="stat">0 campagne envoyée</span>
+    <span class="stat">62% taux d'ouverture</span>
+    <br><br>
+    <span class="stat">2 membres Circle</span>
+    <span class="stat">12 spaces</span>
+    <span class="stat">2 groupes (MTM + FSY Studio)</span>
+    <span class="stat">0 webhook</span>
+    <span class="stat">Migration vidéos en cours (Anam)</span>
+    <br><br>
+    <span class="stat">eSignatures.com pour contrats MTM (0,49€/contrat)</span>
+  </p>
+  <p style="margin-top: 10px; color: #ef9a9a;"><strong>Constat :</strong> L'architecture Circle est bien structurée mais vide (2 membres, pas de contenu visible). Brevo a une bonne base email et des séquences MTM/Formation prêtes, mais zéro connexion entre les outils. Aucun webhook, aucune automatisation, aucun tracking source.</p>
+</div>
+
+<!-- AUDIT RÉSUMÉ -->
+<div class="audit-summary">
+  <div class="audit-card brevo-card">
+    <h3><span class="icon">📧</span> Brevo — Ce qui existe</h3>
+    <ul>
+      <li class="li-ok">13 255 contacts sur liste FSY Audience</li>
+      <li class="li-ok">592 contacts "Active Members"</li>
+      <li class="li-ok">Séquence MTM : 6 emails onboarding</li>
+      <li class="li-ok">Séquence Formation : 7 emails pré-vente</li>
+      <li class="li-ok">Lead magnet Ebook : 3 emails</li>
+      <li class="li-ok">Templates Welcome + Free Trial</li>
+      <li class="li-ok">Taux ouverture 62% (excellent)</li>
+      <li class="li-ko">Aucun webhook configuré</li>
+      <li class="li-ko">Aucune séquence nurture FSY Studio</li>
+      <li class="li-ko">Aucune séquence onboarding post-achat</li>
+      <li class="li-ko">Aucune séquence anti-churn</li>
+      <li class="li-ko">Tags source/intérêt non utilisés</li>
+      <li class="li-partial">Segments obsolètes (mi-2024)</li>
+      <li class="li-ko">Template rétention désactivé</li>
+    </ul>
+  </div>
+  <div class="audit-card circle-card">
+    <h3><span class="icon">⭕</span> Circle — Ce qui existe</h3>
+    <ul>
+      <li class="li-ok">Communauté créée (face-soul-yoga.circle.so)</li>
+      <li class="li-ok">2 Space Groups : MTM + FSY Studio</li>
+      <li class="li-ok">12 spaces structurés (cours, chat, members)</li>
+      <li class="li-ok">FSY Studio caché aux non-membres</li>
+      <li class="li-ok">Charte couleur configurée</li>
+      <li class="li-ok">Anam (VA) a accès pour migration</li>
+      <li class="li-ko">2 membres seulement (Aurélia + Anam)</li>
+      <li class="li-ko">0 vidéo visible dans les courses</li>
+      <li class="li-ko">Aucun webhook</li>
+      <li class="li-ko">Stripe non connecté</li>
+      <li class="li-ko">Aucune automation interne</li>
+      <li class="li-ko">Migration 592 membres non faite</li>
+    </ul>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-container">
+  <h3>Progression globale</h3>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    <span class="progress-text" id="progressText">0 / 29</span>
+  </div>
+  <div class="progress-phases">
+    <span class="progress-phase active" data-phase="0">P0 · Prérequis</span>
+    <span class="progress-phase" data-phase="1">P1 · Capture</span>
+    <span class="progress-phase" data-phase="2">P2 · Nurture</span>
+    <span class="progress-phase" data-phase="3">P3 · Onboarding</span>
+    <span class="progress-phase" data-phase="4">P4 · Rétention</span>
+    <span class="progress-phase" data-phase="5">P5 · Tracking</span>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PHASE 0 : PRÉREQUIS                          -->
+<!-- ============================================ -->
+<div class="phase ph-0">
+  <div class="phase-header">
+    <div class="phase-num">0</div>
+    <div class="phase-title">PRÉREQUIS — Connexions entre outils</div>
+    <div class="phase-meta">
+      <span class="phase-who who-laurie">Laurie</span>
+      <span class="phase-who who-catherine">Catherine</span>
+      <span class="phase-time">~2 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="blocker"><strong>Bloquant :</strong> Tant que cette phase n'est pas terminée, rien d'autre ne peut avancer. Chaque étape suivante dépend de ces connexions.</div>
+
+    <div class="step" data-step="0-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Connecter Stripe à Circle</div>
+          <div class="step-desc">
+            Dans Circle → Settings → Integrations → Stripe. Associer le compte Stripe d'Aurélia.<br>
+            Configurer les 2 niveaux de paiement :
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-circle">Circle</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Dans Circle :</strong><br>
+            1. Settings → Integrations → Connect Stripe<br>
+            2. Créer un Paywall "FSY Studio" → 17€/mois ou 139€/an<br>
+            3. Créer un Paywall "Master The Method" → 2 900€ one-shot<br>
+            4. Associer le paywall FSY Studio au Space Group "FSY The Studio"<br>
+            5. Associer le paywall MTM au Space Group "Master The Method"<br>
+            6. Tester un achat fictif (mode test Stripe) pour vérifier l'accès automatique<br><br>
+            <strong>Résultat attendu :</strong> Quand quelqu'un paie via Stripe, il reçoit automatiquement accès au bon Space Group dans Circle.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="0-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Vérifier que les vidéos sont migrées dans les courses Circle</div>
+          <div class="step-desc">
+            Anam migre les vidéos Uscreen → Bunny.net → Circle. Vérifier que chaque course contient ses vidéos avec le bon ordre et les bons titres. Sans contenu, inutile de migrer les membres.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-circle">Circle</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Courses à vérifier :</strong><br>
+            - Programme Découverte<br>
+            - Programme Bas du Visage<br>
+            - Programme V-Shape<br>
+            - Routines de - de 5 min<br>
+            - Entre 5 et 15 min<br>
+            - Exercices Individuels<br>
+            - La Formation (MTM)<br><br>
+            <strong>Checklist par course :</strong><br>
+            □ Vidéos uploadées et lisibles<br>
+            □ Ordre correct des modules<br>
+            □ Titres et descriptions renseignés<br>
+            □ Drip content configuré si nécessaire (débloquer progressivement)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="0-3">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Créer un webhook Circle → n8n</div>
+          <div class="step-desc">
+            Configurer un webhook dans Circle pour envoyer les événements (nouveau membre, membre supprimé, post créé) vers n8n. Ça permettra de synchroniser Circle avec Brevo.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-circle">Circle</span>
+            <span class="tool-tag t-n8n">n8n</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Dans Circle :</strong> Settings → Developers → Webhooks → Add Webhook<br>
+            <strong>URL :</strong> URL du webhook n8n (à créer dans n8n d'abord)<br>
+            <strong>Événements à écouter :</strong><br>
+            - <code>member.created</code> → nouveau membre<br>
+            - <code>member.deleted</code> → membre supprimé/annulé<br>
+            - <code>post.created</code> → activité contenu<br><br>
+            <strong>Dans n8n :</strong> Créer un workflow "Circle Webhook Receiver" avec un node Webhook en entrée.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="0-4">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Créer un webhook Stripe → n8n</div>
+          <div class="step-desc">
+            Configurer un webhook Stripe pour capturer les événements paiement (nouveau, annulation, échec) et les envoyer à n8n.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-n8n">n8n</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Dans Stripe :</strong> Developers → Webhooks → Add endpoint<br>
+            <strong>URL :</strong> URL du webhook n8n<br>
+            <strong>Événements :</strong><br>
+            - <code>checkout.session.completed</code> → nouvel achat<br>
+            - <code>customer.subscription.deleted</code> → annulation abo<br>
+            - <code>customer.subscription.updated</code> → changement abo<br>
+            - <code>invoice.payment_failed</code> → échec paiement<br>
+            - <code>invoice.paid</code> → paiement réussi<br><br>
+            <strong>Dans n8n :</strong> Créer un workflow "Stripe Webhook Receiver".
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="0-5">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ FAIT — Attributs Brevo créés</div>
+          <div class="step-desc">
+            9 attributs créés via API le 06/04/2026 : <code>SOURCE</code>, <code>INTERET</code>, <code>OFFRE</code>, <code>DATE_ACHAT</code>, <code>STATUT_MEMBRE</code>, <code>CIRCLE_ID</code>, <code>UTM_SOURCE</code>, <code>UTM_MEDIUM</code>, <code>UTM_CAMPAIGN</code>.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Via API Brevo ou interface :</strong> Contacts → Settings → Contact Attributes<br><br>
+            <strong>Attributs à créer :</strong><br>
+            - <code>SOURCE</code> (text) → instagram, youtube, newsletter, lead_magnet, manychat<br>
+            - <code>INTERET</code> (text) → sommeil, face_yoga, machoire, stress, formation<br>
+            - <code>OFFRE</code> (text) → fsy_studio, mtm, sommeil_joie, retraite<br>
+            - <code>DATE_ACHAT</code> (date) → date du premier achat<br>
+            - <code>STATUT_MEMBRE</code> (text) → prospect, free_trial, active, churned, ex_membre<br>
+            - <code>CIRCLE_ID</code> (text) → ID membre Circle pour la synchro<br>
+            - <code>UTM_SOURCE</code> (text)<br>
+            - <code>UTM_MEDIUM</code> (text)<br>
+            - <code>UTM_CAMPAIGN</code> (text)<br><br>
+            <strong>Catherine peut le faire via Claude (API Brevo).</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dep-arrow">▼ <span class="dep-label">Phase 0 terminée = outils connectés</span></div>
+
+<!-- ============================================ -->
+<!-- PHASE 1 : CAPTURE & TAGS                     -->
+<!-- ============================================ -->
+<div class="phase ph-1">
+  <div class="phase-header">
+    <div class="phase-num">1</div>
+    <div class="phase-title">CAPTURE — Identifier et taguer chaque prospect</div>
+    <div class="phase-meta">
+      <span class="phase-who who-claude">Claude/n8n</span>
+      <span class="phase-who who-catherine">Catherine</span>
+      <span class="phase-time">~3 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="1-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Manychat → Brevo</div>
+          <div class="step-desc">
+            Quand Manychat capture un email en DM Instagram, un webhook envoie à n8n qui crée/met à jour le contact Brevo avec les tags : <code>SOURCE=instagram</code>, <code>INTERET=&lt;réponse quiz&gt;</code>, date.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-manychat">Manychat</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Flux :</strong><br>
+            1. Manychat : dans le flow quiz, ajouter une action "External Request" → webhook n8n<br>
+            2. Payload : <code>{ email, prenom, interet, source: "instagram" }</code><br>
+            3. n8n : node Webhook → node HTTP Request (Brevo API POST /contacts)<br>
+            4. Créer le contact avec : listIds=[9], attributes={ SOURCE, INTERET, STATUT_MEMBRE="prospect" }<br>
+            5. Si contact existe → update attributes seulement<br><br>
+            <strong>Test :</strong> Envoyer un test depuis Manychat, vérifier dans Brevo que le contact apparaît avec les bons attributs.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Stripe achat FSY Studio → Brevo tag "active"</div>
+          <div class="step-desc">
+            <strong>FSY Studio uniquement</strong> (17€/mois — B2C, pas de contrat). Quand Stripe confirme un achat → n8n met à jour le contact Brevo : <code>STATUT_MEMBRE=active</code>, <code>OFFRE=fsy_studio</code>, <code>DATE_ACHAT</code>, ajoute à la liste "Active Members" (#12). Pour MTM (B2B) → voir étape 1-6 (passe par eSignatures).
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Trigger :</strong> Webhook Stripe <code>checkout.session.completed</code><br>
+            <strong>Logique n8n :</strong><br>
+            1. Extraire email + product du payload Stripe<br>
+            2. Déterminer l'offre (montant → fsy_studio / mtm / sommeil_joie)<br>
+            3. Brevo API : update contact → STATUT_MEMBRE="active", OFFRE, DATE_ACHAT<br>
+            4. Brevo API : ajouter à liste #12 (Active Members)<br>
+            5. Retirer de liste #11 (Free Trial) si présent
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1-3">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Stripe annulation → Brevo tag "churned"</div>
+          <div class="step-desc">
+            Quand un abonné annule → n8n met à jour : <code>STATUT_MEMBRE=churned</code>, retire de "Active Members", ajoute à une nouvelle liste "Ex-Membres".
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1-4">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Circle nouveau membre → Brevo sync</div>
+          <div class="step-desc">
+            Quand Circle crée un membre → n8n synchronise le <code>CIRCLE_ID</code> dans Brevo et confirme le statut. Double vérification avec Stripe.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-circle">Circle</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1-5">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Ajouter les UTM sur tous les liens</div>
+          <div class="step-desc">
+            Bio Instagram, description YouTube, liens newsletter, chaque lead magnet. Format : <code>?utm_source=instagram&utm_medium=bio&utm_campaign=fsy_studio</code>
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Liens à taguer :</strong><br>
+            - Bio Instagram → <code>utm_source=instagram&utm_medium=bio</code><br>
+            - Lien stories → <code>utm_source=instagram&utm_medium=story</code><br>
+            - Description YouTube → <code>utm_source=youtube&utm_medium=description</code><br>
+            - Newsletter Brevo → <code>utm_source=brevo&utm_medium=newsletter</code><br>
+            - Chaque lead magnet → <code>utm_source=lead_magnet&utm_campaign=ebook_machoire</code> (etc.)<br><br>
+            <strong>Qui :</strong> Aurélia ou Laurie mettent à jour les liens. Catherine configure les templates.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="1-6">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Stripe MTM → eSignatures → Circle</div>
+          <div class="step-desc">
+            Flux spécifique MTM (B2B, 2 900€) : paiement Stripe → n8n envoie contrat pré-rempli via API eSignatures.com → webhook "signed" → n8n donne accès Circle MTM + lance onboarding Brevo. <strong>Zéro intervention manuelle.</strong>
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-esign">eSignatures.com</span>
+            <span class="tool-tag t-circle">Circle</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Prérequis :</strong> Compte eSignatures.com + API key<br><br>
+            <strong>1. Template contrat MTM :</strong><br>
+            - Créer un template dans eSignatures.com avec les champs variables : nom, prénom, entreprise, email, adresse, SIRET<br>
+            - Le contenu du contrat est standard (conditions MTM, tarif 2 900€, obligations)<br>
+            - Coût : 0,49€ par contrat envoyé<br><br>
+            <strong>2. Workflow n8n :</strong><br>
+            - Trigger : Webhook Stripe <code>checkout.session.completed</code> (produit = MTM)<br>
+            - Node IF : vérifier que le produit est bien MTM (pas FSY Studio)<br>
+            - Node HTTP Request : API eSignatures.com → envoyer contrat pré-rempli<br>
+            - Payload : <code>{ template_id, signers: [{ name, email, company }] }</code><br><br>
+            <strong>3. Deuxième workflow n8n :</strong><br>
+            - Trigger : Webhook eSignatures.com → événement <code>contract.signed</code><br>
+            - Node HTTP Request : Circle API → inviter membre au Space Group MTM<br>
+            - Node HTTP Request : Brevo API → update STATUT_MEMBRE="active", OFFRE="mtm"<br>
+            - → Déclenche la séquence onboarding MTM (6 emails déjà prêts)<br><br>
+            <strong>Résultat :</strong> Le client paie → reçoit le contrat sur mobile → signe → accès Circle automatique + emails onboarding. Aurélia ne touche à rien.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dep-arrow">▼ <span class="dep-label">Capture en place = on sait d'où viennent les prospects</span></div>
+
+<!-- ============================================ -->
+<!-- PHASE 2 : NURTURE                            -->
+<!-- ============================================ -->
+<div class="phase ph-2">
+  <div class="phase-header">
+    <div class="phase-num">2</div>
+    <div class="phase-title">NURTURE — Séquences email pré-achat</div>
+    <div class="phase-meta">
+      <span class="phase-who who-claude">Claude</span>
+      <span class="phase-who who-aurelia">Aurélia valide</span>
+      <span class="phase-time">~5 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="2-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Séquence "Sommeil" — 4 emails</div>
+          <div class="step-desc">
+            Templates #184 à #187 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + remplacer les [LIEN_...] + validation Aurélia.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur (Entry Point) :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>INTERET</code><br>
+            → Valeur : <code>sommeil</code><br><br>
+            <strong>2. Enchaînement :</strong><br>
+            → <strong>Envoyer email</strong> → Template #184 "Nurture-Sommeil-1-Bienvenue"<br>
+            → <strong>Attendre 3 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #185 "Nurture-Sommeil-2-Temoignage"<br>
+            → <strong>Attendre 2 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #186 "Nurture-Sommeil-3-Video"<br>
+            → <strong>Attendre 2 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #187 "Nurture-Sommeil-4-Offre"<br><br>
+            <strong>3. Paramètres :</strong><br>
+            → Nom : "Nurture Sommeil"<br>
+            → Autoriser un contact à entrer plusieurs fois : NON<br>
+            → Heures d'envoi : 8h-20h (fuseau Europe/Paris)<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="2-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Séquence "Face Yoga" — 4 emails</div>
+          <div class="step-desc">
+            Templates #188 à #191 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + remplacer les [LIEN_...] + validation Aurélia.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>INTERET</code><br>
+            → Valeur : <code>face_yoga</code><br><br>
+            <strong>2. Enchaînement :</strong><br>
+            → <strong>Envoyer email</strong> → Template #188 "Nurture-FaceYoga-1-Bienvenue"<br>
+            → <strong>Attendre 3 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #189 "Nurture-FaceYoga-2-AvantApres"<br>
+            → <strong>Attendre 2 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #190 "Nurture-FaceYoga-3-10min"<br>
+            → <strong>Attendre 2 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #191 "Nurture-FaceYoga-4-Offre"<br><br>
+            <strong>3. Paramètres :</strong><br>
+            → Nom : "Nurture Face Yoga"<br>
+            → Autoriser un contact à entrer plusieurs fois : NON<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="2-3">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Séquence "Générale" — 4 emails</div>
+          <div class="step-desc">
+            Templates #192 à #195 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + remplacer les [LIEN_...] + validation Aurélia.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact is added to a list"<br>
+            → Liste : <code>FSY Audience (#9)</code><br><br>
+            <strong>2. Condition (filtre) :</strong><br>
+            → Ajouter une condition APRÈS le déclencheur :<br>
+            → "Contact attribute" → <code>INTERET</code> → "is empty"<br>
+            → (Si le contact a déjà un intérêt, il ira dans la séquence Sommeil ou Face Yoga à la place)<br><br>
+            <strong>3. Enchaînement :</strong><br>
+            → <strong>Envoyer email</strong> → Template #192 "Nurture-Generale-1-Bienvenue"<br>
+            → <strong>Attendre 3 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #193 "Nurture-Generale-2-Decouverte"<br>
+            → <strong>Attendre 4 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #194 "Nurture-Generale-3-Quiz"<br>
+            → <strong>Attendre 7 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #195 "Nurture-Generale-4-Offre"<br><br>
+            <strong>4. Paramètres :</strong><br>
+            → Nom : "Nurture Générale"<br>
+            → Autoriser un contact à entrer plusieurs fois : NON<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="2-4">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates existants — Automation Brevo : Séquence "MTM Pré-vente" — 7 emails</div>
+          <div class="step-desc">
+            Templates #154 à #175 existaient déjà. <strong>Reste à faire :</strong> vérifier/créer l'automation dans Brevo.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Vérifier d'abord :</strong><br>
+            → Aller dans Automations → vérifier s'il existe déjà une automation avec ces templates<br>
+            → Si oui, vérifier le déclencheur et les délais<br>
+            → Si non, créer :<br><br>
+            <strong>2. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>INTERET</code><br>
+            → Valeur : <code>formation</code><br><br>
+            <strong>3. Enchaînement :</strong><br>
+            → Template #154 "Formation-email-1" → <strong>Attendre 2 jours</strong><br>
+            → Template #165 "Formation-email-2" → <strong>Attendre 2 jours</strong><br>
+            → Template #166 "Formation-email-3" → <strong>Attendre 2 jours</strong><br>
+            → Template #167 "Formation-email-4" → <strong>Attendre 2 jours</strong><br>
+            → Template #168 "Formation-email-5" → <strong>Attendre 2 jours</strong><br>
+            → Template #169 "Formation-email-6" → <strong>Attendre 3 jours</strong><br>
+            → Template #175 "Formation-email-7"<br><br>
+            <strong>4. Paramètres :</strong><br>
+            → Nom : "Nurture MTM Pré-vente"<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="2-5">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Tester chaque séquence bout en bout</div>
+          <div class="step-desc">
+            Créer un contact test par séquence, vérifier que tous les emails arrivent au bon moment avec le bon contenu.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>Pour chaque séquence :</strong><br><br>
+            <strong>1. Créer un contact test :</strong><br>
+            → Contacts → Ajouter un contact<br>
+            → Email : <code>test-sommeil@csbusiness.fr</code> (ou test-faceyoga@, test-generale@, test-mtm@)<br>
+            → PRENOM : "Test"<br><br>
+            <strong>2. Déclencher la séquence :</strong><br>
+            → Modifier le contact test → changer l'attribut <code>INTERET</code> à la valeur correspondante<br>
+            → (Pour la séquence Générale : ajouter le contact à la liste FSY Audience #9)<br><br>
+            <strong>3. Vérifier :</strong><br>
+            → L'email J+0 arrive immédiatement<br>
+            → Vérifier le contenu, les liens, l'affichage mobile<br>
+            → Pour les emails suivants : dans l'automation, clic droit sur le délai → "Skip wait" pour accélérer le test<br><br>
+            <strong>4. Faire valider par Aurélia :</strong><br>
+            → Transférer chaque email test à aurelia.delsol@gmail.com<br>
+            → Attendre son OK avant d'activer l'automation
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dep-arrow">▼ <span class="dep-label">Nurture en place = les prospects reçoivent le bon message</span></div>
+
+<!-- ============================================ -->
+<!-- PHASE 3 : ONBOARDING                         -->
+<!-- ============================================ -->
+<div class="phase ph-3">
+  <div class="phase-header">
+    <div class="phase-num">3</div>
+    <div class="phase-title">ONBOARDING — Accueil des nouveaux membres</div>
+    <div class="phase-meta">
+      <span class="phase-who who-claude">Claude</span>
+      <span class="phase-who who-laurie">Laurie valide</span>
+      <span class="phase-time">~4 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="3-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Onboarding FSY Studio (J+0, J+3, J+7)</div>
+          <div class="step-desc">
+            Templates #196, #197, #198 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + remplacer les [LIEN_...] + validation Laurie.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>STATUT_MEMBRE</code><br>
+            → Valeur : <code>active</code><br><br>
+            <strong>2. Condition (filtre) :</strong><br>
+            → Ajouter une condition : <code>OFFRE</code> = <code>fsy_studio</code><br>
+            → (Pour séparer du onboarding MTM qui a sa propre séquence)<br><br>
+            <strong>3. Enchaînement :</strong><br>
+            → <strong>Envoyer email</strong> → Template #196 "Onboarding-FSY-1-Bienvenue"<br>
+            → <strong>Attendre 3 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #197 "Onboarding-FSY-2-PremiersPas"<br>
+            → <strong>Attendre 4 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #198 "Onboarding-FSY-3-Feedback"<br><br>
+            <strong>4. Paramètres :</strong><br>
+            → Nom : "Onboarding FSY Studio"<br>
+            → Autoriser un contact à entrer plusieurs fois : NON<br>
+            → Heures d'envoi : 8h-20h<br>
+            → NE PAS activer avant validation Laurie<br><br>
+            <strong>Note :</strong> Le déclencheur se fait via n8n (workflow 01 : Stripe → Brevo met STATUT_MEMBRE=active). L'automation Brevo réagit au changement d'attribut.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="3-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Chatbot WhatsApp : Message de bienvenue auto</div>
+          <div class="step-desc">
+            Quand un nouveau membre rejoint le groupe WhatsApp FSY → chatbot envoie bienvenue + FAQ. (Pivot WhatsApp décidé session 6.) <strong>→ n8n, pas Brevo.</strong>
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-n8n">n8n</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="3-5">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Alerte J+14 : Relance si inactif → n8n (pas Brevo)</div>
+          <div class="step-desc">
+            Nécessite les données Circle (dernière activité). <strong>→ n8n, pas Brevo.</strong> Envoie une alerte à Laurie pour contact humain.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-circle">Circle webhook</span>
+            <span class="tool-tag t-n8n">n8n</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="3-6">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates existants — Automation Brevo : Onboarding MTM (6 emails)</div>
+          <div class="step-desc">
+            Templates #178 à #183 existaient déjà. <strong>Reste à faire :</strong> créer l'automation dans Brevo.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo Automation</span>
+            <span class="tool-tag t-esign">eSignatures.com</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>STATUT_MEMBRE</code><br>
+            → Valeur : <code>active</code><br><br>
+            <strong>2. Condition (filtre) :</strong><br>
+            → <code>OFFRE</code> = <code>mtm</code><br><br>
+            <strong>3. Enchaînement :</strong><br>
+            → <strong>Envoyer email</strong> → Template #178 "MTM-email-1" (J+0)<br>
+            → <strong>Attendre 7 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #179 "MTM-email-2" (J+7)<br>
+            → <strong>Attendre 23 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #180 "MTM-email-3" (J+30)<br>
+            → <strong>Attendre 60 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #181 "MTM-email-4" (J+90)<br>
+            → <strong>Attendre 90 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #182 "MTM-email-5" (J+180)<br>
+            → <strong>Attendre 150 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #183 "MTM-email-6" (J+330)<br><br>
+            <strong>4. Paramètres :</strong><br>
+            → Nom : "Onboarding MTM"<br>
+            → <strong>Vouvoiement</strong> (B2B pro)<br>
+            → NE PAS activer avant validation Aurélia<br><br>
+            <strong>Flux complet :</strong> Client paie 2 900€ → n8n envoie contrat eSignatures → signature → n8n met OFFRE=mtm + STATUT=active dans Brevo → cette automation se déclenche.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dep-arrow">▼ <span class="dep-label">Onboarding en place = les nouveaux membres sont guidés</span></div>
+
+<!-- ============================================ -->
+<!-- PHASE 4 : RÉTENTION                          -->
+<!-- ============================================ -->
+<div class="phase ph-4">
+  <div class="phase-header">
+    <div class="phase-num">4</div>
+    <div class="phase-title">RÉTENTION — Anti-churn et reconquête</div>
+    <div class="phase-meta">
+      <span class="phase-who who-claude">Claude</span>
+      <span class="phase-who who-aurelia">Aurélia valide</span>
+      <span class="phase-time">~4 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="4-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Bilans FSY Studio (J+30, J+60, J+90)</div>
+          <div class="step-desc">
+            Templates #199, #200, #201 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + validation Aurélia.
+          </div>
+          <div class="step-tools"><span class="tool-tag t-brevo">Brevo Automation</span></div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>DATE_ACHAT</code><br>
+            → (Se déclenche quand n8n écrit la date d'achat après paiement Stripe)<br><br>
+            <strong>2. Condition :</strong><br>
+            → <code>OFFRE</code> = <code>fsy_studio</code><br><br>
+            <strong>3. Enchaînement :</strong><br>
+            → <strong>Attendre 30 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #199 "Retention-Bilan-J30"<br>
+            → <strong>Attendre 30 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #200 "Retention-Bilan-J60"<br>
+            → <strong>Attendre 30 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #201 "Retention-Bilan-J90"<br><br>
+            <strong>4. Paramètres :</strong><br>
+            → Nom : "Bilans FSY Studio J30-60-90"<br>
+            → Autoriser un contact à entrer plusieurs fois : NON<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="4-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Templates FAITS — Automation Brevo : Post-annulation + Reconquête</div>
+          <div class="step-desc">
+            Templates #204 et #205 créés le 06/04. <strong>Reste à faire :</strong> créer l'automation dans Brevo + validation Aurélia.
+          </div>
+          <div class="step-tools"><span class="tool-tag t-brevo">Brevo Automation</span></div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1. Déclencheur :</strong><br>
+            → "A contact attribute is updated"<br>
+            → Attribut : <code>STATUT_MEMBRE</code><br>
+            → Valeur : <code>churned</code><br><br>
+            <strong>2. Enchaînement :</strong><br>
+            → <strong>Attendre 1 jour</strong><br>
+            → <strong>Envoyer email</strong> → Template #204 "Retention-PostAnnulation-J1"<br>
+            → <strong>Attendre 29 jours</strong><br>
+            → <strong>Envoyer email</strong> → Template #205 "Retention-Reconquete-M1"<br><br>
+            <strong>3. Paramètres :</strong><br>
+            → Nom : "Post-annulation + Reconquête"<br>
+            → Autoriser un contact à entrer plusieurs fois : OUI (un client peut churner, revenir, re-churner)<br>
+            → NE PAS activer avant validation Aurélia
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="4-3">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Alerte inactivité 14 jours</div>
+          <div class="step-desc">
+            Workflow 08 créé le 06/04. Scanne Circle chaque lundi, tag les inactifs dans Brevo, envoie alerte email. <strong>Reste à faire :</strong> importer dans n8n + activer.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-circle">Circle</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="4-4">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">✅ Workflow n8n FAIT — Pré-annulation J-7</div>
+          <div class="step-desc">
+            Workflow 09 créé le 06/04. Reçoit webhook Stripe <code>invoice.upcoming</code> → envoie template #203. <strong>Reste à faire :</strong> importer dans n8n + configurer webhook dans Stripe (accès nécessaire).
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-stripe">Stripe</span>
+            <span class="tool-tag t-n8n">n8n</span>
+            <span class="tool-tag t-brevo">Brevo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="4-6">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Réactiver le template rétention existant</div>
+          <div class="step-desc">
+            Le template #50 "Me laisserais-tu une dernière chance ?" est désactivé.
+          </div>
+          <div class="step-tools"><span class="tool-tag t-brevo">Brevo</span></div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Pas-à-pas Brevo</span>
+          <div class="step-detail">
+            <strong>1.</strong> Aller dans Brevo → Templates → chercher #50<br>
+            <strong>2.</strong> L'activer<br>
+            <strong>3.</strong> Décider où l'intégrer : soit dans la séquence post-annulation (entre J+1 et M+1), soit comme email séparé déclenché par le tag "inactive"<br>
+            <strong>4.</strong> Vérifier le contenu — il date peut-être, Aurélia doit valider
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dep-arrow">▼ <span class="dep-label">Rétention en place = on garde les membres</span></div>
+
+<!-- ============================================ -->
+<!-- PHASE 5 : TRACKING & PILOTAGE                -->
+<!-- ============================================ -->
+<div class="phase ph-5">
+  <div class="phase-header">
+    <div class="phase-num">5</div>
+    <div class="phase-title">TRACKING — Mesurer et piloter</div>
+    <div class="phase-meta">
+      <span class="phase-who who-claude">Claude</span>
+      <span class="phase-who who-catherine">Catherine</span>
+      <span class="phase-time">~3 jours</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="5-1">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Mettre à jour les segments Brevo</div>
+          <div class="step-desc">
+            Recréer des segments dynamiques : Prospects actifs (dernière ouverture &lt;30j), Membres actifs, Membres inactifs (&gt;14j), Churned (&lt;90j, reconquête possible), Ex-membres (&gt;90j).
+          </div>
+          <div class="step-tools"><span class="tool-tag t-brevo">Brevo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="5-2">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Dashboard KPI FSY — connecter aux vraies données</div>
+          <div class="step-desc">
+            Le dashboard-kpi-fsy.html existe mais est hardcodé. Le connecter à Brevo API (contacts par segment) + Stripe API (MRR, churn) + Circle API (membres actifs).
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo API</span>
+            <span class="tool-tag t-stripe">Stripe API</span>
+            <span class="tool-tag t-circle">Circle API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="5-3">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Migration des 592 membres actifs vers Circle</div>
+          <div class="step-desc">
+            Une fois tout en place : exporter les 592 "Active Members" de Brevo → import batch dans Circle avec le bon Space Group. Email de migration à prévoir (expliquant le changement de plateforme).
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-brevo">Brevo export</span>
+            <span class="tool-tag t-circle">Circle import</span>
+          </div>
+          <span class="step-toggle" onclick="toggleDetail(this)">▸ Détail</span>
+          <div class="step-detail">
+            <strong>Séquence migration :</strong><br>
+            1. Email J-7 : "On déménage ! Voici ce qui change et pourquoi c'est mieux"<br>
+            2. Email J-3 : "Plus que 3 jours — crée ton compte Circle maintenant"<br>
+            3. Email J-Day : "C'est aujourd'hui ! Ton lien d'accès Circle"<br>
+            4. Email J+3 : "Tu n'as pas encore activé ton compte ? On t'aide"<br>
+            5. Email J+7 : Dernière relance + offre bonus pour ceux qui migrent<br><br>
+            <strong>Important :</strong> Ne pas couper l'ancien accès (Uscreen) avant que 80%+ aient migré.<br>
+            <strong>Deadline :</strong> Objectif 31 juillet 2026 (décision session 6).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="5-4">
+      <div class="step-header">
+        <div class="step-checkbox" onclick="toggleStep(this)"></div>
+        <div class="step-content">
+          <div class="step-title">Rapport hebdo automatique</div>
+          <div class="step-desc">
+            Workflow n8n qui envoie chaque lundi un résumé à Aurélia : nouveaux membres, churns, taux d'ouverture emails, membres actifs Circle.
+          </div>
+          <div class="step-tools">
+            <span class="tool-tag t-n8n">n8n cron</span>
+            <span class="tool-tag t-brevo">Brevo API</span>
+            <span class="tool-tag t-stripe">Stripe API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  CS Consulting Stratégique — Plan d'implémentation workflow FSY — 6 avril 2026<br>
+  Basé sur l'audit Brevo (API) + Circle (API) réalisé par Catherine + Claude
+</footer>
+
+<script>
+// Checkbox persistence
+function toggleStep(el) {
+  el.classList.toggle('checked');
+  el.closest('.step').classList.toggle('done');
+  saveState();
+  updateProgress();
+}
+
+function toggleDetail(el) {
+  const detail = el.nextElementSibling;
+  detail.classList.toggle('open');
+  el.textContent = detail.classList.contains('open') ? '▾ Masquer' : '▸ Détail';
+}
+
+function saveState() {
+  const state = {};
+  document.querySelectorAll('.step').forEach(step => {
+    const id = step.dataset.step;
+    state[id] = step.classList.contains('done');
+  });
+  localStorage.setItem('fsy-workflow-plan', JSON.stringify(state));
+}
+
+// Étapes terminées le 06/04/2026 par Catherine + Claude
+const COMPLETED_STEPS = [
+  '0-5',  // Attributs Brevo créés
+  '2-1',  // Templates nurture Sommeil créés (#184-187)
+  '2-2',  // Templates nurture Face Yoga créés (#188-191)
+  '2-3',  // Templates nurture Générale créés (#192-195)
+  '2-4',  // Templates MTM pré-vente vérifiés (existants #154-175)
+  '3-1',  // Templates onboarding FSY Studio créés (#196-198)
+  '3-6',  // Templates onboarding MTM vérifiés (existants #178-183)
+  '4-1',  // Templates bilans J30/60/90 créés (#199-201)
+  '4-2',  // Templates post-annulation + reconquête créés (#204-205)
+  '4-3',  // Workflow n8n alerte inactivité créé (JSON)
+  '4-4',  // Workflow n8n pré-annulation créé (JSON)
+];
+
+function loadState() {
+  const raw = localStorage.getItem('fsy-workflow-plan');
+  let state = {};
+  if (raw) {
+    state = JSON.parse(raw);
+  }
+  // Marquer les étapes complétées par défaut
+  COMPLETED_STEPS.forEach(id => {
+    if (state[id] === undefined) state[id] = true;
+  });
+  document.querySelectorAll('.step').forEach(step => {
+    const id = step.dataset.step;
+    if (state[id]) {
+      step.classList.add('done');
+      step.querySelector('.step-checkbox').classList.add('checked');
+    }
+  });
+  saveState();
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.step').length;
+  const done = document.querySelectorAll('.step.done').length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / ' + total;
+
+  // Update phase badges
+  document.querySelectorAll('.progress-phase').forEach(badge => {
+    const phase = badge.dataset.phase;
+    const phaseSteps = document.querySelectorAll(`.step[data-step^="${phase}-"]`);
+    const phaseDone = document.querySelectorAll(`.step.done[data-step^="${phase}-"]`);
+    badge.classList.remove('active', 'completed');
+    if (phaseDone.length === phaseSteps.length && phaseSteps.length > 0) {
+      badge.classList.add('completed');
+    } else if (phaseDone.length > 0) {
+      badge.classList.add('active');
+    }
+  });
+  // First non-completed phase is active
+  const phases = document.querySelectorAll('.progress-phase');
+  let foundActive = false;
+  phases.forEach(p => {
+    if (!p.classList.contains('completed') && !foundActive) {
+      p.classList.add('active');
+      foundActive = true;
+    }
+  });
+}
+
+loadState();
+</script>
+
+</body>
+</html>

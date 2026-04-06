@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSY — Liste UTM Complète</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; color: #e8e0d8; font-family: 'Inter', sans-serif; padding: 24px; max-width: 900px; margin: 0 auto; }
+  h1 { color: #C27A5A; font-size: 1.5rem; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 24px; }
+  .info { background: #1a1a1a; border: 1px solid #C27A5A; border-radius: 8px; padding: 14px; margin-bottom: 24px; font-size: 0.82rem; color: #d4956f; line-height: 1.6; }
+  .info strong { color: #C27A5A; }
+
+  .section { margin-bottom: 28px; }
+  .section-title { font-size: 0.95rem; font-weight: 700; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .st-ig { background: linear-gradient(135deg, #2e1a2e, #151515); color: #ce93d8; }
+  .st-yt { background: linear-gradient(135deg, #2e1a1a, #151515); color: #ef5350; }
+  .st-brevo { background: linear-gradient(135deg, #1a2433, #151515); color: #64b5f6; }
+  .st-lead { background: linear-gradient(135deg, #1a2e1a, #151515); color: #81c784; }
+  .st-mc { background: linear-gradient(135deg, #1a2e2e, #151515); color: #80cbc4; }
+  .st-site { background: linear-gradient(135deg, #2e2a1a, #151515); color: #ffd54f; }
+
+  .utm-row { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 12px; margin-bottom: 8px; }
+  .utm-label { font-size: 0.82rem; font-weight: 600; color: #e8e0d8; margin-bottom: 6px; }
+  .utm-url { background: #0f0f0f; border: 1px solid #444; border-radius: 4px; padding: 8px 12px; font-size: 0.75rem; font-family: monospace; color: #C27A5A; word-break: break-all; cursor: pointer; position: relative; }
+  .utm-url:hover { border-color: #C27A5A; }
+  .utm-url::after { content: 'Cliquer pour copier'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; color: #666; font-family: 'Inter', sans-serif; }
+  .utm-url.copied::after { content: 'Copié ✓'; color: #4CAF50; }
+  .utm-note { font-size: 0.72rem; color: #888; margin-top: 4px; font-style: italic; }
+
+  .replace { background: #2a1a14; border: 1px dashed #C27A5A; border-radius: 4px; padding: 4px 8px; color: #d4956f; font-size: 0.72rem; display: inline-block; margin-top: 4px; }
+
+  footer { text-align: center; color: #555; font-size: 0.72rem; margin-top: 32px; padding-top: 16px; border-top: 1px solid #222; }
+</style>
+</head>
+<body>
+
+<h1>Liste UTM — Face Soul Yoga</h1>
+<p class="subtitle">Tous les liens à taguer pour tracker les sources d'acquisition</p>
+
+<div class="info">
+  <strong>Comment ça marche :</strong> Les UTM sont des paramètres ajoutés à la fin d'un lien. Ils permettent de savoir d'où vient chaque personne qui clique. Brevo les capture automatiquement.<br><br>
+  <strong>Format :</strong> <code>?utm_source=xxx&amp;utm_medium=xxx&amp;utm_campaign=xxx</code><br>
+  <strong>Remplacer</strong> <code>[URL_PAGE_VENTE]</code> par le vrai lien de la page de vente FSY Studio, et <code>[URL_LEAD_MAGNET]</code> par le lien du lead magnet correspondant.
+</div>
+
+<!-- INSTAGRAM -->
+<div class="section">
+  <div class="section-title st-ig">📸 Instagram</div>
+
+  <div class="utm-row">
+    <div class="utm-label">Bio Instagram → Page de vente FSY Studio</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=instagram&utm_medium=bio&utm_campaign=fsy_studio</div>
+    <div class="replace">Remplacer [URL_PAGE_VENTE] par le vrai lien</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Lien dans les Stories</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=instagram&utm_medium=story&utm_campaign=fsy_studio</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Lien dans un Reel (description)</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=instagram&utm_medium=reel&utm_campaign=fsy_studio</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Bio Instagram → Lead magnet Ebook mâchoire</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_LEAD_MAGNET]?utm_source=instagram&utm_medium=bio&utm_campaign=ebook_machoire</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Bio Instagram → Quiz Sommeil</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_QUIZ_SOMMEIL]?utm_source=instagram&utm_medium=bio&utm_campaign=quiz_sommeil</div>
+  </div>
+</div>
+
+<!-- YOUTUBE -->
+<div class="section">
+  <div class="section-title st-yt">▶️ YouTube</div>
+
+  <div class="utm-row">
+    <div class="utm-label">Description vidéo → Page de vente FSY Studio</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=youtube&utm_medium=description&utm_campaign=fsy_studio</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Description vidéo → Lead magnet</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_LEAD_MAGNET]?utm_source=youtube&utm_medium=description&utm_campaign=ebook_machoire</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Carte/Écran de fin → Page de vente</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=youtube&utm_medium=card&utm_campaign=fsy_studio</div>
+  </div>
+</div>
+
+<!-- BREVO NEWSLETTER -->
+<div class="section">
+  <div class="section-title st-brevo">📧 Newsletter Brevo</div>
+
+  <div class="utm-row">
+    <div class="utm-label">CTA newsletter hebdo → Page de vente FSY Studio</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=brevo&utm_medium=newsletter&utm_campaign=fsy_studio</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">CTA newsletter → Page MTM (formation)</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_MTM]?utm_source=brevo&utm_medium=newsletter&utm_campaign=mtm</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">CTA newsletter → Sommeil et Joie</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_SOMMEIL_JOIE]?utm_source=brevo&utm_medium=newsletter&utm_campaign=sommeil_joie</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">CTA newsletter → Retraite</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_RETRAITE]?utm_source=brevo&utm_medium=newsletter&utm_campaign=retraite</div>
+  </div>
+</div>
+
+<!-- LEAD MAGNETS -->
+<div class="section">
+  <div class="section-title st-lead">🎁 Lead Magnets (formulaires)</div>
+
+  <div class="utm-row">
+    <div class="utm-label">Page Ebook Mâchoire (formulaire Brevo)</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_FORMULAIRE_EBOOK]?utm_source=lead_magnet&utm_medium=formulaire&utm_campaign=ebook_machoire</div>
+    <div class="utm-note">Le formulaire Brevo doit tagger le contact avec INTERET=machoire automatiquement</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Page Quiz Sommeil</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_QUIZ_SOMMEIL]?utm_source=lead_magnet&utm_medium=quiz&utm_campaign=quiz_sommeil</div>
+    <div class="utm-note">Le résultat du quiz doit tagger INTERET=sommeil dans Brevo</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Page Guide Anti-stress (à créer)</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_GUIDE_STRESS]?utm_source=lead_magnet&utm_medium=formulaire&utm_campaign=guide_stress</div>
+    <div class="utm-note">Tagger INTERET=stress dans Brevo</div>
+  </div>
+</div>
+
+<!-- MANYCHAT -->
+<div class="section">
+  <div class="section-title st-mc">💬 Manychat (DM Instagram)</div>
+
+  <div class="utm-row">
+    <div class="utm-label">Lien envoyé dans le DM après quiz</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=instagram&utm_medium=manychat_quiz&utm_campaign=fsy_studio</div>
+    <div class="utm-note">Le workflow n8n (05) capture déjà SOURCE=instagram + UTM_MEDIUM=manychat_quiz</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Lien vidéo gratuite envoyé en DM</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_VIDEO_GRATUITE]?utm_source=instagram&utm_medium=manychat_dm&utm_campaign=video_gratuite</div>
+  </div>
+</div>
+
+<!-- SITE WEB -->
+<div class="section">
+  <div class="section-title st-site">🌐 Site Web (facesoulyoga.com / Wix)</div>
+
+  <div class="utm-row">
+    <div class="utm-label">Bouton "Rejoindre le Studio" sur le site</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_VENTE]?utm_source=site_web&utm_medium=bouton_cta&utm_campaign=fsy_studio</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Pop-up newsletter sur le site</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_FORMULAIRE_NEWSLETTER]?utm_source=site_web&utm_medium=popup&utm_campaign=newsletter</div>
+  </div>
+
+  <div class="utm-row">
+    <div class="utm-label">Page Formation MTM sur le site</div>
+    <div class="utm-url" onclick="copyUTM(this)">[URL_PAGE_MTM]?utm_source=site_web&utm_medium=page_formation&utm_campaign=mtm</div>
+  </div>
+</div>
+
+<footer>
+  CS Consulting Stratégique — Liste UTM FSY — 6 avril 2026<br>
+  Cliquer sur un lien pour le copier. Remplacer les [URL_...] par les vrais liens avant utilisation.
+</footer>
+
+<script>
+function copyUTM(el) {
+  navigator.clipboard.writeText(el.textContent.trim());
+  el.classList.add('copied');
+  setTimeout(() => el.classList.remove('copied'), 2000);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSY — Parcours Client Complet (3 offres)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f0f; color: #e8e0d8; font-family: 'Inter', sans-serif; padding: 24px; }
+
+  h1 { color: #C27A5A; font-size: 1.8rem; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 8px; }
+  .instruction { background: #1a1a1a; border: 2px solid #C27A5A; border-radius: 8px; padding: 16px; margin-bottom: 32px; font-size: 0.85rem; color: #d4956f; }
+  .instruction strong { color: #C27A5A; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; margin-bottom: 0; }
+  .tab { padding: 12px 24px; cursor: pointer; font-weight: 600; font-size: 0.9rem; border-radius: 8px 8px 0 0; border: 1px solid #333; border-bottom: none; background: #1a1a1a; color: #888; transition: all 0.2s; }
+  .tab:hover { color: #ccc; }
+  .tab.active { background: #0f0f0f; color: #C27A5A; border-color: #C27A5A; }
+  .tab-fsy.active { color: #4CAF50; border-color: #4CAF50; }
+  .tab-mtm.active { color: #FF9800; border-color: #FF9800; }
+  .tab-ads.active { color: #9C27B0; border-color: #9C27B0; }
+
+  .tab-content { display: none; border: 1px solid #333; border-radius: 0 8px 8px 8px; padding: 24px; }
+  .tab-content.active { display: block; }
+
+  /* Parcours header */
+  .parcours-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #333; }
+  .parcours-header .price { font-size: 1.8rem; font-weight: 800; }
+  .parcours-header .desc { font-size: 0.85rem; color: #999; }
+  .price-fsy { color: #4CAF50; }
+  .price-mtm { color: #FF9800; }
+  .price-ads { color: #9C27B0; }
+
+  /* Phase */
+  .phase { margin-bottom: 24px; position: relative; }
+  .phase-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px 8px 0 0; cursor: pointer; }
+  .phase-bar:hover { filter: brightness(1.1); }
+  .phase-num { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+  .phase-title { font-size: 1rem; font-weight: 600; }
+  .phase-tools { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tool-badge { background: rgba(255,255,255,0.1); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; color: #ccc; }
+
+  .phase-body { padding: 16px; padding-left: 60px; border-left: 3px solid #333; margin-left: 16px; }
+
+  /* Colors per phase */
+  .ph-acq .phase-bar { background: linear-gradient(135deg, #1a2e1a, #151515); }
+  .ph-acq .phase-num { background: #4CAF50; color: #000; }
+  .ph-acq .phase-title { color: #4CAF50; }
+  .ph-acq .phase-body { border-color: #4CAF50; }
+
+  .ph-cap .phase-bar { background: linear-gradient(135deg, #1a2433, #151515); }
+  .ph-cap .phase-num { background: #2196F3; color: #000; }
+  .ph-cap .phase-title { color: #2196F3; }
+  .ph-cap .phase-body { border-color: #2196F3; }
+
+  .ph-nur .phase-bar { background: linear-gradient(135deg, #2e2410, #151515); }
+  .ph-nur .phase-num { background: #FF9800; color: #000; }
+  .ph-nur .phase-title { color: #FF9800; }
+  .ph-nur .phase-body { border-color: #FF9800; }
+
+  .ph-conv .phase-bar { background: linear-gradient(135deg, #2e1c14, #151515); }
+  .ph-conv .phase-num { background: #C27A5A; color: #000; }
+  .ph-conv .phase-title { color: #C27A5A; }
+  .ph-conv .phase-body { border-color: #C27A5A; }
+
+  .ph-onb .phase-bar { background: linear-gradient(135deg, #1a2e2e, #151515); }
+  .ph-onb .phase-num { background: #26a69a; color: #000; }
+  .ph-onb .phase-title { color: #26a69a; }
+  .ph-onb .phase-body { border-color: #26a69a; }
+
+  .ph-vie .phase-bar { background: linear-gradient(135deg, #1a1a2e, #151515); }
+  .ph-vie .phase-num { background: #5c6bc0; color: #fff; }
+  .ph-vie .phase-title { color: #5c6bc0; }
+  .ph-vie .phase-body { border-color: #5c6bc0; }
+
+  .ph-ret .phase-bar { background: linear-gradient(135deg, #231428, #151515); }
+  .ph-ret .phase-num { background: #9C27B0; color: #fff; }
+  .ph-ret .phase-title { color: #9C27B0; }
+  .ph-ret .phase-body { border-color: #9C27B0; }
+
+  .ph-sor .phase-bar { background: linear-gradient(135deg, #2e1a1a, #151515); }
+  .ph-sor .phase-num { background: #ef5350; color: #fff; }
+  .ph-sor .phase-title { color: #ef5350; }
+  .ph-sor .phase-body { border-color: #ef5350; }
+
+  .ph-ups .phase-bar { background: linear-gradient(135deg, #2e2e1a, #151515); }
+  .ph-ups .phase-num { background: #fdd835; color: #000; }
+  .ph-ups .phase-title { color: #fdd835; }
+  .ph-ups .phase-body { border-color: #fdd835; }
+
+  /* Arrow */
+  .arrow { text-align: center; color: #444; font-size: 1.2rem; margin: 4px 0; padding-left: 16px; }
+
+  /* Email cards */
+  .email-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 10px; }
+  .email-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px; position: relative; }
+  .email-card h4 { font-size: 0.85rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .email-card p { font-size: 0.78rem; color: #aaa; line-height: 1.5; }
+  .email-card .timing { font-size: 0.7rem; color: #C27A5A; font-weight: 600; margin-bottom: 4px; }
+  .email-card .channel { display: inline-block; font-size: 0.65rem; padding: 2px 6px; border-radius: 3px; margin-top: 6px; }
+  .ch-email { background: #1b3a1b; color: #81c784; }
+  .ch-whatsapp { background: #1b3a1b; color: #66bb6a; }
+  .ch-sms { background: #3a3a1b; color: #ffd54f; }
+  .ch-auto { background: #1b2a3a; color: #64b5f6; }
+  .ch-manual { background: #3a1b1b; color: #ef9a9a; }
+
+  /* Action items */
+  .action-item { background: #2a1a1a; border: 1px dashed #ef5350; border-radius: 6px; padding: 10px; margin-top: 8px; font-size: 0.78rem; color: #ef9a9a; }
+  .action-item strong { color: #ef5350; }
+
+  /* Status badges */
+  .status { display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 3px; margin-left: 8px; }
+  .st-ok { background: #1b5e20; color: #81c784; }
+  .st-todo { background: #4a1515; color: #ff8a80; }
+  .st-partial { background: #4a3b15; color: #ffd54f; }
+  .st-laurie { background: #1b2a3a; color: #90caf9; }
+
+  /* Validate section */
+  .validate { background: #1a1a1a; border: 2px solid #C27A5A; border-radius: 8px; padding: 20px; margin-top: 32px; }
+  .validate h2 { color: #C27A5A; font-size: 1.1rem; margin-bottom: 12px; }
+  .validate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .validate-item { background: #222; border-radius: 6px; padding: 12px; }
+  .validate-item h4 { font-size: 0.85rem; color: #C27A5A; margin-bottom: 6px; }
+  .validate-item p { font-size: 0.78rem; color: #aaa; }
+  .validate-item .question { color: #ffd54f; font-weight: 500; margin-top: 6px; font-size: 0.8rem; }
+
+  /* Notes */
+  .note { font-size: 0.75rem; color: #666; font-style: italic; margin-top: 8px; }
+
+  footer { text-align: center; color: #555; font-size: 0.75rem; margin-top: 40px; padding-top: 16px; border-top: 1px solid #333; }
+
+  @media (max-width: 700px) {
+    .tabs { flex-direction: column; }
+    .email-grid { grid-template-columns: 1fr; }
+    .phase-tools { display: none; }
+    .phase-body { padding-left: 16px; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Parcours Client Complet — FSY</h1>
+<p class="subtitle">3 offres x 9 phases : de la decouverte Instagram a l'apres-accompagnement</p>
+
+<div class="instruction">
+  <strong>Objectif de ce document :</strong> Valider avec Aurelia et Laurie le parcours complet de chaque offre, les outils utilises a chaque etape, et tous les emails/messages automatiques. Laurie a deja documente une partie des process — ce schema sert de base pour croiser avec son travail et identifier les trous.
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab tab-fsy active" onclick="switchTab('fsy')">FSY Studio — 17€/mois</div>
+  <div class="tab tab-mtm" onclick="switchTab('mtm')">Master The Method — 2 900€</div>
+  <div class="tab tab-ads" onclick="switchTab('ads')">Aurelia Del Sol — 397€+</div>
+</div>
+
+<!-- ======================= FSY STUDIO ======================= -->
+<div class="tab-content active" id="tab-fsy">
+
+  <div class="parcours-header">
+    <div>
+      <div class="price price-fsy">17€/mois</div>
+      <div class="desc">FSY Studio — Abonnement face yoga accessible (B2C)<br>Cible : femmes 30-55 ans, bien-etre, decouverte face yoga</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 : ACQUISITION -->
+  <div class="phase ph-acq">
+    <div class="phase-bar">
+      <div class="phase-num">1</div>
+      <div class="phase-title">ACQUISITION — D'ou viennent les prospects ?</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Instagram</span>
+        <span class="tool-badge">YouTube</span>
+        <span class="tool-badge">Manychat</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Instagram (canal principal) <span class="status st-ok">actif</span></h4>
+          <p>Reels, stories, bio link → Manychat quiz<br>Quiz identifie le pain point (sommeil, machoire, stress)<br>→ 3 videos gratuites personnalisees (Bunny.net)</p>
+          <span class="channel ch-auto">UTM : instagram/bio</span>
+        </div>
+        <div class="email-card">
+          <h4>YouTube <span class="status st-partial">partiel</span></h4>
+          <p>Videos longues, tutos face yoga<br>Lien description → lead magnet ou page vente</p>
+          <span class="channel ch-auto">UTM : youtube/description</span>
+        </div>
+        <div class="email-card">
+          <h4>Newsletter existante <span class="status st-ok">actif</span></h4>
+          <p>13 000 contacts Brevo, 36-50% ouverture<br>CTA → page vente FSY Studio</p>
+          <span class="channel ch-auto">UTM : brevo/newsletter</span>
+        </div>
+        <div class="email-card">
+          <h4>Lead Magnets <span class="status st-todo">a creer</span></h4>
+          <p>Quiz sommeil, guide machoires, routine anti-stress<br>Capture email → tag interet automatique dans Brevo</p>
+          <span class="channel ch-auto">1 UTM par lead magnet</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider avec Aurelia :</strong> Quels lead magnets existent deja ? Lesquels creer en priorite ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 2 : CAPTURE -->
+  <div class="phase ph-cap">
+    <div class="phase-bar">
+      <div class="phase-num">2</div>
+      <div class="phase-title">CAPTURE — Identifier et taguer le prospect</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Manychat</span>
+        <span class="tool-badge">n8n</span>
+        <span class="tool-badge">Brevo</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Manychat → n8n → Brevo <span class="status st-todo">a connecter</span></h4>
+          <p>Manychat capture l'email en DM Instagram<br>Webhook vers n8n qui cree le contact Brevo<br>Tags auto : source, interet, date</p>
+          <span class="channel ch-auto">Automatique</span>
+        </div>
+        <div class="email-card">
+          <h4>Formulaires landing pages <span class="status st-partial">partiel</span></h4>
+          <p>Chaque lead magnet a son formulaire Brevo<br>Tag automatique a la soumission</p>
+          <span class="channel ch-auto">Brevo forms</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider avec Laurie :</strong> Quels formulaires existent deja dans Brevo ? Quels tags sont en place ? Listes ou tags ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 3 : NURTURE -->
+  <div class="phase ph-nur">
+    <div class="phase-bar">
+      <div class="phase-num">3</div>
+      <div class="phase-title">NURTURE — Sequences email pre-achat</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Brevo</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Sequence Sommeil <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Declencheur : tag interet=sommeil</div>
+          <p><strong>J+0 :</strong> Bienvenue + resultat quiz personnalise<br>
+          <strong>J+3 :</strong> Temoignage cliente (transformation sommeil)<br>
+          <strong>J+5 :</strong> Video gratuite "3 exercices pour mieux dormir"<br>
+          <strong>J+7 :</strong> Offre Sommeil et Joie (397€) ou FSY Studio (17€)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Sequence Face Yoga <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Declencheur : tag interet=face_yoga</div>
+          <p><strong>J+0 :</strong> Bienvenue + video gratuite exclusive<br>
+          <strong>J+3 :</strong> Resultats avant/apres (preuves sociales)<br>
+          <strong>J+5 :</strong> "Pourquoi 10 min/jour changent tout"<br>
+          <strong>J+7 :</strong> Offre FSY Studio 17€/mois — essai gratuit ?</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Sequence Generale <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Declencheur : source=newsletter (pas d'interet precis)</div>
+          <p><strong>J+0 :</strong> Bienvenue dans l'univers FSY<br>
+          <strong>J+3 :</strong> Contenu educatif (decouverte face yoga)<br>
+          <strong>J+7 :</strong> Quiz pour identifier l'interet → re-tag auto<br>
+          <strong>J+14 :</strong> Offre adaptee selon le clic detecte</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider :</strong> Existe-t-il deja des sequences dans Brevo ? Combien d'emails par sequence ? Quel ton (tutoiement ?) ? Aurelia valide le contenu ou Laurie ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 4 : CONVERSION -->
+  <div class="phase ph-conv">
+    <div class="phase-bar">
+      <div class="phase-num">4</div>
+      <div class="phase-title">CONVERSION — Achat et paiement</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Stripe</span>
+        <span class="tool-badge">Circle</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Page de vente → Stripe checkout <span class="status st-ok">actif</span></h4>
+          <p>Landing page FSY Studio → bouton paiement<br>Stripe gere l'abonnement 17€/mois ou 139€/an<br>Webhook Stripe → n8n</p>
+          <span class="channel ch-auto">Automatique</span>
+        </div>
+        <div class="email-card">
+          <h4>Email confirmation achat <span class="status st-todo">a verifier</span></h4>
+          <div class="timing">Immediat apres paiement</div>
+          <p>Confirmation de paiement<br>Lien d'acces Circle<br>Prochaines etapes</p>
+          <span class="channel ch-email">Email Brevo ou Stripe</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider :</strong> Qui envoie l'email de confirmation ? Stripe auto ou Brevo ? Le lien Circle est-il automatique ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 5 : ONBOARDING -->
+  <div class="phase ph-onb">
+    <div class="phase-bar">
+      <div class="phase-num">5</div>
+      <div class="phase-title">ONBOARDING — Accueil nouveau membre</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Brevo</span>
+        <span class="tool-badge">Circle</span>
+        <span class="tool-badge">WhatsApp</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email J+0 : Bienvenue <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Immediat apres creation compte Circle</div>
+          <p>Bienvenue dans la communaute FSY !<br>Comment acceder a Circle<br>Par ou commencer (1ere video recommandee)<br>Lien WhatsApp communaute</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>WhatsApp : Message de bienvenue <span class="status st-todo">chatbot</span></h4>
+          <div class="timing">Quand rejoint le groupe WhatsApp</div>
+          <p>Chatbot envoie message de bienvenue<br>Presentation rapide de la communaute<br>FAQ automatique (horaires, comment pratiquer)</p>
+          <span class="channel ch-whatsapp">WhatsApp chatbot</span>
+        </div>
+        <div class="email-card">
+          <h4>SMS/WhatsApp J+1 : Bienvenue perso <span class="status st-laurie">doc Laurie</span></h4>
+          <div class="timing">1 jour apres inscription</div>
+          <p>Message personnalise SMS ou WhatsApp<br>"Bienvenue [prenom] ! As-tu reussi a te connecter ?"<br>Lien direct vers 1ere video</p>
+          <span class="channel ch-whatsapp">SMS ou WhatsApp</span>
+        </div>
+        <div class="email-card">
+          <h4>Email J+3 : Premier pas <span class="status st-todo">a creer</span></h4>
+          <div class="timing">3 jours apres inscription</div>
+          <p>Comment bien demarrer (routine 10 min)<br>Video tutoriel plateforme Circle<br>"Reponds a cet email si tu as une question"</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Email J+7 : Feedback <span class="status st-laurie">doc Laurie</span></h4>
+          <div class="timing">7 jours apres inscription</div>
+          <p>Comment ca se passe ? Besoin d'aide ?<br>Lien vers communaute WhatsApp<br>Temoignage d'une membre (avant/apres)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Check perso J+14 : Relance Laurie <span class="status st-laurie">doc Laurie</span></h4>
+          <div class="timing">14 jours — si aucune activite Circle</div>
+          <p>Message personnel de Laurie (ou CM freelance)<br>"Je vois que tu n'as pas encore commence, tout va bien ?"<br>Appel ou message WhatsApp direct</p>
+          <span class="channel ch-manual">Manuel — Laurie/CM</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider avec Laurie :</strong> Ce process est base sur ta doc (J+0 a J+30). Est-ce que c'est deja en place dans Brevo ou c'est encore manuel ? Le J+14 (relance perso si inactive) est-il fait systematiquement ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 6 : VIE SERIE (ENGAGEMENT) -->
+  <div class="phase ph-vie">
+    <div class="phase-bar">
+      <div class="phase-num">6</div>
+      <div class="phase-title">VIE ABONNEE — Engagement et contenu</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Circle</span>
+        <span class="tool-badge">Brevo</span>
+        <span class="tool-badge">WhatsApp</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Publication hebdo (process Laurie) <span class="status st-laurie">doc Laurie</span></h4>
+          <p><strong>1.</strong> Video publiee sur Circle (batch pre-enregistre)<br>
+          <strong>2.</strong> Email recap + tip de la semaine (Brevo)<br>
+          <strong>3.</strong> Instagram story teaser<br>
+          <strong>4.</strong> Post communaute Circle (question/challenge)<br>
+          <strong>5.</strong> Rappel dimanche soir (chatbot WhatsApp)<br>
+          <strong>6.</strong> Live mensuel Q&A (Aurelia, 30 min)</p>
+          <span class="channel ch-auto">Circle + Brevo + Instagram + WhatsApp bot</span>
+        </div>
+        <div class="email-card">
+          <h4>Email J+30 : Bilan 1 mois <span class="status st-todo">a creer</span></h4>
+          <div class="timing">30 jours apres inscription</div>
+          <p>Comment te sens-tu apres 1 mois ?<br>Progres attendus (photos avant/apres autres membres)<br>Invitation a partager sur le groupe WhatsApp</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Email J+60 : Deepening <span class="status st-todo">a creer</span></h4>
+          <div class="timing">60 jours apres inscription</div>
+          <p>Decouvre les routines avancees<br>Temoignage membre 3 mois<br>Challenge communautaire (si actif)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Email J+90 : Milestone <span class="status st-todo">a creer</span></h4>
+          <div class="timing">90 jours apres inscription</div>
+          <p>3 mois deja ! Recap de tes progres<br>Invitation a laisser un avis<br>Teasing des programmes premium</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Challenges trimestriels <span class="status st-partial">existant</span></h4>
+          <p>4x/an — challenge communautaire sur Circle<br>Campagne email Brevo (3-5 emails)<br>Boost engagement et retention</p>
+          <span class="channel ch-email">Email Brevo + Circle</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider :</strong> Quels emails existent deja pendant la vie abonnee ? Y a-t-il des challenges en place ? Quel est le taux de churn actuel ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 7 : RETENTION / ANTI-CHURN -->
+  <div class="phase ph-ret">
+    <div class="phase-bar">
+      <div class="phase-num">7</div>
+      <div class="phase-title">RETENTION — Anti-churn et reconquete</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Stripe</span>
+        <span class="tool-badge">n8n</span>
+        <span class="tool-badge">Brevo</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Alerte inactivite (14 jours) <span class="status st-todo">a construire</span></h4>
+          <div class="timing">Si 0 connexion Circle depuis 14 jours</div>
+          <p>Circle webhook → n8n → tag Brevo "inactive"<br>"Tu nous manques ! Voici une routine de 5 min pour reprendre"<br>Lien direct vers une video populaire</p>
+          <span class="channel ch-email">Email Brevo auto</span>
+        </div>
+        <div class="email-card">
+          <h4>Email pre-annulation (J-7) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">7 jours avant fin de periode Stripe</div>
+          <p>Rappel de la valeur : ce que tu as accompli ce mois<br>Nouveautes a venir<br>Temoignage membre fidele</p>
+          <span class="channel ch-email">Email Brevo via Stripe webhook</span>
+        </div>
+        <div class="email-card">
+          <h4>Email post-annulation (J+1) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">1 jour apres annulation Stripe</div>
+          <p>"On est tristes de te voir partir"<br>Mini-sondage (1 question : pourquoi ?)<br>Offre : 1 mois offert pour revenir</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Email reconquete (M+1) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">1 mois apres annulation</div>
+          <p>"Ce qui a change depuis ton depart"<br>Nouveaux contenus, temoignages frais<br>Offre speciale retour (-20% ou 1 mois offert)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+      <p class="note">Seuil Laurie : alerte si churn depasse 8%/mois. Objectif : &lt;5%/mois. Qui surveille aujourd'hui ?</p>
+      <div class="action-item"><strong>A valider :</strong> Quel est le process actuel quand quelqu'un annule ? Y a-t-il une offre de retention ? Qui gere ca aujourd'hui (Laurie ? Personne ?) ? Le seuil 8% est-il suivi quelque part ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 8 : SORTIE -->
+  <div class="phase ph-sor">
+    <div class="phase-bar">
+      <div class="phase-num">8</div>
+      <div class="phase-title">SORTIE — Desabonnement et offboarding</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Stripe</span>
+        <span class="tool-badge">Circle</span>
+        <span class="tool-badge">Brevo</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Desactivation acces Circle <span class="status st-todo">a automatiser</span></h4>
+          <div class="timing">Fin de periode Stripe (pas de renouvellement)</div>
+          <p>Stripe webhook → n8n → desactive le compte Circle<br>Tag Brevo : "ex-membre" + date sortie<br>Retire du groupe WhatsApp</p>
+          <span class="channel ch-auto">n8n automatique</span>
+        </div>
+        <div class="email-card">
+          <h4>Email sortie : Merci <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Jour de la desactivation</div>
+          <p>Merci pour ce bout de chemin ensemble<br>Tes acquis restent (les exercices appris)<br>"La porte est toujours ouverte"</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Sondage sortie <span class="status st-todo">a creer</span></h4>
+          <div class="timing">J+3 apres desactivation</div>
+          <p>3 questions rapides :<br>1. Pourquoi pars-tu ?<br>2. Qu'est-ce qui t'aurait fait rester ?<br>3. Recommanderais-tu FSY ? (NPS)</p>
+          <span class="channel ch-email">Email Brevo + formulaire</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 9 : UPSELL / APRÈS -->
+  <div class="phase ph-ups">
+    <div class="phase-bar">
+      <div class="phase-num">9</div>
+      <div class="phase-title">APRES — Upsell et LTV</div>
+      <div class="phase-tools">
+        <span class="tool-badge">Brevo</span>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Upsell Sommeil et Joie (M+3) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">3 mois apres inscription (si encore active)</div>
+          <p>Tag : membre active depuis 3+ mois<br>"Tu adores le face yoga ? Decouvre comment transformer ton sommeil"<br>→ Offre Sommeil et Joie 397€</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Upsell MTM (profils pro) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Detection profil pro (coach, praticienne)</div>
+          <p>Si tag : metier=praticienne OU engagement tres eleve<br>"Tu veux enseigner le face yoga ? Decouvre MTM"<br>→ Page MTM 2 900€</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Nurture ex-membres (M+3/M+6/M+12) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">3, 6 et 12 mois apres sortie</div>
+          <p>Newsletters periodiques aux ex-membres<br>Nouveautes, temoignages, offre de retour<br>Objectif : reconversion ou recommandation</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider :</strong> Existe-t-il un process d'upsell aujourd'hui ? Les ex-membres recoivent-elles encore des emails ?</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================= MTM ======================= -->
+<div class="tab-content" id="tab-mtm">
+
+  <div class="parcours-header">
+    <div>
+      <div class="price price-mtm">2 900€</div>
+      <div class="desc">Master The Method — Certification face yoga (B2B)<br>Cible : praticiennes bien-etre, coachs, professionnelles sante qui veulent enseigner le face yoga</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase ph-acq">
+    <div class="phase-bar"><div class="phase-num">1</div><div class="phase-title">ACQUISITION — Attirer les professionnelles</div>
+      <div class="phase-tools"><span class="tool-badge">Instagram</span><span class="tool-badge">Manychat</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Instagram contenu pro <span class="status st-ok">actif</span></h4>
+          <p>Posts/reels sur le metier de face yoga teacher<br>Temoignages certifiees<br>Bio link → lead magnet pro</p>
+        </div>
+        <div class="email-card">
+          <h4>Lead magnet B2B <span class="status st-todo">a creer</span></h4>
+          <p>Guide PDF "Devenir face yoga teacher en 2026"<br>Ou webinaire gratuit (1x/trimestre)<br>Capture email → tag interet=mtm dans Brevo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 2 : NURTURE LAUNCH -->
+  <div class="phase ph-nur">
+    <div class="phase-bar"><div class="phase-num">2</div><div class="phase-title">NURTURE — Sequence de lancement (2x/an)</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Sequence lancement MTM (7-8 emails) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">2 pushs/an : septembre + mars</div>
+          <p><strong>J-14 :</strong> Teasing — "Quelque chose arrive..."<br>
+          <strong>J-7 :</strong> Presentation MTM + temoignage certifiee<br>
+          <strong>J-3 :</strong> FAQ + "pose-moi tes questions"<br>
+          <strong>J-1 :</strong> Early bird 2 500€ (48h seulement)<br>
+          <strong>J0 :</strong> Ouverture des inscriptions — 2 900€<br>
+          <strong>J+3 :</strong> Temoignage detaille d'une certifiee<br>
+          <strong>J+5 :</strong> "Derniere chance" — urgence douce<br>
+          <strong>J+7 :</strong> Cloture — "Les inscriptions ferment ce soir"</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+      <p class="note">Evergreen prevu a terme : 10 inscriptions/mois en continu (sans lancement)</p>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 3 : CONVERSION -->
+  <div class="phase ph-conv">
+    <div class="phase-bar"><div class="phase-num">3</div><div class="phase-title">CONVERSION — Achat + Contrat</div>
+      <div class="phase-tools"><span class="tool-badge">Stripe</span><span class="tool-badge">Circle</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Paiement Stripe → Contrat auto <span class="status st-todo">a automatiser</span></h4>
+          <p>Stripe checkout 2 900€<br>Webhook → n8n → envoi contrat e-signature automatique<br>Tag Brevo : "mtm_inscrite"</p>
+        </div>
+        <div class="email-card">
+          <h4>Email confirmation + contrat <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Immediat apres paiement</div>
+          <p>Bienvenue dans MTM !<br>Lien contrat a signer<br>Prochaines etapes + acces Circle imminent</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 4 : ONBOARDING -->
+  <div class="phase ph-onb">
+    <div class="phase-bar"><div class="phase-num">4</div><div class="phase-title">ONBOARDING — Accueil dans la formation</div>
+      <div class="phase-tools"><span class="tool-badge">Circle</span><span class="tool-badge">Telegram</span><span class="tool-badge">Brevo</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email J+0 : Bienvenue MTM <span class="status st-todo">a creer</span></h4>
+          <p>Acces Circle + calendrier formation<br>Lien Telegram communaute certifiees<br>Guide de demarrage (PDF ou video)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Telegram : Message bienvenue <span class="status st-ok">bot pret</span></h4>
+          <p>Chatbot Telegram envoie bienvenue<br>Presentation communaute + regles<br>FAQ automatique</p>
+          <span class="channel ch-whatsapp">Telegram bot</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 5 : VIE FORMATION -->
+  <div class="phase ph-vie">
+    <div class="phase-bar"><div class="phase-num">5</div><div class="phase-title">VIE FORMATION — Suivi et progression</div>
+      <div class="phase-tools"><span class="tool-badge">Circle</span><span class="tool-badge">Brevo</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email mi-parcours <span class="status st-todo">a creer</span></h4>
+          <div class="timing">A mi-chemin de la formation (~20h)</div>
+          <p>Comment ca se passe ?<br>Rappel des ressources disponibles<br>Encouragement + lien replay sessions manquees</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Email pre-quiz certification <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Quand 80% du contenu consomme</div>
+          <p>Tu es prete pour la certification !<br>Comment se passe le quiz Circle<br>Ce que tu recois apres (certificat, kit, licence)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 6 : CERTIFICATION -->
+  <div class="phase ph-conv">
+    <div class="phase-bar"><div class="phase-num">6</div><div class="phase-title">CERTIFICATION — Quiz + Kit</div>
+      <div class="phase-tools"><span class="tool-badge">Circle</span><span class="tool-badge">Brevo</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email certification reussie <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Immediat apres quiz reussi</div>
+          <p>Felicitations ! Tu es certifiee FSY<br>Telechargement certificat PDF<br>Kit "Trained by FSY" (logo, templates com)<br>Lien programme ambassadeur</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Licence annuelle 100€/an <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Proposition post-certification</div>
+          <p>Acces continu communaute + updates CPD<br>Stripe abo 100€/an<br>Renouvellement auto</p>
+          <span class="channel ch-auto">Stripe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 7 : POST FORMATION -->
+  <div class="phase ph-ret">
+    <div class="phase-bar"><div class="phase-num">7</div><div class="phase-title">POST-FORMATION — Retention licence + Ambassadeurs</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span><span class="tool-badge">Stripe</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Relance licence (M-3 avant expiration) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">3 mois avant fin licence annuelle</div>
+          <p>Rappel valeur : ce que tu gardes avec la licence<br>Nouveautes CPD de l'annee<br>Lien renouvellement</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Programme ambassadeur <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Post-certification</div>
+          <p>Lien affilie unique (10-15% commission)<br>Templates de communication fournis<br>Suivi commissions (dashboard ?)</p>
+          <span class="channel ch-auto">Stripe affiliate ou manuel</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================= AURELIA DEL SOL ======================= -->
+<div class="tab-content" id="tab-ads">
+
+  <div class="parcours-header">
+    <div>
+      <div class="price price-ads">397€+</div>
+      <div class="desc">Aurelia Del Sol — Programmes premium transformation (B2C haut de gamme)<br>1er programme : Sommeil et Joie (397€, 6 semaines) — lancement 8 juin 2026</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase ph-acq">
+    <div class="phase-bar"><div class="phase-num">1</div><div class="phase-title">ACQUISITION — Positionnement premium</div>
+      <div class="phase-tools"><span class="tool-badge">Instagram</span><span class="tool-badge">YouTube</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Instagram Aurelia Del Sol <span class="status st-todo">a creer</span></h4>
+          <p>Contenu lifestyle, intimite, art de vivre<br>Positionnement premium distinct de FSY<br>→ Lead magnet (quiz sommeil, guide machoires)</p>
+        </div>
+        <div class="email-card">
+          <h4>YouTube long format <span class="status st-partial">en reflexion</span></h4>
+          <p>Videos profondes, expertise Aurelia<br>Positionnement expert/mentor<br>→ Lien description vers landing Aurelia Del Sol</p>
+        </div>
+        <div class="email-card">
+          <h4>Upsell depuis FSY Studio <span class="status st-todo">a creer</span></h4>
+          <p>Membres FSY actives 3+ mois<br>Email : "Prete pour aller plus loin ?"<br>→ Page Sommeil et Joie</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 2 : NURTURE -->
+  <div class="phase ph-nur">
+    <div class="phase-bar"><div class="phase-num">2</div><div class="phase-title">NURTURE — Sequence pre-lancement</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Sequence Sommeil et Joie (5-7 emails) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Pre-lancement 8 juin 2026</div>
+          <p><strong>J-21 :</strong> "Le sommeil, c'est sacre" — contenu educatif<br>
+          <strong>J-14 :</strong> Temoignage transformation (beta testeur ?)<br>
+          <strong>J-7 :</strong> Presentation du programme en detail<br>
+          <strong>J-3 :</strong> FAQ + "je reponds a tes questions"<br>
+          <strong>J-1 :</strong> Derniere chance pre-inscription (prix early bird ?)<br>
+          <strong>J0 :</strong> C'est ouvert ! Lien inscription<br>
+          <strong>J+3 :</strong> Rappel cloture + urgence douce</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+      <div class="action-item"><strong>A valider :</strong> Y a-t-il un prix early bird ? Combien de places ? Lancement ouvert ou ferme ?</div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 3 : CONVERSION -->
+  <div class="phase ph-conv">
+    <div class="phase-bar"><div class="phase-num">3</div><div class="phase-title">CONVERSION — Achat 397€</div>
+      <div class="phase-tools"><span class="tool-badge">Stripe</span><span class="tool-badge">Circle</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Paiement + acces <span class="status st-todo">a configurer</span></h4>
+          <p>Stripe checkout 397€<br>Acces Circle espace Aurelia Del Sol<br>Email confirmation + bienvenue</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 4 : ONBOARDING -->
+  <div class="phase ph-onb">
+    <div class="phase-bar"><div class="phase-num">4</div><div class="phase-title">ONBOARDING — Bienvenue dans le programme</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span><span class="tool-badge">Circle</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email J+0 : Bienvenue Sommeil et Joie <span class="status st-todo">a creer</span></h4>
+          <p>Bienvenue, voici comment ca va se passer<br>Acces Circle + guide de demarrage<br>Semaine 1 : commence par le body stress mapping</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Contenu du programme (6 semaines) <span class="status st-ok">cree par Aurelia</span></h4>
+          <p>6 videos guidees + audios sommeil<br>Body stress mapping + poster salle de bain<br>Guide crise 3h du matin (acupressure + audio)<br>Journal guide 6 semaines<br>Bonus : recettes Damien, guide hormonal</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 5 : VIE PROGRAMME -->
+  <div class="phase ph-vie">
+    <div class="phase-bar"><div class="phase-num">5</div><div class="phase-title">VIE PROGRAMME — 6 semaines</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span><span class="tool-badge">Circle</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email hebdo (S1 a S6) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Chaque debut de semaine pendant 6 semaines</div>
+          <p><strong>S1 :</strong> Mapping de ton stress corporel<br>
+          <strong>S2 :</strong> Les bases du sommeil reparateur<br>
+          <strong>S3 :</strong> Routine du soir personnalisee<br>
+          <strong>S4 :</strong> Gerer les crises de la nuit<br>
+          <strong>S5 :</strong> Approfondir — hormones et cycles<br>
+          <strong>S6 :</strong> Ton rituel complet + bilan</p>
+          <span class="channel ch-email">Email Brevo (drip)</span>
+        </div>
+        <div class="email-card">
+          <h4>Email mi-parcours (S3) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Semaine 3 — mi-programme</div>
+          <p>Comment tu te sens ?<br>Rappel : garantie 100% si &lt;20% consomme (J+7)<br>Encouragement + lien support</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">▼</div>
+
+  <!-- PHASE 6 : FIN + RETENTION -->
+  <div class="phase ph-ret">
+    <div class="phase-bar"><div class="phase-num">6</div><div class="phase-title">FIN — Renouvellement + Upsell</div>
+      <div class="phase-tools"><span class="tool-badge">Brevo</span><span class="tool-badge">Stripe</span></div>
+    </div>
+    <div class="phase-body">
+      <div class="email-grid">
+        <div class="email-card">
+          <h4>Email fin de programme (S6) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Fin de la semaine 6</div>
+          <p>Bravo, tu as termine !<br>Bilan de ta transformation<br>Invitation a laisser un temoignage<br>Teasing : "Pour garder l'acces..."</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Renouvellement 47€/an (M+6) <span class="status st-todo">a creer</span></h4>
+          <div class="timing">6 mois apres achat</div>
+          <p>Acces continu au contenu + mises a jour<br>Stripe abo 47€/an automatique<br>Email relance si non renouvele</p>
+          <span class="channel ch-auto">Stripe + Brevo</span>
+        </div>
+        <div class="email-card">
+          <h4>Upsell programmes suivants <span class="status st-todo">a creer</span></h4>
+          <div class="timing">Post-programme</div>
+          <p>Prochains programmes Aurelia Del Sol<br>Respiration, immersions, mastermind<br>Newsletter premium Aurelia (contenu exclusif)</p>
+          <span class="channel ch-email">Email Brevo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================= VALIDATION ======================= -->
+<div class="validate">
+  <h2>Questions a valider en session avec Aurelia et Laurie</h2>
+  <div class="validate-grid">
+    <div class="validate-item">
+      <h4>Outils par phase</h4>
+      <p>Est-ce que les outils assignes a chaque phase sont corrects ? Y en a-t-il d'autres ?</p>
+      <div class="question">Laurie : peux-tu nous montrer ce qui existe deja dans Brevo (sequences, listes, tags) ?</div>
+    </div>
+    <div class="validate-item">
+      <h4>Emails existants</h4>
+      <p>Quels emails automatiques sont deja en place ? Lesquels sont manuels ?</p>
+      <div class="question">Laurie : as-tu documente les emails actuels quelque part ?</div>
+    </div>
+    <div class="validate-item">
+      <h4>Process d'annulation</h4>
+      <p>Que se passe-t-il aujourd'hui quand une abonnee annule ?</p>
+      <div class="question">Y a-t-il une offre de retention ? Quelqu'un contacte la personne ?</div>
+    </div>
+    <div class="validate-item">
+      <h4>Ton et voix</h4>
+      <p>Quel ton pour les emails ? Tutoiement ? Voix Aurelia ou voix FSY ?</p>
+      <div class="question">FSY Studio = chaleureux/communautaire ? Aurelia Del Sol = intime/premium ?</div>
+    </div>
+    <div class="validate-item">
+      <h4>Acces API</h4>
+      <p>Pour automatiser les connexions, on a besoin des acces admin.</p>
+      <div class="question">Laurie : peux-tu nous donner les logins Brevo, Circle, Manychat, Stripe, Bunny PENDANT la session ?</div>
+    </div>
+    <div class="validate-item">
+      <h4>Priorite de construction</h4>
+      <p>On ne peut pas tout construire en meme temps. Quel parcours en premier ?</p>
+      <div class="question">Suggestion : FSY Studio (plus de volume) ou Sommeil et Joie (lancement 8 juin) ?</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  CS Consulting Strategique — Parcours Client Complet FSY — Avril 2026<br>
+  <span style="color: #C27A5A;">Document de travail — A valider en session avec Aurelia et Laurie</span>
+</footer>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector('.tab-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+
+</body>
+</html>
