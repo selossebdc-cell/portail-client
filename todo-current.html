@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tâches en cours</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f0f;
+    color: #e8e0d8;
+    min-height: 100vh;
+    padding: 24px 16px 140px;
+  }
+  h1 {
+    color: #C27A5A;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+  .progress-bar {
+    background: #1a1a1a;
+    border-radius: 8px;
+    height: 8px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: #C27A5A;
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.4s ease;
+  }
+
+  /* Filtres */
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn.active {
+    background: #C27A5A;
+    color: #0f0f0f;
+    border-color: #C27A5A;
+    font-weight: 600;
+  }
+
+  /* Type selector */
+  .type-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .type-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background: #1a1a1a;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .type-btn.active {
+    background: #C27A5A;
+    color: #0f0f0f;
+    border-color: #C27A5A;
+    font-weight: 600;
+  }
+
+  /* Catégories */
+  .category {
+    color: #C27A5A;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px;
+  }
+
+  /* Tâches */
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #1a1a1a;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .task.done { opacity: 0.4; }
+  .task input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border: 2px solid #C27A5A;
+    border-radius: 6px;
+    background: transparent;
+    margin-top: 1px;
+    cursor: pointer;
+    position: relative;
+  }
+  .task input[type="checkbox"]:checked {
+    background: #C27A5A;
+  }
+  .task input[type="checkbox"]:checked::after {
+    content: '\2713';
+    color: #0f0f0f;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .task.done .task-text { text-decoration: line-through; color: #555; }
+  .task-text { font-size: 0.95rem; line-height: 1.4; }
+  .task-detail { color: #777; font-size: 0.8rem; margin-top: 2px; }
+  .task-meta { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .task-tag {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #1a1a1a;
+    color: #888;
+  }
+  .task-tag.urgent { background: #4a1a1a; color: #ff6b6b; }
+  .task-tag.important { background: #4a3a1a; color: #ffa94d; }
+  .task-tag.perso { background: #1a3a2a; color: #4ade80; }
+  .task-tag.pro { background: #1a2a3a; color: #60a5fa; }
+
+  .add-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border-top: 1px solid #2a2a2a;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+  }
+  .add-row {
+    display: flex;
+    gap: 8px;
+  }
+  .add-bar input[type="text"] {
+    flex: 1;
+    background: #0f0f0f;
+    border: 1.5px solid #333;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #e8e0d8;
+    font-size: 0.95rem;
+  }
+  .add-bar input[type="text"]:focus { border-color: #C27A5A; outline: none; }
+  .add-bar input[type="text"]::placeholder { color: #555; }
+  .add-bar select {
+    background: #0f0f0f;
+    border: 1.5px solid #333;
+    color: #C27A5A;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  .add-bar select:focus { border-color: #C27A5A; outline: none; }
+  .add-btn, .mic-btn {
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    width: 44px;
+    min-width: 44px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .add-btn {
+    background: #C27A5A;
+    color: #0f0f0f;
+    font-size: 1.3rem;
+  }
+  .mic-btn {
+    background: #333;
+    color: #e8e0d8;
+    font-size: 1.2rem;
+  }
+  .mic-btn.recording {
+    background: #e55;
+    color: #fff;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .add-btn:active, .mic-btn:active { opacity: 0.7; }
+  .counter-row {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #C27A5A;
+    font-weight: 600;
+  }
+  .loading { text-align: center; color: #555; padding: 40px 0; }
+  .empty { text-align: center; color: #555; padding: 40px 0; }
+</style>
+</head>
+<body>
+
+<h1>Mes tâches</h1>
+<div class="subtitle" id="subtitle">Tâches en cours</div>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="type-selector">
+  <button class="type-btn active" data-type="all">Tous</button>
+  <button class="type-btn" data-type="pro">Pro</button>
+  <button class="type-btn" data-type="perso">Perso</button>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">Tout</button>
+  <button class="filter-btn" data-filter="todo">À faire</button>
+  <button class="filter-btn" data-filter="done">Fait</button>
+</div>
+
+<div id="task-list"><div class="loading">Chargement...</div></div>
+
+<div class="add-bar">
+  <div class="add-row">
+    <input type="text" id="new-task" placeholder="Ajouter une tâche..." enterkeyhint="done">
+    <button class="mic-btn" id="mic-btn">🎤</button>
+    <button class="add-btn" id="add-btn">+</button>
+  </div>
+  <select id="category">
+    <option value="clients">Clients</option>
+    <option value="contenu">Contenu</option>
+    <option value="administratif">Admin</option>
+    <option value="finances">Finances</option>
+    <option value="dev">Dev</option>
+    <option value="filles">Filles</option>
+    <option value="sante">Santé</option>
+    <option value="perso">Perso</option>
+  </select>
+  <select id="task-type" style="margin-left:8px">
+    <option value="pro">Type: Pro</option>
+    <option value="perso">Type: Perso</option>
+  </select>
+  <div class="counter-row" id="counter"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-config.js"></script>
+
+<script>
+const CATEGORY_LABELS = {
+  filles: 'Filles', finances: 'Finances',
+  administratif: 'Administratif', clients: 'Clients', contenu: 'Contenu',
+  dev: 'Développement', perso: 'Perso', sante: 'Santé'
+};
+
+let allTasks = [];
+let currentFilter = 'all';
+let currentType = 'all';
+
+async function loadTasks() {
+  try {
+    const { data, error } = await db
+      .from('tasks')
+      .select('*')
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    allTasks = data || [];
+    render();
+    setupRealtime();
+  } catch (e) {
+    console.error('Erreur chargement:', e);
+    document.getElementById('task-list').innerHTML = '<div class="empty">Erreur de chargement</div>';
+  }
+}
+
+function render() {
+  const list = document.getElementById('task-list');
+  let filtered = [...allTasks];
+
+  // Type filter
+  if (currentType === 'pro') filtered = filtered.filter(t => t.type === 'pro');
+  else if (currentType === 'perso') filtered = filtered.filter(t => t.type === 'perso');
+
+  // Status filter
+  if (currentFilter === 'todo') filtered = filtered.filter(t => t.status !== 'done');
+  else if (currentFilter === 'done') filtered = filtered.filter(t => t.status === 'done');
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">Aucune tâche</div>';
+    updateProgress();
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  filtered.forEach(t => {
+    if (!groups[t.category]) groups[t.category] = [];
+    groups[t.category].push(t);
+  });
+
+  let html = '';
+  for (const [cat, tasks] of Object.entries(groups)) {
+    html += `<div class="category">${CATEGORY_LABELS[cat] || cat}</div>`;
+    tasks.forEach(t => {
+      const done = t.status === 'done';
+      const urgentTag = t.priority === 2 ? '<span class="task-tag urgent">Urgent</span>' :
+                        t.priority === 1 ? '<span class="task-tag important">Important</span>' : '';
+      const typeTag = `<span class="task-tag ${t.type}">${t.type === 'perso' ? 'Perso' : 'Pro'}</span>`;
+      html += `
+        <label class="task ${done ? 'done' : ''}" onclick="toggleTask('${t.id}', '${t.status}')">
+          <input type="checkbox" ${done ? 'checked' : ''} readonly>
+          <div style="flex:1">
+            <div class="task-text">${escapeHtml(t.title)}</div>
+            ${t.detail ? `<div class="task-detail">${escapeHtml(t.detail)}</div>` : ''}
+            <div class="task-meta">${urgentTag}${typeTag}</div>
+          </div>
+        </label>`;
+    });
+  }
+  list.innerHTML = html;
+  updateProgress();
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function toggleTask(id, status) {
+  const newStatus = status === 'done' ? 'todo' : 'done';
+  try {
+    await db.from('tasks').update({
+      status: newStatus,
+      completed_at: newStatus === 'done' ? new Date().toISOString() : null,
+      updated_by: 'catherine'
+    }).eq('id', id);
+    const task = allTasks.find(t => t.id === id);
+    if (task) { task.status = newStatus; task.completed_at = newStatus === 'done' ? new Date().toISOString() : null; }
+    render();
+  } catch (e) {
+    console.error('Erreur update:', e);
+  }
+}
+
+async function addTask() {
+  const input = document.getElementById('new-task');
+  const cat = document.getElementById('category').value;
+  const type = document.getElementById('task-type').value;
+  const title = input.value.trim();
+  if (!title) return;
+
+  try {
+    const { data, error } = await db.from('tasks').insert([{
+      title,
+      category: cat,
+      type,
+      status: 'todo',
+      created_by: 'catherine'
+    }]).select();
+
+    if (error) throw error;
+    if (data && data.length > 0) {
+      allTasks.unshift(data[0]);
+      input.value = '';
+      render();
+    }
+  } catch (e) {
+    console.error('Erreur ajout:', e);
+  }
+}
+
+function updateProgress() {
+  const active = allTasks.filter(t => t.status !== 'cancelled');
+  const done = active.filter(t => t.status === 'done').length;
+  const total = active.length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('counter').textContent = `${done} / ${total} — ${pct}%`;
+}
+
+// Filtres
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+// Type selector
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentType = btn.dataset.type;
+    render();
+  });
+});
+
+// Add task
+document.getElementById('add-btn').addEventListener('click', addTask);
+document.getElementById('new-task').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addTask(); }
+});
+
+// Speech recognition
+const micBtn = document.getElementById('mic-btn');
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  let isRecording = false;
+
+  micBtn.addEventListener('click', () => {
+    if (isRecording) {
+      recognition.stop();
+    } else {
+      recognition.start();
+      micBtn.classList.add('recording');
+      isRecording = true;
+    }
+  });
+
+  recognition.addEventListener('result', (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('new-task').value = transcript;
+  });
+
+  recognition.addEventListener('end', () => {
+    micBtn.classList.remove('recording');
+    isRecording = false;
+    const text = document.getElementById('new-task').value.trim();
+    if (text) addTask();
+  });
+
+  recognition.addEventListener('error', () => {
+    micBtn.classList.remove('recording');
+    isRecording = false;
+  });
+} else {
+  micBtn.style.display = 'none';
+}
+
+// Real-time updates
+function setupRealtime() {
+  const channel = db.channel('tasks-channel');
+
+  channel.on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'tasks'
+  }, payload => {
+    loadTasks();
+  }).subscribe();
+}
+
+// Init
+loadTasks();
+</script>
+</body>
+</html>
